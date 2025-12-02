@@ -32,7 +32,8 @@ class DialogScene(BaseScene):
 
         # Create a semi-transparent background overlay
         overlay_entity = ui.label_entity("", 320, 240)
-        overlay_entity.add(AlphaComponent(0.5))  # Semi-transparent overlay
+        # Semi-transparent overlay - let's to close the dialog faster
+        overlay_entity.add(AlphaComponent(0.5))
 
         # Dialog title
         self.title = ui.h2_entity(self.title_text, 320, 180, GameConfig.TEXT_COLOR)
@@ -93,35 +94,5 @@ class DialogScene(BaseScene):
         ]
 
     def update(self, delta_time: float):
-        # Handle fade out if needed (when confirming)
-        if hasattr(self, "_fading_out") and self._fading_out:
-            # Check if all entities have faded out (current alpha is at or near target alpha of 0)
-            all_faded = True
-            for entity in self.entities:
-                alpha_comp = entity.get(AlphaComponent)
-                if alpha_comp:
-                    # Check if alpha is still above a very small threshold (close enough to 0)
-                    if alpha_comp.alpha > 0.01:  # Still visible, not fully faded
-                        all_faded = False
-                        break
-
-            # If all entities are fully transparent, transition to the target scene
-            if all_faded:
-                if hasattr(self, "_target_scene") and self._target_scene is not None:
-                    self.app.scene_manager.change(self._target_scene)
-                # If no target scene was defined, return to the previous scene
-                elif (
-                    hasattr(self, "previous_scene")
-                    and self.previous_scene is not None
-                ):
-                    self.app.scene_manager.change(self.previous_scene)
-
-    def start_fade_out(self, target_scene=None):
-        """Start the fade out animation before transitioning to the next scene"""
-        self._fading_out = True
-        if target_scene:
-            self._target_scene = target_scene
-        for entity in self.entities:
-            alpha_comp = entity.get(AlphaComponent)
-            if alpha_comp:
-                alpha_comp.target_alpha = 0.0  # Fade to transparent
+        # Call parent update to handle fade-out if in progress
+        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out

@@ -1,7 +1,7 @@
 import logging
 
 from config import GameConfig
-from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
+from engine import BaseScene, ButtonComponent, UIBuilder
 
 log = logging.getLogger("game/scenes")
 
@@ -13,12 +13,16 @@ class MenuScene(BaseScene):
         self._fading_out = False
         ui = UIBuilder(self.app.font)
         self.title = ui.h1_entity("Guess The Number", 300, 80)
-        self.subtitle = ui.h2_entity("Press Start", 300, 130, GameConfig.HINT_COLOR)
+        self.subtitle = ui.h2_entity("Press START", 300, 130, GameConfig.HINT_COLOR)
 
         def start_game():
             log.info("Start pressed")
-            # Start fade out before changing scene
-            self.start_fade_out()
+            # Start fade out with callback to start the game
+            def on_fade_complete():
+                from .game import GameScene
+                self.app.scene_manager.change(GameScene(self.app))
+
+            self.start_fade_out(on_complete_callback=on_fade_complete)
 
         self.btn_start = ui.button_entity("START", 300, 240, start_game)
         # Set minimum width to match longest button text in scene
@@ -28,10 +32,11 @@ class MenuScene(BaseScene):
 
         def exit_game():
             log.info("Exit pressed")
-            # Start fade out before exiting
-            self.start_fade_out()
-            # We'll handle the actual exit after fade completes
-            self._exit_requested = True
+            # Start fade out with callback to exit the application
+            def on_fade_complete():
+                self.app.running = False
+
+            self.start_fade_out(on_complete_callback=on_fade_complete)
 
         self.btn_exit = ui.button_entity("EXIT", 300, 300, exit_game)
         # Set minimum width to match longest button text in scene
@@ -52,33 +57,5 @@ class MenuScene(BaseScene):
         pass
 
     def update(self, delta_time: float):
-        # Handle fade out if needed
-        if hasattr(self, "_fading_out") and self._fading_out:
-            # Check if all entities have faded out (current alpha is at or near target alpha of 0)
-            all_faded = True
-            for entity in self.entities:
-                alpha_comp = entity.get(AlphaComponent)
-                if alpha_comp:
-                    # Check if alpha is still above a very small threshold (close enough to 0)
-                    if alpha_comp.alpha > 0.01:  # Still visible, not fully faded
-                        all_faded = False
-                        break
-
-            # If all entities are fully transparent, handle the next action
-            if all_faded:
-                if hasattr(self, "_exit_requested") and self._exit_requested:
-                    # Exit the application
-                    self.app.running = False
-                else:
-                    # Start a new game
-                    from .game import GameScene
-
-                    self.app.scene_manager.change(GameScene(self.app))
-
-    def start_fade_out(self):
-        """Start the fade out animation before transitioning to the next scene"""
-        self._fading_out = True
-        for entity in self.entities:
-            alpha_comp = entity.get(AlphaComponent)
-            if alpha_comp:
-                alpha_comp.target_alpha = 0.0  # Fade to transparent
+        # Call parent update to handle fade-out if in progress
+        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out

@@ -26,7 +26,7 @@ class UIConfig(BaseModel):
 
     # Component animation speeds
     progress_bar_animation_speed: float = 8.0
-    alpha_animation_speed: float = 3.0
+    alpha_animation_speed: float = 6.0
 
     # Scene settings
     scene_max_history_entries: int = 6

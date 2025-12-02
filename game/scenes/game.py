@@ -4,7 +4,6 @@ import pygame
 
 from config import GameConfig
 from engine import (
-    AlphaComponent,
     BaseScene,
     ButtonComponent,
     InputFieldComponent,
@@ -75,9 +74,12 @@ class GameScene(BaseScene):
 
         def restart_click():
             log.info("Restart clicked")
-            # Start fade out before resetting the game
-            self.start_fade_out()
-            self._restart_requested = True
+            # Start fade out with a callback to reset and recreate the scene
+            def on_fade_complete():
+                # Change to a new GameScene which will start fresh
+                self.app.scene_manager.change(GameScene(self.app))
+
+            self.start_fade_out(on_complete_callback=on_fade_complete)
 
         # Create full-width buttons that span more of the container
         btn_width = 280
@@ -106,12 +108,12 @@ class GameScene(BaseScene):
             from .dialog import DialogScene
 
             def confirm_quit():
-                # Create menu scene and start fade out on the dialog
+                # Start fade out with callback to go to menu
                 from .menu import MenuScene
+                def on_fade_complete():
+                    self.app.scene_manager.change(MenuScene(self.app))
 
-                menu_scene = MenuScene(self.app)
-                # Start fade out on the dialog scene itself and transition to menu
-                self.app.scene_manager.current.start_fade_out(menu_scene)
+                self.app.scene_manager.current.start_fade_out(on_complete_callback=on_fade_complete)
 
             def cancel_quit():
                 # Go back to the game scene without quitting, preserve game state
@@ -266,8 +268,12 @@ class GameScene(BaseScene):
                     if input_field is not None and input_field.text:
                         self.submit_guess()
                 case pygame.K_ESCAPE:
-                    # Start fade out before changing scene
-                    self.start_fade_out()
+                    # Start fade out with callback to go to menu
+                    def on_fade_complete():
+                        from .menu import MenuScene
+                        self.app.scene_manager.change(MenuScene(self.app))
+
+                    self.start_fade_out(on_complete_callback=on_fade_complete)
         # Handle custom event to clear error message
         elif (
             event.type == pygame.USEREVENT
@@ -314,37 +320,8 @@ class GameScene(BaseScene):
                         error_label.text = ""
 
     def update(self, delta_time: float):
-        # Handle fade out if needed
-        if hasattr(self, "_fading_out") and self._fading_out:
-            # Check if all entities have faded out (current alpha is at or near target alpha of 0)
-            all_faded = True
-            for entity in self.entities:
-                alpha_comp = entity.get(AlphaComponent)
-                if alpha_comp:
-                    # Check if alpha is still above a very small threshold (close enough to 0)
-                    if alpha_comp.alpha > 0.01:  # Still visible, not fully faded
-                        all_faded = False
-                        break
-
-            # If all entities are fully transparent, handle transitions based on the context
-            if all_faded:
-                # Check if the restart flag was set before the fade started
-                if hasattr(self, "_restart_requested"):
-                    # For restart, come back to the same scene after fade out
-                    self.app.scene_manager.change(GameScene(self.app))
-                else:
-                    # This handles the ESC key case - go to menu
-                    from .menu import MenuScene
-
-                    self.app.scene_manager.change(MenuScene(self.app))
-
         # Update button states
         self.update_submit_button_state()
 
-    def start_fade_out(self):
-        """Start the fade out animation before transitioning to the next scene"""
-        self._fading_out = True
-        for entity in self.entities:
-            alpha_comp = entity.get(AlphaComponent)
-            if alpha_comp:
-                alpha_comp.target_alpha = 0.0  # Fade to transparent
+        # Call parent update to handle fade-out if in progress
+        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
