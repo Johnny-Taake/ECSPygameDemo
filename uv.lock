@@ -30,7 +30,7 @@ wheels = [
 ]
 
 [[package]]
-name = "guessnumberpygame"
+name = "guess-number-pygame"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
