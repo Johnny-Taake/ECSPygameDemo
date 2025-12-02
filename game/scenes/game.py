@@ -52,7 +52,7 @@ class GameScene(BaseScene):
             GameConfig.HINT_COLOR,
         )
         # Error message positioned between instructions and input field
-        self.error_label = ui.label_entity("", 320, 140, GameConfig.ERROR_COLOR)
+        self.error_label = ui.label_entity("", 320, 150, GameConfig.ERROR_COLOR)
         # Calculate max input length based on the max possible number
         max_input_len = len(str(self.game_logic.max_number))
         self.input_ent = ui.input_entity(
@@ -65,9 +65,9 @@ class GameScene(BaseScene):
             if input_comp:
                 input_comp.text = preserved_input_value
 
-        self.history_label = ui.label_entity("", 320, 270, GameConfig.HINT_COLOR)
+        self.history_label = ui.label_entity("", 320, 260, GameConfig.HINT_COLOR)
         self.attempts_label = ui.label_entity(
-            f"Attempts: {self.game_logic.attempts}", 320, 310, GameConfig.HINT_COLOR
+            f"Attempts: {self.game_logic.attempts}", 320, 300, GameConfig.HINT_COLOR
         )
 
         self._restart_requested = False
@@ -83,7 +83,7 @@ class GameScene(BaseScene):
 
         # Create full-width buttons that span more of the container
         btn_width = 280
-        btn_y = 370
+        btn_y = 360
 
         # Restart button - reposition to better distribute space
         self.btn_restart = ui.button_entity_with_min_width(
