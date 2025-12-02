@@ -3,7 +3,6 @@ from engine import (
     AlphaComponent,
     BaseScene,
     ButtonComponent,
-    InputFieldComponent,
     LabelComponent,
     ServiceLocator,
     UIBuilder,
@@ -36,17 +35,17 @@ class MenuScene(BaseScene):
             self.current_difficulty_index = GameConfig.DEFAULT_DIFFICULTY_INDEX
 
         ui = UIBuilder(self.app.font)
-        self.title = ui.h1_entity("Guess The Number", 300, 60)
-        self.subtitle = ui.h2_entity("Press START", 300, 105, GameConfig.HINT_COLOR)
+        self.title = ui.h1_entity("Guess The Number", 320, 60)
+        self.subtitle = ui.h2_entity("Press START", 320, 105, GameConfig.HINT_COLOR)
 
         # Difficulty selection UI
         self.difficulty_label = ui.label_entity(
-            "Difficulty:", 300, 150, GameConfig.TEXT_COLOR
+            "Difficulty:", 320, 150, GameConfig.TEXT_COLOR
         )
 
         # Display current difficulty
         self.current_difficulty_text = ui.label_entity(
-            self.get_current_difficulty_text(), 300, 175, GameConfig.TEXT_COLOR
+            self.get_current_difficulty_text(), 320, 175, GameConfig.TEXT_COLOR
         )
 
         # Left arrow for previous difficulty
@@ -56,7 +55,9 @@ class MenuScene(BaseScene):
             )
             self.update_difficulty_display()
 
-        self.btn_prev = ui.button_entity("<", 240, 220, prev_difficulty)
+        difficulty_btn_center_x = 320
+        btn_spacing = 60  # Space between the center and each button
+        self.btn_prev = ui.button_entity("<", difficulty_btn_center_x - btn_spacing, 220, prev_difficulty)
         prev_component = self.btn_prev.get(ButtonComponent)
         if prev_component:
             prev_component.min_width = 100
@@ -68,7 +69,7 @@ class MenuScene(BaseScene):
             )
             self.update_difficulty_display()
 
-        self.btn_next = ui.button_entity(">", 360, 220, next_difficulty)
+        self.btn_next = ui.button_entity(">", difficulty_btn_center_x + btn_spacing, 220, next_difficulty)
         next_component = self.btn_next.get(ButtonComponent)
         if next_component:
             next_component.min_width = 100
@@ -108,8 +109,9 @@ class MenuScene(BaseScene):
 
             self.start_fade_out(on_complete_callback=on_fade_complete)
 
+        # Center the start button at the exact center horizontally
         self.btn_start = ui.button_entity(
-            "START", 300, 280, start_game
+            "START", 320, 280, start_game
         )  # Center adjusted to match other UI elements, Y position updated for proper spacing
         # Set minimum width to match the width of difficulty buttons row
         start_component = self.btn_start.get(ButtonComponent)
@@ -127,8 +129,9 @@ class MenuScene(BaseScene):
 
             self.start_fade_out(on_complete_callback=on_fade_complete)
 
+        # Center the exit button at the exact center horizontally
         self.btn_exit = ui.button_entity(
-            "EXIT", 300, 340, exit_game
+            "EXIT", 320, 340, exit_game
         )  # Center adjusted to match other UI elements, Y position updated for proper spacing
         # Set minimum width to match the width of difficulty buttons row
         exit_component = self.btn_exit.get(ButtonComponent)
