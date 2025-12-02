@@ -42,7 +42,7 @@ class GameApp:
 
     def run(self):
         while self.running:
-            dt = self.clock.tick(self.fps) / 1000.0
+            delta_time = self.clock.tick(self.fps) / 1000.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -64,7 +64,7 @@ class GameApp:
 
             if self.scene_manager.current:
                 try:
-                    self.scene_manager.current.update(dt)
+                    self.scene_manager.current.update(delta_time)
                 except Exception as e:
                     log.exception("Scene update error: %s", e)
 
