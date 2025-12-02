@@ -71,20 +71,13 @@ class GameScene(BaseScene):
             f"Attempts: {self.game_logic.attempts}", 320, 310, GameConfig.HINT_COLOR
         )
 
+        self._restart_requested = False
+
         def restart_click():
             log.info("Restart clicked")
-            self.game_logic.reset()
-            input_field = self.input_ent.get(InputFieldComponent)
-            if input_field is not None:
-                input_field.clear()
-            self.history_list = []
-            self.clear_error_label()  # Clear error label on reset
-            self.update_history_label()
-            attempts_label_comp = self.attempts_label.get(LabelComponent)
-            if attempts_label_comp is not None:
-                attempts_label_comp.text = f"Attempts: {self.game_logic.attempts}"
-            # Update submit button state after reset
-            self.update_submit_button_state()
+            # Start fade out before resetting the game
+            self.start_fade_out()
+            self._restart_requested = True
 
         # Create full-width buttons that span more of the container
         btn_width = 280
@@ -333,11 +326,17 @@ class GameScene(BaseScene):
                         all_faded = False
                         break
 
-            # If all entities are fully transparent, transition to menu
+            # If all entities are fully transparent, handle transitions based on the context
             if all_faded:
-                from .menu import MenuScene
+                # Check if the restart flag was set before the fade started
+                if hasattr(self, "_restart_requested"):
+                    # For restart, come back to the same scene after fade out
+                    self.app.scene_manager.change(GameScene(self.app))
+                else:
+                    # This handles the ESC key case - go to menu
+                    from .menu import MenuScene
 
-                self.app.scene_manager.change(MenuScene(self.app))
+                    self.app.scene_manager.change(MenuScene(self.app))
 
         # Update button states
         self.update_submit_button_state()
