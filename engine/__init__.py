@@ -1,5 +1,5 @@
 __all__ = [
-    "Entity",
+    "GameObject",
     "Position",
     "LabelComponent",
     "H1Component",
@@ -18,7 +18,7 @@ __all__ = [
     "UIBuilder",
 ]
 
-from .ecs import Entity
+from .ecs import GameObject
 from .components import (
     Position,
     LabelComponent,
@@ -33,5 +33,6 @@ from .components import (
 from .event_bus import EventBus
 from .service_locator import ServiceLocator
 from .systems import RenderSystem, InputSystem
-from .scene_manager import BaseScene, SceneManager
+from .base_scene import BaseScene
+from .scene_manager import SceneManager
 from .ui_builder import UIBuilder
