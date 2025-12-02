@@ -1,30 +1,9 @@
 import logging
-from pygame.event import Event
 
-from engine import Entity
+from .base_scene import BaseScene
+
 
 log = logging.getLogger("engine/scene_manager")
-
-
-class BaseScene:
-    def __init__(self, app):
-        self.app = app
-        self.entities: list[Entity] = []
-
-    def enter(self):
-        pass
-
-    def exit(self):
-        pass
-
-    def handle_event(self, event: Event):
-        pass
-
-    def update(self, dt: float):
-        pass
-
-    def render(self):
-        pass
 
 
 class SceneManager:
