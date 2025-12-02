@@ -4,6 +4,7 @@ from pygame.event import Event
 from pygame.font import Font
 
 from .components import LabelComponent, Position, InputFieldComponent, ButtonComponent
+from config import GameConfig
 
 
 class RenderSystem:
@@ -18,8 +19,8 @@ class RenderSystem:
 
     def draw_input(self, inp: InputFieldComponent, position: Position):
         text = inp.text if inp.text else inp.placeholder
-        color = (255, 255, 255) if inp.text else (180, 180, 180)
-        surf = self.font.render(f">{text}", True, color)
+        text_color = GameConfig.TEXT_COLOR if inp.text else GameConfig.HINT_COLOR[:3]
+        surf = self.font.render(f">{text}", True, text_color)
         rect = surf.get_rect(center=(position.x, position.y))
         self.screen.blit(surf, rect)
         underline_y = position.y + int(self.font.get_linesize() / 1.8)
@@ -34,13 +35,13 @@ class RenderSystem:
     def draw_button(self, button: ButtonComponent, position: Position):
         surf = self.font.render(button.text, True, (0, 0, 0))
         rect = surf.get_rect(center=(position.x, position.y))
-        pad = 12
+        pad = GameConfig.BUTTON_PADDING
         box = Rect(
             rect.x - pad, rect.y - pad, rect.width + pad * 2, rect.height + pad * 2
         )
-        color = (200, 200, 255) if button.hover else (220, 220, 220)
+        color = GameConfig.BUTTON_HOVER_COLOR if button.hover else GameConfig.BUTTON_BG_COLOR
         # Draw rounded rectangle for border radius effect
-        draw.rect(self.screen, color, box, border_radius=10)
+        draw.rect(self.screen, color, box, border_radius=GameConfig.BUTTON_RADIUS)
         self.screen.blit(surf, rect)
 
         # Store button dimensions for click detection

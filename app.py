@@ -1,41 +1,35 @@
 import logging
 import pygame
+from config import GameConfig
 
 from engine import RenderSystem, InputSystem, SceneManager, ServiceLocator
 from game import BootScene
 
-# Configure logging to show all messages
+
+# Configure logging based on config
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=GameConfig.LOG_LEVEL,
+    format=GameConfig.LOG_FORMAT,
 )
 
 log = logging.getLogger("main")
 
 
 class GameApp:
-    def __init__(self, width=640, height=400, fps=60):
+    def __init__(self, width=GameConfig.WINDOW_WIDTH, height=GameConfig.WINDOW_HEIGHT, fps=GameConfig.FPS):
         pygame.init()
 
         # Set the icon
         icon = pygame.image.load("assets/icon.png")
-        pygame.display.set_caption("Guess The Number")
+        pygame.display.set_caption(GameConfig.WINDOW_TITLE)
 
         self.screen = pygame.display.set_mode((width, height))
 
-        # Set the application ID for Windows taskbar icon
-        import os
-        if os.name == 'nt':  # Windows
-            import ctypes
-            myappid = 'com.guessnumber.game'  # arbitrary string
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
-        # Set the icon after window creation for better compatibility
         pygame.display.set_icon(icon)
 
         self.clock = pygame.time.Clock()
         self.fps = fps
-        self.font = pygame.font.SysFont('arial', 18)
+        self.font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE)
         self.running = True
 
         self.render_system = RenderSystem(self.screen, self.font)
@@ -70,7 +64,7 @@ class GameApp:
                     log.exception("Scene update error: %s", e)
 
             # Render
-            self.screen.fill((30, 30, 30))
+            self.screen.fill(GameConfig.BACKGROUND_COLOR)
             if self.scene_manager.current:
                 try:
                     self.render_system.update(

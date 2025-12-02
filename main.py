@@ -1,9 +1,10 @@
 from app import GameApp
+from config import GameConfig
 
 if __name__ == "__main__":
     app = GameApp(
-        width=640,
-        height=400,
-        fps=60
+        width=GameConfig.WINDOW_WIDTH,
+        height=GameConfig.WINDOW_HEIGHT,
+        fps=GameConfig.FPS
     )
     app.run()
