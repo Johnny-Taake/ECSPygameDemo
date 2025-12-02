@@ -17,7 +17,6 @@ log = get_logger("game/scenes")
 
 
 # NOTE: Example with lading tasks when the boot scene is entered
-# LOADING TASKS
 class LoadingTask(ABC):
     """Abstract base class for loading tasks"""
 
@@ -132,17 +131,16 @@ class BootScene(BaseScene):
     def initialize_services(self):
         """Initialize services for the game"""
         event_bus = EventBus()
+
         ServiceLocator.provide("event_bus", event_bus)
+        # Initialize game logic with default range from config
         ServiceLocator.provide(
-            "game_logic", GameLogic(GameConfig.MIN_NUMBER, GameConfig.MAX_NUMBER)
+            "game_logic", GameLogic()
         )
         log.info("Services initialized")
 
     def load_ui_assets(self):
         """Load UI related assets (fonts, images, etc.)"""
-        # In a real game, this would load images, custom fonts, etc.
-        # We'll keep it lightweight for this example, but in a real game
-        # you might load button images, background images, icons, etc.
         try:
             # Example: Load icon or other UI assets
             icon_path = "assets/icon.png"
@@ -154,8 +152,6 @@ class BootScene(BaseScene):
 
     def load_game_assets(self):
         """Load game specific assets"""
-        # This is where game-specific assets would be loaded
-        # In a real implementation, you might load game-specific images, sounds, etc. here
         try:
             # Example: Load any game-specific assets
             log.info("Game assets processed")
@@ -185,7 +181,7 @@ class BootScene(BaseScene):
         self.asset_loader.reset()
 
     def update(self, delta_time: float):
-        # Handle fade out (inherited from BaseScene, but we call it here too)
+        # Handle fade out (inherited from BaseScene)
         # Execute next asset loading task if not completed
         if not self.asset_loader.completed:
             self.asset_loader.execute_next_task(delta_time)
@@ -208,6 +204,7 @@ class BootScene(BaseScene):
         if self.asset_loader.completed and not self.loading_complete:
             self.loading_complete = True
             log.info("BootScene - All assets loaded, transitioning to menu")
+
             # Start fade out with callback to go to menu
             def on_fade_complete():
                 from .menu import MenuScene
@@ -216,4 +213,4 @@ class BootScene(BaseScene):
             self.start_fade_out(on_complete_callback=on_fade_complete)
 
         # Call parent update to handle fade-out if in progress
-        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
+        super().update(delta_time)

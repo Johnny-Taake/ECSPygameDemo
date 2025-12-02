@@ -29,7 +29,7 @@ class UIConfig(BaseModel):
     alpha_animation_speed: float = 6.0
 
     # Scene settings
-    scene_max_history_entries: int = 6
+    scene_max_history_entries: int = 4
     scene_title_position: Tuple[int, int] = (300, 80)
     scene_subtitle_position: Tuple[int, int] = (300, 130)
     scene_button_start_position: Tuple[int, int] = (300, 240)

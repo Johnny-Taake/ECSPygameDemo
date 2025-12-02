@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from .base import ColorConfig, GameRangeConfig, WindowConfig
+from .base import ColorConfig, WindowConfig, DifficultyConfig
 from .logging import LoggingConfig
 from .ui import UIConfig
 
@@ -11,12 +11,11 @@ class GameConfig(BaseModel):
     """Main configuration class containing all game settings."""
 
     window: WindowConfig = WindowConfig()
-    game_range: GameRangeConfig = GameRangeConfig()
+    difficulty: DifficultyConfig = DifficultyConfig()
     colors: ColorConfig = ColorConfig()
     ui: UIConfig = UIConfig()
     logging: LoggingConfig = LoggingConfig()
 
-    # Convenience properties to maintain backward compatibility
     @property
     def WINDOW_WIDTH(self) -> int:
         return self.window.width
@@ -32,14 +31,6 @@ class GameConfig(BaseModel):
     @property
     def WINDOW_TITLE(self) -> str:
         return self.window.title
-
-    @property
-    def MIN_NUMBER(self) -> int:
-        return self.game_range.min_number
-
-    @property
-    def MAX_NUMBER(self) -> int:
-        return self.game_range.max_number
 
     @property
     def BACKGROUND_COLOR(self) -> tuple:
@@ -112,6 +103,16 @@ class GameConfig(BaseModel):
     @property
     def SCENE_MAX_HISTORY_ENTRIES(self) -> int:
         return self.ui.scene_max_history_entries
+
+    @property
+    def DIFFICULTY_MODES(self):
+        """Get the list of difficulty modes."""
+        return self.difficulty.modes
+
+    @property
+    def DEFAULT_DIFFICULTY_INDEX(self):
+        """Get the default difficulty index."""
+        return self.difficulty.default_index
 
     # Component defaults
     @property

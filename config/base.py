@@ -1,7 +1,6 @@
 """Base configuration models using Pydantic."""
 
-from typing import Tuple
-
+from typing import List, Tuple
 from pydantic import BaseModel, field_validator
 
 
@@ -18,20 +17,6 @@ class WindowConfig(BaseModel):
     def validate_dimension(cls, v: int) -> int:
         if v <= 0:
             raise ValueError("Window dimensions must be positive")
-        return v
-
-
-class GameRangeConfig(BaseModel):
-    """Configuration for game number range settings."""
-
-    min_number: int = 1
-    max_number: int = 100
-
-    @field_validator("max_number")
-    @classmethod
-    def validate_range(cls, v: int, values) -> int:
-        if "min_number" in values.data and v <= values.data["min_number"]:
-            raise ValueError("max_number must be greater than min_number")
         return v
 
 
@@ -70,3 +55,45 @@ class ColorConfig(BaseModel):
             if all(isinstance(c, int) and 0 <= c <= 255 for c in (r, g, b)):
                 return (r, g, b)
         raise ValueError("Color must be a tuple of 3 integers between 0 and 255")
+
+
+class DifficultyModel(BaseModel):
+    """Model for a single difficulty setting."""
+    name: str
+    min: int
+    max: int
+
+    @field_validator("max")
+    @classmethod
+    def validate_difficulty_range(cls, v: int, values) -> int:
+        if "min" in values.data and v <= values.data["min"]:
+            raise ValueError("max must be greater than min")
+        return v
+
+
+class DifficultyConfig(BaseModel):
+    """Configuration for all difficulty modes."""
+    modes: List[DifficultyModel] = [
+        DifficultyModel(name="Easy", min=1, max=10),
+        DifficultyModel(name="Medium", min=1, max=100),
+        DifficultyModel(name="Hard", min=1, max=1000),
+        DifficultyModel(name="Very Hard", min=1, max=10000),
+        DifficultyModel(name="Extreme", min=1, max=100000)
+    ]
+    default_index: int = 1  # Index of default difficulty mode (0-based), defaulting to "Medium" at index 1
+
+    @field_validator("modes")
+    @classmethod
+    def validate_modes(cls, v: List[DifficultyModel]) -> List[DifficultyModel]:
+        if not v:
+            raise ValueError("At least one difficulty mode must be defined")
+        return v
+
+    @field_validator("default_index")
+    @classmethod
+    def validate_default_index(cls, v: int, values) -> int:
+        if "modes" in values.data and v >= len(values.data["modes"]):
+            raise ValueError(f"Default index {v} is out of range for {len(values.data['modes'])} difficulty modes")
+        if v < 0:
+            raise ValueError("Default index must be non-negative")
+        return v

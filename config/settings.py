@@ -17,11 +17,11 @@ class Settings(BaseSettings):
     window_fps: Optional[int] = None
     window_title: Optional[str] = None
 
-    game_min_number: Optional[int] = None
-    game_max_number: Optional[int] = None
-
     # Logging settings
     log_level: Optional[LogLevel] = None
+
+    # Difficulty settings
+    difficulty_default_index: Optional[int] = None
 
     def get_config(self) -> GameConfig:
         """Get the game configuration, potentially modified by environment variables."""
@@ -32,12 +32,10 @@ class Settings(BaseSettings):
             config.window.fps = self.window_fps
         if self.window_title is not None:
             config.window.title = self.window_title
-        if self.game_min_number is not None:
-            config.game_range.min_number = self.game_min_number
-        if self.game_max_number is not None:
-            config.game_range.max_number = self.game_max_number
         if self.log_level is not None:
             config.logging.log_level = self.log_level
+        if self.difficulty_default_index is not None:
+            config.difficulty.default_index = self.difficulty_default_index
 
         return config
 

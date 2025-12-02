@@ -1,4 +1,5 @@
 import pygame
+from typing import Any, Dict, Optional
 
 from config import GameConfig
 from engine import (
@@ -9,6 +10,7 @@ from engine import (
     ServiceLocator,
     UIBuilder,
 )
+from engine.event_bus import EventBus
 from game.logic import GameLogic, GuessStatus
 from logger import get_logger
 
@@ -19,7 +21,33 @@ class GameScene(BaseScene):
     def enter(self):
         log.info("GameScene enter")
         ui = UIBuilder(self.app.font)
-        self.game_logic: GameLogic = ServiceLocator.get("game_logic")  # type: ignore
+
+        # Get the EventBus to listen for difficulty selection
+        event_bus_raw = ServiceLocator.get("event_bus")
+        if event_bus_raw is not None:
+            event_bus: Optional[EventBus] = event_bus_raw  # type: ignore
+        else:
+            log.error("EventBus not found in ServiceLocator. Difficulty selection will not be handled.")
+            event_bus = None
+
+        # Subscribe to difficulty selection event to get the most recent settings
+        self.difficulty_params: Optional[Dict[str, Any]] = None
+        def handle_difficulty_selection(data: Optional[Dict[str, Any]]) -> None:
+            if data:
+                self.difficulty_params = data
+
+        if event_bus is not None:
+            event_bus.subscribe("difficulty_selected", handle_difficulty_selection)
+        else:
+            log.error("EventBus not found in ServiceLocator. Difficulty selection will not be handled.")
+
+        # Get the game logic from ServiceLocator
+        game_logic_raw = ServiceLocator.get("game_logic")
+        if game_logic_raw is not None:
+            self.game_logic: GameLogic = game_logic_raw  # type: ignore
+        else:
+            log.error("GameLogic not found in ServiceLocator. Using default.")
+            self.game_logic = GameLogic()  # Use default if not available in service locator
 
         # Check if we're returning from dialog cancel (preserve all game state)
         is_returning_from_dialog = (
@@ -36,9 +64,20 @@ class GameScene(BaseScene):
                 if input_comp:
                     preserved_input_value = input_comp.text
         else:
-            # This is a new game session, reset everything
-            self.game_logic.reset()
-            # Note: GameLogic.reset() likely already generates a new number
+            # Apply the selected difficulty by creating new game logic if parameters were provided
+            if self.difficulty_params:
+                from game.logic import GameLogic as GL
+                new_game_logic = GL(
+                    min_number=self.difficulty_params["min_number"],
+                    max_number=self.difficulty_params["max_number"]
+                )
+                self.game_logic = new_game_logic
+                # Update service locator with new game logic
+                ServiceLocator.provide("game_logic", self.game_logic)
+            else:
+                # Use existing game logic (default or previous range)
+                self.game_logic.reset()
+
             preserved_history_list = []
             preserved_input_value = ""
 
@@ -242,7 +281,7 @@ class GameScene(BaseScene):
         if label_comp is not None:
             label_comp.text = compact
 
-    def handle_event(self, event):
+    def handle_event(self, event: pygame.event.Event):
         # keyboard: Enter triggers submit, ESC -> menu
         if event.type == pygame.KEYDOWN:
             match event.key:
