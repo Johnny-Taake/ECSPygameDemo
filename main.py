@@ -1,7 +1,9 @@
-def main():
-    pass
-
+from app import GameApp
 
 if __name__ == "__main__":
-    main()
-
+    app = GameApp(
+        width=640,
+        height=400,
+        fps=60
+    )
+    app.run()
