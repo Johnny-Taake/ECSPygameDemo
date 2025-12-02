@@ -10,6 +10,27 @@ class LabelComponent:
         self.color = color
 
 
+class H1Component:
+    def __init__(self, text: str, color=(255, 255, 255)):
+        self.text = text
+        self.color = color
+        self.size = 36
+
+
+class H2Component:
+    def __init__(self, text: str, color=(255, 255, 255)):
+        self.text = text
+        self.color = color
+        self.size = 28
+
+
+class H3Component:
+    def __init__(self, text: str, color=(255, 255, 255)):
+        self.text = text
+        self.color = color
+        self.size = 24
+
+
 class InputFieldComponent:
     def __init__(self, max_length: int = 6):
         self.text = ""
@@ -26,6 +47,7 @@ class ButtonComponent:
         self.text = text
         self.on_click = None
         self.hover = False
+        self.active = True
         self.width = 0
         self.height = 0
         self.min_width = 0

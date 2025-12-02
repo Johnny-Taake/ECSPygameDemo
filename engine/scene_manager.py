@@ -1,10 +1,9 @@
 import logging
-
-log = logging.getLogger("engine/scene_manager")
-import logging
 from pygame.event import Event
 
 from engine import Entity
+
+log = logging.getLogger("engine/scene_manager")
 
 
 class BaseScene:
