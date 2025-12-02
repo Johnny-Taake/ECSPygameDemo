@@ -28,3 +28,4 @@ class ButtonComponent:
         self.hover = False
         self.width = 0
         self.height = 0
+        self.min_width = 0

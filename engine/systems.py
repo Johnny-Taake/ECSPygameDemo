@@ -24,11 +24,13 @@ class RenderSystem:
         rect = surf.get_rect(center=(position.x, position.y))
         self.screen.blit(surf, rect)
         underline_y = position.y + int(self.font.get_linesize() / 1.8)
+        # Make the input field visually larger
+        input_width = 180  # Increased from 120
         draw.line(
             self.screen,
             (100, 100, 100),
-            (position.x - 120, underline_y),
-            (position.x + 120, underline_y),
+            (position.x - input_width, underline_y),
+            (position.x + input_width, underline_y),
             2,
         )
 
@@ -36,13 +38,19 @@ class RenderSystem:
         surf = self.font.render(button.text, True, (0, 0, 0))
         rect = surf.get_rect(center=(position.x, position.y))
         pad = GameConfig.BUTTON_PADDING
+
+        # Calculate box width: use the larger of text width or min_width
+        text_width = rect.width + pad * 2
+        box_width = max(text_width, button.min_width)
         box = Rect(
-            rect.x - pad, rect.y - pad, rect.width + pad * 2, rect.height + pad * 2
+            position.x - box_width // 2, rect.y - pad, box_width, rect.height + pad * 2
         )
         color = GameConfig.BUTTON_HOVER_COLOR if button.hover else GameConfig.BUTTON_BG_COLOR
         # Draw rounded rectangle for border radius effect
         draw.rect(self.screen, color, box, border_radius=GameConfig.BUTTON_RADIUS)
-        self.screen.blit(surf, rect)
+        # Center the text in the button
+        text_rect = surf.get_rect(center=(position.x, position.y))
+        self.screen.blit(surf, text_rect)
 
         # Store button dimensions for click detection
         button.width = box.width
