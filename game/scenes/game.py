@@ -69,6 +69,7 @@ class GameScene(BaseScene):
             f"Attempts: {self.game_logic.attempts}", 320, 300, GameConfig.HINT_COLOR
         )
 
+
         self._restart_requested = False
 
         def restart_click():
@@ -217,27 +218,11 @@ class GameScene(BaseScene):
         self.update_history_label()
 
     def show_error(self, message: str):
-        """Show an error message temporarily"""
+        """Show an error message"""
         error_label_comp = self.error_label.get(LabelComponent)
         if error_label_comp is not None:
             error_label_comp.text = message
             error_label_comp.color = GameConfig.ERROR_COLOR
-
-        # Clear the error message after 3 seconds
-        import threading
-
-        def clear_error_after_delay():
-            import time
-
-            time.sleep(3)
-            # Use a callback to update UI from main thread to avoid threading issues
-            pygame.event.post(
-                pygame.event.Event(pygame.USEREVENT, {"action": "clear_error"})
-            )
-
-        thread = threading.Thread(target=clear_error_after_delay)
-        thread.daemon = True
-        thread.start()
 
     def clear_error_label(self):
         """Clear the error message"""
@@ -273,13 +258,6 @@ class GameScene(BaseScene):
                         self.app.scene_manager.change(MenuScene(self.app))
 
                     self.start_fade_out(on_complete_callback=on_fade_complete)
-        # Handle custom event to clear error message
-        elif (
-            event.type == pygame.USEREVENT
-            and hasattr(event, "action")
-            and event.action == "clear_error"
-        ):
-            self.clear_error_label()
 
     def update_submit_button_state(self):
         """Update the submit button's active state and error message based on input validity"""
