@@ -65,6 +65,18 @@ class GameConfig(BaseModel):
         return self.ui.default_font
 
     @property
+    def DEFAULT_FONT_PATH(self) -> str:
+        return self.ui.default_font_path
+
+    @property
+    def ITALIC_FONT_PATH(self) -> str:
+        return self.ui.italic_font_path
+
+    @property
+    def BOLD_FONT_PATH(self) -> str:
+        return self.ui.bold_font_path
+
+    @property
     def DEFAULT_FONT_SIZE(self) -> int:
         return self.ui.default_font_size
 

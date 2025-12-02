@@ -27,9 +27,14 @@ class GameApp:
 
         self.clock = pygame.time.Clock()
         self.fps = fps
-        self.font = pygame.font.SysFont(
-            GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE
-        )
+
+        # Load custom font from file, fallback to system font if file is not available
+        try:
+            self.font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.DEFAULT_FONT_SIZE)
+        except:
+            # Fallback to system font if custom font fails to load
+            self.font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE)
+
         self.running = True
 
         self.render_system = RenderSystem(self.screen, self.font)

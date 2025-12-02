@@ -81,20 +81,23 @@ class GameScene(BaseScene):
             preserved_history_list = []
             preserved_input_value = ""
 
-        title_text = f"Guess the number game {self.game_logic.min_number}-{self.game_logic.max_number}"
-        self.title = ui.h1_entity(title_text, 320, 50)
-        self.instructions = ui.h2_entity(
+        # Split the title into two lines: main title and range
+        title_text = "Guess the number game"
+        self.title = ui.h2_entity(title_text, 320, 40, GameConfig.H1_DEFAULT_COLOR)  # Use H2 size for better fit
+        range_text = f"{self.game_logic.min_number}-{self.game_logic.max_number}"
+        self.range_label = ui.h3_entity(range_text, 320, 70, GameConfig.H2_DEFAULT_COLOR)  # Range on separate line
+        self.instructions = ui.h3_entity(
             "Enter the number and press Submit or Enter",
             320,
-            100,
+            110,  # Moved lower to accommodate the range label
             GameConfig.HINT_COLOR,
         )
         # Error message positioned between instructions and input field
-        self.error_label = ui.label_entity("", 320, 150, GameConfig.ERROR_COLOR)
+        self.error_label = ui.label_entity("", 320, 160, GameConfig.ERROR_COLOR)  # Moved lower
         # Calculate max input length based on the max possible number
         max_input_len = len(str(self.game_logic.max_number))
         self.input_ent = ui.input_entity(
-            "Enter the number", 320, 200, max_len=max_input_len
+            "Enter the number", 320, 210, max_len=max_input_len  # Moved lower
         )
 
         # Restore input value if returning from dialog
@@ -221,6 +224,7 @@ class GameScene(BaseScene):
 
         for entity in [
             self.title,
+            self.range_label,
             self.instructions,
             self.input_ent,
             self.btn_submit,
@@ -234,6 +238,7 @@ class GameScene(BaseScene):
 
         self.entities = [
             self.title,
+            self.range_label,
             self.instructions,
             self.input_ent,
             self.btn_submit,

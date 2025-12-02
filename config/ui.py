@@ -9,6 +9,9 @@ class UIConfig(BaseModel):
     """Configuration for UI settings."""
 
     default_font: str = "arial"
+    default_font_path: str = "assets/fonts/0xProtoNerdFont-Regular.ttf"
+    italic_font_path: str = "assets/fonts/0xProtoNerdFont-Italic.ttf"
+    bold_font_path: str = "assets/fonts/0xProtoNerdFont-Bold.ttf"
     default_font_size: int = 18
     button_padding: int = 12
     button_radius: int = 10
@@ -29,7 +32,7 @@ class UIConfig(BaseModel):
     alpha_animation_speed: float = 6.0
 
     # Scene settings
-    scene_max_history_entries: int = 4
+    scene_max_history_entries: int = 3
     scene_title_position: Tuple[int, int] = (300, 80)
     scene_subtitle_position: Tuple[int, int] = (300, 130)
     scene_button_start_position: Tuple[int, int] = (300, 240)

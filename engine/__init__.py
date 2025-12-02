@@ -13,6 +13,7 @@ __all__ = [
     "SoundComponent",
     "EventBus",
     "ServiceLocator",
+    "AssetLoader",
     "RenderSystem",
     "InputSystem",
     "SoundSystem",
@@ -35,6 +36,7 @@ from .components import (
     ProgressBarComponent,
     SoundComponent,
 )
+from .asset_loader import AssetLoader
 from .ecs import GameObject
 from .event_bus import EventBus
 from .scene_manager import SceneManager
