@@ -1,10 +1,10 @@
-import logging
 from enum import Enum, auto
 from random import randint
 
 from config import GameConfig
+from logger import get_logger
 
-log = logging.getLogger("game/logic")
+log = get_logger("game/logic")
 
 
 class GuessStatus(Enum):

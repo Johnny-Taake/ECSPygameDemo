@@ -1,4 +1,3 @@
-import logging
 from abc import ABC, abstractmethod
 from typing import Any, Callable, List
 
@@ -12,8 +11,9 @@ from engine import (
     UIBuilder,
 )
 from game.logic import GameLogic
+from logger import get_logger
 
-log = logging.getLogger("game/scenes")
+log = get_logger("game/scenes")
 
 
 # NOTE: Example with lading tasks when the boot scene is entered

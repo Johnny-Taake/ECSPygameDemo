@@ -1,8 +1,7 @@
-import logging
-
 from .base_scene import BaseScene
+from logger import get_logger
 
-log = logging.getLogger("engine/scene_manager")
+log = get_logger("engine/scene_manager")
 
 
 class SceneManager:

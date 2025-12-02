@@ -1,5 +1,3 @@
-import logging
-
 import pygame
 
 from config import GameConfig
@@ -12,8 +10,9 @@ from engine import (
     UIBuilder,
 )
 from game.logic import GameLogic, GuessStatus
+from logger import get_logger
 
-log = logging.getLogger("game/scenes")
+log = get_logger("game/scenes")
 
 
 class GameScene(BaseScene):

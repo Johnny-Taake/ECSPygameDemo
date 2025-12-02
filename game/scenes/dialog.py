@@ -1,9 +1,8 @@
-import logging
-
 from config import GameConfig
 from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
+from logger import get_logger
 
-log = logging.getLogger("game/scenes")
+log = get_logger("game/scenes")
 
 
 class DialogScene(BaseScene):

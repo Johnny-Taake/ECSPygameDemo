@@ -1,18 +1,11 @@
-import logging
-
 import pygame
 
 from config import GameConfig
 from engine import InputSystem, RenderSystem, SceneManager, ServiceLocator
 from game import BootScene
+from logger import get_logger
 
-# Configure logging based on config
-logging.basicConfig(
-    level=GameConfig.LOG_LEVEL,
-    format=GameConfig.LOG_FORMAT,
-)
-
-log = logging.getLogger("main")
+log = get_logger("main")
 
 
 class GameApp:
