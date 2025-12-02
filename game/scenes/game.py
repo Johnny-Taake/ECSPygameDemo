@@ -147,6 +147,28 @@ class GameScene(BaseScene):
             from .dialog import DialogScene
 
             def confirm_quit():
+                # Store the current difficulty in service locator before going to menu
+                # Get difficulty info from current game_logic
+                difficulty_info = {
+                    "min_number": self.game_logic.min_number,
+                    "max_number": self.game_logic.max_number,
+                }
+
+                # Find the corresponding difficulty index to store
+                config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+                matching_index = None
+                for i, mode in enumerate(config_difficulty_modes):
+                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                        matching_index = i
+                        break
+
+                if matching_index is not None:
+                    ServiceLocator.provide("last_selected_difficulty", matching_index)
+                else:
+                    # If not found in predefined modes, store as a custom difficulty
+                    # For now, just store the current index if available or default
+                    pass
+
                 # Start fade out with callback to go to menu
                 from .menu import MenuScene
                 def on_fade_complete():
@@ -241,7 +263,7 @@ class GameScene(BaseScene):
                 from .win import WinScene
 
                 self.app.scene_manager.change(
-                    WinScene(self.app, self.game_logic.attempts)
+                    WinScene(self.app, self.game_logic.attempts, self.game_logic)
                 )
                 return
 

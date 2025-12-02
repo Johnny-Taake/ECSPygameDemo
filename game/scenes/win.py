@@ -6,9 +6,10 @@ log = get_logger("game/scenes")
 
 
 class WinScene(BaseScene):
-    def __init__(self, app, attempts: int):
+    def __init__(self, app, attempts: int, game_logic=None):
         super().__init__(app)
         self.attempts = attempts
+        self.game_logic = game_logic  # Store game logic to access difficulty info
 
     def enter(self):
         log.info("WinScene enter")
@@ -20,6 +21,22 @@ class WinScene(BaseScene):
         )
 
         def to_menu():
+            # Store the current difficulty in service locator before going to menu
+            if self.game_logic is not None:
+                from engine import ServiceLocator
+                from config import GameConfig
+
+                # Find the corresponding difficulty index to store
+                config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+                matching_index = None
+                for i, mode in enumerate(config_difficulty_modes):
+                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                        matching_index = i
+                        break
+
+                if matching_index is not None:
+                    ServiceLocator.provide("last_selected_difficulty", matching_index)
+
             # Start fade out with callback to go to menu
             def on_fade_complete():
                 from .menu import MenuScene
@@ -30,6 +47,23 @@ class WinScene(BaseScene):
         def start_play_again():
             # For play again, we can also add fade transition if desired
             log.info("Play again")
+
+            # Store the current difficulty in service locator for the new game
+            if self.game_logic is not None:
+                from engine import ServiceLocator
+                from config import GameConfig
+
+                # Find the corresponding difficulty index to store
+                config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+                matching_index = None
+                for i, mode in enumerate(config_difficulty_modes):
+                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                        matching_index = i
+                        break
+
+                if matching_index is not None:
+                    ServiceLocator.provide("last_selected_difficulty", matching_index)
+
             from .game import GameScene
 
             # Start fade out with callback to go to game scene

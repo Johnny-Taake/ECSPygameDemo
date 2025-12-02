@@ -28,8 +28,12 @@ class MenuScene(BaseScene):
             for mode in config_difficulty_modes
         ]
 
-        # Initialize to the configured default difficulty index
-        self.current_difficulty_index = GameConfig.DEFAULT_DIFFICULTY_INDEX
+        # Get the last selected difficulty from service locator, or use default if none
+        last_difficulty_raw = ServiceLocator.get("last_selected_difficulty")
+        if last_difficulty_raw is not None:
+            self.current_difficulty_index = last_difficulty_raw
+        else:
+            self.current_difficulty_index = GameConfig.DEFAULT_DIFFICULTY_INDEX
 
         ui = UIBuilder(self.app.font)
         self.title = ui.h1_entity("Guess The Number", 300, 60)
