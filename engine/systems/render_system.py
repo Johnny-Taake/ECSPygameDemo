@@ -1,12 +1,18 @@
 import pygame
-from pygame import draw, Rect, K_BACKSPACE, K_RETURN
+from pygame import draw, Rect
 from pygame.surface import Surface
-from pygame.event import Event
 from pygame.font import Font
 
-from .components import (
-    LabelComponent, Position, InputFieldComponent, ButtonComponent,
-    H1Component, H2Component, H3Component, ProgressBarComponent, AlphaComponent
+from ..components import (
+    LabelComponent,
+    Position,
+    InputFieldComponent,
+    ButtonComponent,
+    H1Component,
+    H2Component,
+    H3Component,
+    ProgressBarComponent,
+    AlphaComponent,
 )
 from config import GameConfig
 
@@ -28,7 +34,9 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
@@ -43,7 +51,9 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
@@ -58,7 +68,9 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
@@ -73,13 +85,17 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
         self.screen.blit(surf, rect)
 
-    def draw_input(self, inp: InputFieldComponent, position: Position, alpha: float = 1.0):
+    def draw_input(
+        self, inp: InputFieldComponent, position: Position, alpha: float = 1.0
+    ):
         text = inp.text if inp.text else inp.placeholder
         text_color = GameConfig.TEXT_COLOR if inp.text else GameConfig.HINT_COLOR[:3]
 
@@ -92,7 +108,9 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
@@ -109,7 +127,9 @@ class RenderSystem:
             4,
         )
 
-    def draw_button(self, button: ButtonComponent, position: Position, alpha: float = 1.0):
+    def draw_button(
+        self, button: ButtonComponent, position: Position, alpha: float = 1.0
+    ):
         # Muted color when inactive
         color = (0, 0, 0) if button.active else (100, 100, 100)
         surf = self.font.render(button.text, True, color)
@@ -120,7 +140,9 @@ class RenderSystem:
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
             # Make it transparent
-            temp_surf.fill((255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT)
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
             surf = temp_surf
 
         rect = surf.get_rect(center=(position.x, position.y))
@@ -137,7 +159,11 @@ class RenderSystem:
         if not button.active:
             bg_color = (150, 150, 150)
         else:
-            bg_color = GameConfig.BUTTON_HOVER_COLOR if button.hover else GameConfig.BUTTON_BG_COLOR
+            bg_color = (
+                GameConfig.BUTTON_HOVER_COLOR
+                if button.hover
+                else GameConfig.BUTTON_BG_COLOR
+            )
 
         # Apply alpha to the background color
         if alpha < 1.0:
@@ -153,7 +179,9 @@ class RenderSystem:
         button.width = box.width
         button.height = box.height
 
-    def draw_progress_bar(self, progress_bar: ProgressBarComponent, position: Position, alpha: float = 1.0):
+    def draw_progress_bar(
+        self, progress_bar: ProgressBarComponent, position: Position, alpha: float = 1.0
+    ):
         # Apply alpha to colors if needed
         if alpha < 1.0:
             bg_color = tuple(int(c * alpha) for c in progress_bar.color)
@@ -167,7 +195,7 @@ class RenderSystem:
             progress_bar.x - progress_bar.width // 2,
             progress_bar.y - progress_bar.height // 2,
             progress_bar.width,
-            progress_bar.height
+            progress_bar.height,
         )
         draw.rect(self.screen, bg_color, bg_rect)
 
@@ -178,7 +206,7 @@ class RenderSystem:
                 progress_bar.x - progress_bar.width // 2,
                 progress_bar.y - progress_bar.height // 2,
                 fill_width,
-                progress_bar.height
+                progress_bar.height,
             )
             draw.rect(self.screen, fill_color, fill_rect)
 
@@ -204,9 +232,15 @@ class RenderSystem:
             if alpha_comp:
                 # Update alpha with smooth animation towards target
                 if alpha_comp.alpha < alpha_comp.target_alpha:
-                    alpha_comp.alpha = min(alpha_comp.alpha + alpha_comp.animation_speed * 0.016, alpha_comp.target_alpha)
+                    alpha_comp.alpha = min(
+                        alpha_comp.alpha + alpha_comp.animation_speed * 0.016,
+                        alpha_comp.target_alpha,
+                    )
                 elif alpha_comp.alpha > alpha_comp.target_alpha:
-                    alpha_comp.alpha = max(alpha_comp.alpha - alpha_comp.animation_speed * 0.016, alpha_comp.target_alpha)
+                    alpha_comp.alpha = max(
+                        alpha_comp.alpha - alpha_comp.animation_speed * 0.016,
+                        alpha_comp.target_alpha,
+                    )
 
             h1 = e.get(H1Component)
             if h1:
@@ -231,73 +265,12 @@ class RenderSystem:
             if pb:
                 # Update progress with smooth animation towards target
                 if pb.progress < pb.target_progress:
-                    pb.progress = min(pb.progress + pb.animation_speed * 0.016, pb.target_progress)  # 0.016 is roughly 60fps
+                    pb.progress = min(
+                        pb.progress + pb.animation_speed * 0.016, pb.target_progress
+                    )  # 0.016 is roughly 60fps
                 elif pb.progress > pb.target_progress:
-                    pb.progress = max(pb.progress - pb.animation_speed * 0.016, pb.target_progress)
+                    pb.progress = max(
+                        pb.progress - pb.animation_speed * 0.016, pb.target_progress
+                    )
 
                 self.draw_progress_bar(pb, pos, alpha)
-
-
-class InputSystem:
-    def __init__(self):
-        self.focused_input = None
-
-    def set_focus(self, input_component: InputFieldComponent):
-        if self.focused_input:
-            self.focused_input.focused = False
-        self.focused_input = input_component
-        if input_component:
-            input_component.focused = True
-
-    def handle_key(self, key_event: Event):
-        if not self.focused_input:
-            return
-        if key_event.key == K_BACKSPACE:
-            self.focused_input.text = self.focused_input.text[:-1]
-        elif key_event.key == K_RETURN:
-            # handled by scenes / buttons via events
-            pass
-        else:
-            ch = key_event.unicode
-            if ch.isprintable() and (
-                len(self.focused_input.text) < self.focused_input.max_length
-            ):
-                self.focused_input.text += ch
-
-    def handle_mouse(self, mx, my, entities):
-        # click detection: if click in input area -> focus it
-        for e in entities:
-            pos = e.get(Position)
-            btn = e.get(ButtonComponent)
-            inp = e.get(InputFieldComponent)
-            if not pos:
-                continue
-            if btn:
-                # Use actual button dimensions for click detection
-                half_width = btn.width // 2
-                half_height = btn.height // 2
-                if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
-                    if btn.on_click and btn.active:  # Only respond to clicks if the button is active
-                        btn.on_click()
-            if inp:
-                if abs(mx - pos.x) <= 120 and abs(my - pos.y) <= 20:
-                    self.set_focus(inp)
-
-    def handle_mouse_motion(self, mx, my, entities):
-        # reset all button hover states first
-        for e in entities:
-            btn = e.get(ButtonComponent)
-            if btn:
-                btn.hover = False
-
-        # check which buttons are being hovered over
-        for e in entities:
-            pos = e.get(Position)
-            btn = e.get(ButtonComponent)
-            if not pos or not btn:
-                continue
-            # Use actual button dimensions to detect hover
-            half_width = btn.width // 2
-            half_height = btn.height // 2
-            if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
-                btn.hover = True
