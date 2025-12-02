@@ -7,3 +7,4 @@ class ButtonComponent:
         self.width = 0
         self.height = 0
         self.min_width = 0
+        self.min_height = 0

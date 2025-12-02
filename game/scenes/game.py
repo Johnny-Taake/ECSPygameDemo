@@ -113,6 +113,13 @@ class GameScene(BaseScene):
 
         def restart_click():
             log.info("Restart clicked")
+
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+
             # Start fade out with a callback to reset and recreate the scene
             def on_fade_complete():
                 # Change to a new GameScene which will start fresh
@@ -130,6 +137,12 @@ class GameScene(BaseScene):
         )
 
         def submit_click():
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+
             self.submit_guess()
 
         # Submit/Confirm button - reposition accordingly
@@ -144,6 +157,12 @@ class GameScene(BaseScene):
 
         # Back to menu - move to top right with appropriate padding
         def show_quit_confirmation():
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+
             from .dialog import DialogScene
 
             def confirm_quit():
@@ -311,6 +330,12 @@ class GameScene(BaseScene):
                     # when focused input exists submit
                     input_field = self.input_ent.get(InputFieldComponent)
                     if input_field is not None and input_field.text:
+                        # Play keyboard click sound for Enter key submission
+                        from engine import ServiceLocator
+                        sound_system = ServiceLocator.get("sound_system")
+                        if sound_system:
+                            sound_system.play_sound("keyboard_click")
+
                         self.submit_guess()
                 case pygame.K_ESCAPE:
                     # Start fade out with callback to go to menu

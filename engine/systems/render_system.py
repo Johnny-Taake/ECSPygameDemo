@@ -11,6 +11,7 @@ from ..components import (
     H1Component,
     H2Component,
     H3Component,
+    ImageComponent,
     InputFieldComponent,
     LabelComponent,
     Position,
@@ -145,7 +146,13 @@ class RenderSystem:
             if button.active
             else GameConfig.INACTIVE_BUTTON_GRAYED_COLOR
         )
-        surf = self.font.render(button.text, True, color)
+
+        # Handle text rendering
+        if button.text:  # If there's text, render it normally
+            surf = self.font.render(button.text, True, color)
+        else:  # If no text (like for image buttons), create an empty surface
+            # For image buttons with empty text, create a transparent surface
+            surf = pygame.Surface((1, 1), pygame.SRCALPHA)  # Tiny transparent surface
 
         # Apply transparency if alpha is less than 1.0
         if alpha < 1.0:
@@ -161,11 +168,14 @@ class RenderSystem:
         rect = surf.get_rect(center=(position.x, position.y))
         pad = GameConfig.BUTTON_PADDING
 
-        # Calculate box width: use the larger of text width or min_width
+        # Calculate box width and height: use the larger of text dimensions or min dimensions
+        # For image buttons (empty text), we rely on min_width and min_height to determine the padding area
         text_width = rect.width + pad * 2
+        text_height = rect.height + pad * 2
         box_width = max(text_width, button.min_width)
+        box_height = max(text_height, button.min_height)
         box = Rect(
-            position.x - box_width // 2, rect.y - pad, box_width, rect.height + pad * 2
+            position.x - box_width // 2, position.y - box_height // 2, box_width, box_height
         )
 
         # Calculate button color based on hover state and alpha
@@ -184,9 +194,10 @@ class RenderSystem:
 
         # Draw rounded rectangle for border radius effect
         draw.rect(self.screen, bg_color, box, border_radius=GameConfig.BUTTON_RADIUS)
-        # Center the text in the button
-        text_rect = surf.get_rect(center=(position.x, position.y))
-        self.screen.blit(surf, text_rect)
+        # Center the text in the button (only if it's not an image button)
+        if button.text:  # Only blit text if it exists
+            text_rect = surf.get_rect(center=(position.x, position.y))
+            self.screen.blit(surf, text_rect)
 
         # Store button dimensions for click detection
         button.width = box.width
@@ -238,6 +249,48 @@ class RenderSystem:
             2,
             border_radius=GameConfig.PROGRESS_BAR_BORDER_RADIUS,
         )
+
+    def draw_image(
+        self, image: ImageComponent, position: Position, alpha: float = 1.0
+    ):
+        # Load the image if not already loaded
+        if image.pygame_image is None:
+            try:
+                loaded_image = pygame.image.load(image.image_path).convert_alpha()
+
+                # Resize if dimensions are specified
+                if image.width and image.height:
+                    loaded_image = pygame.transform.scale(loaded_image, (image.width, image.height))
+
+                image.pygame_image = loaded_image
+            except pygame.error:
+                # Create a placeholder surface if image fails to load
+                image.pygame_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+                # Draw a red rectangle to indicate missing image
+                pygame.draw.rect(image.pygame_image, (255, 0, 0), pygame.Rect(0, 0, 50, 50))
+
+        # Safety check: ensure image.pygame_image is not None before using it
+        # This handles the edge case where something went wrong in the loading process
+        if image.pygame_image is None:
+            image.pygame_image = pygame.Surface((50, 50), pygame.SRCALPHA)
+            pygame.draw.rect(image.pygame_image, (255, 0, 255), pygame.Rect(0, 0, 50, 50))  # Magenta for error
+
+        # Create a temporary surface for alpha transparency
+        if alpha < 1.0:
+            # Create a temporary surface with per-pixel alpha
+            temp_surf = pygame.Surface(image.pygame_image.get_size(), pygame.SRCALPHA)
+            temp_surf.blit(image.pygame_image, (0, 0))
+            # Make it transparent
+            temp_surf.fill(
+                (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
+            )
+            img = temp_surf
+        else:
+            img = image.pygame_image
+
+        # Calculate position to center the image
+        rect = img.get_rect(center=(position.x, position.y))
+        self.screen.blit(img, rect)
 
     def update(self, entities: list):
         for e in entities:
@@ -295,3 +348,6 @@ class RenderSystem:
                     )
 
                 self.draw_progress_bar(pb, pos, alpha)
+            img = e.get(ImageComponent)
+            if img:
+                self.draw_image(img, pos, alpha)

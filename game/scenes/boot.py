@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, List
 
-from config import GameConfig
 from engine import (
     BaseScene,
     EventBus,
@@ -123,10 +122,12 @@ class BootScene(BaseScene):
             "Initializing services", self.initialize_services
         )
 
-        # Add other potential asset loading tasks here
+        # NOTE: Add other potential asset loading tasks here
         # For example, loading fonts, images, sounds, etc.
         self.asset_loader.add_simple_task("Loading UI assets", self.load_ui_assets)
         self.asset_loader.add_simple_task("Loading game assets", self.load_game_assets)
+        self.asset_loader.add_simple_task("Loading sound assets", self.load_sound_assets)
+        self.asset_loader.add_simple_task("Loading image assets", self.load_image_assets)
 
     def initialize_services(self):
         """Initialize services for the game"""
@@ -157,6 +158,39 @@ class BootScene(BaseScene):
             log.info("Game assets processed")
         except Exception as e:
             log.warning(f"Error loading game assets: {e}")
+
+    def load_sound_assets(self):
+        """Load sound assets"""
+        try:
+            # Get the sound system from service locator
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+
+            if sound_system:
+                # Load general button click sound
+                sound_system.load_sound("button_click", "assets/sounds/button-click.mp3")
+                # Load keyboard click sound
+                sound_system.load_sound("keyboard_click", "assets/sounds/keyboard-click.mp3")
+                # Load win sound
+                sound_system.load_sound("win", "assets/sounds/soft-treble-win-fade-out.mp3")
+                log.info("Sound assets loaded successfully")
+            else:
+                log.warning("Sound system not found in ServiceLocator")
+        except Exception as e:
+            log.warning(f"Error loading sound assets: {e}")
+
+    def load_image_assets(self):
+        """Preload image assets to cache them for later use"""
+        try:
+            import pygame
+            # Preload the sound toggle images
+            pygame.image.load("assets/images/volume.png")
+            pygame.image.load("assets/images/mute.png")
+            # Preload any other images that might be used
+            pygame.image.load("assets/icon.png")
+            log.info("Image assets preloaded successfully")
+        except Exception as e:
+            log.warning(f"Error preloading image assets: {e}")
 
     def enter(self):
         log.info("BootScene enter")

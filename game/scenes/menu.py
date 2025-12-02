@@ -3,6 +3,7 @@ from engine import (
     AlphaComponent,
     BaseScene,
     ButtonComponent,
+    ImageComponent,
     LabelComponent,
     ServiceLocator,
     UIBuilder,
@@ -50,6 +51,12 @@ class MenuScene(BaseScene):
 
         # Left arrow for previous difficulty
         def prev_difficulty():
+            # Play keyboard click sound specifically for difficulty selection
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("keyboard_click")
+
             self.current_difficulty_index = (self.current_difficulty_index - 1) % len(
                 self.difficulty_modes
             )
@@ -64,6 +71,12 @@ class MenuScene(BaseScene):
 
         # Right arrow for next difficulty
         def next_difficulty():
+            # Play keyboard click sound specifically for difficulty selection
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("keyboard_click")
+
             self.current_difficulty_index = (self.current_difficulty_index + 1) % len(
                 self.difficulty_modes
             )
@@ -76,6 +89,12 @@ class MenuScene(BaseScene):
 
         def start_game():
             log.info("Start pressed")
+
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
 
             # Emit difficulty event via EventBus
             event_bus = ServiceLocator.get("event_bus")
@@ -140,6 +159,41 @@ class MenuScene(BaseScene):
                 220  # Same total width as difficulty buttons (100 + 20 gap + 100)
             )
 
+        # Sound toggle button - placed at the top right similar to the game scene
+        self.sound_enabled = True  # Track sound state
+
+        def toggle_sound():
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                if self.sound_enabled:
+                    sound_system.disable_sounds()
+                    self.sound_enabled = False
+                    # Update the image to muted
+                    img_component = self.btn_sound.get(ImageComponent)
+                    if img_component:
+                        img_component.image_path = "assets/images/mute.png"
+                        img_component.pygame_image = None  # Reset to force reload
+                else:
+                    sound_system.enable_sounds()
+                    self.sound_enabled = True
+                    # Update the image to unmuted
+                    img_component = self.btn_sound.get(ImageComponent)
+                    if img_component:
+                        img_component.image_path = "assets/images/volume.png"
+                        img_component.pygame_image = None  # Reset to force reload
+
+                # Play button click sound if sound is enabled
+                if self.sound_enabled:
+                    sound_system.play_sound("button_click")
+
+        # Create the sound toggle button as an image button
+        sound_btn_x = GameConfig.WINDOW_WIDTH - 50  # Same as in GameScene
+        sound_btn_y = 50  # Same as in GameScene
+        self.btn_sound = ui.image_button_entity(
+            "assets/images/volume.png", sound_btn_x, sound_btn_y, toggle_sound
+        )
+
         # Add alpha components to enable fade transitions
         all_entities = [
             self.title,
@@ -150,6 +204,7 @@ class MenuScene(BaseScene):
             self.btn_next,
             self.btn_start,
             self.btn_exit,
+            self.btn_sound,
         ]
 
         for entity in all_entities:

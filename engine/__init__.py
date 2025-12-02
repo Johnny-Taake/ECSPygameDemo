@@ -9,10 +9,13 @@ __all__ = [
     "ButtonComponent",
     "ProgressBarComponent",
     "AlphaComponent",
+    "ImageComponent",
+    "SoundComponent",
     "EventBus",
     "ServiceLocator",
     "RenderSystem",
     "InputSystem",
+    "SoundSystem",
     "BaseScene",
     "SceneManager",
     "UIBuilder",
@@ -25,14 +28,16 @@ from .components import (
     H1Component,
     H2Component,
     H3Component,
+    ImageComponent,
     InputFieldComponent,
     LabelComponent,
     Position,
     ProgressBarComponent,
+    SoundComponent,
 )
 from .ecs import GameObject
 from .event_bus import EventBus
 from .scene_manager import SceneManager
 from .service_locator import ServiceLocator
-from .systems import InputSystem, RenderSystem
+from .systems import InputSystem, RenderSystem, SoundSystem
 from .ui_builder import UIBuilder

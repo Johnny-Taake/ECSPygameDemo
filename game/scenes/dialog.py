@@ -45,12 +45,24 @@ class DialogScene(BaseScene):
         # Confirmation button
         def confirm():
             log.info("Dialog confirm")
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+
             # Execute the confirm callback
             self.on_confirm()
 
         # Cancel button
         def cancel():
             log.info("Dialog cancel")
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+
             if self.on_cancel is not None:
                 self.on_cancel()
             # If no cancel callback is provided, go back to previous scene

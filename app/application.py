@@ -1,7 +1,7 @@
 import pygame
 
 from config import GameConfig
-from engine import InputSystem, RenderSystem, SceneManager, ServiceLocator
+from engine import InputSystem, RenderSystem, SoundSystem, SceneManager, ServiceLocator
 from game import BootScene
 from logger import get_logger
 
@@ -34,11 +34,13 @@ class GameApp:
 
         self.render_system = RenderSystem(self.screen, self.font)
         self.input_system = InputSystem()
+        self.sound_system = SoundSystem()
 
         self.scene_manager = SceneManager(self)
         self.scene_manager.change(BootScene(self))
 
         ServiceLocator.provide("app", self)
+        ServiceLocator.provide("sound_system", self.sound_system)
 
     def run(self):
         while self.running:
@@ -47,18 +49,24 @@ class GameApp:
                 if event.type == pygame.QUIT:
                     self.running = False
                     break
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mx, my = event.pos
                     if self.scene_manager.current:
                         self.input_system.handle_mouse(
                             mx, my, self.scene_manager.current.entities
                         )
+                    # Process sound system for clicked buttons
+                    if self.scene_manager.current:
+                        self.sound_system.update(self.scene_manager.current.entities)
+
                 if event.type == pygame.MOUSEMOTION:
                     mx, my = event.pos
                     if self.scene_manager.current:
                         self.input_system.handle_mouse_motion(
                             mx, my, self.scene_manager.current.entities
                         )
+
                 if event.type == pygame.KEYDOWN:
                     self.input_system.handle_key(event)
                     if self.scene_manager.current:
@@ -69,6 +77,10 @@ class GameApp:
                     self.scene_manager.current.update(delta_time)
                 except Exception as e:
                     log.exception("Scene update error: %s", e)
+
+            # Process sound system for any entities with sound components
+            if self.scene_manager.current:
+                self.sound_system.update(self.scene_manager.current.entities)
 
             # Render
             self.screen.fill(GameConfig.BACKGROUND_COLOR)

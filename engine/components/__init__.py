@@ -8,6 +8,8 @@ __all__ = [
     "ButtonComponent",
     "ProgressBarComponent",
     "AlphaComponent",
+    "ImageComponent",
+    "SoundComponent",
 ]
 
 
@@ -18,3 +20,5 @@ from .input import InputFieldComponent
 from .label import LabelComponent
 from .position import Position
 from .progress_bar import ProgressBarComponent
+from .image import ImageComponent
+from .sound import SoundComponent

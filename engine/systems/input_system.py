@@ -44,6 +44,17 @@ class InputSystem:
                 # Use actual button dimensions for click detection
                 half_width = btn.width // 2
                 half_height = btn.height // 2
+
+                # Check if this entity has an ImageComponent (for image buttons)
+                from engine.components import ImageComponent
+                img_component = e.get(ImageComponent)
+                if img_component:
+                    # For image buttons, provide minimum click area for better clickability
+                    min_click_width = 40  # Minimum 40px width for click area
+                    min_click_height = 40  # Minimum 40px height for click area
+                    half_width = max(half_width, min_click_width // 2)
+                    half_height = max(half_height, min_click_height // 2)
+
                 if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
                     if (
                         btn.on_click and btn.active

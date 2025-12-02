@@ -72,13 +72,41 @@ class WinScene(BaseScene):
 
             self.start_fade_out(on_complete_callback=on_fade_complete)
 
+        # Play win sound when the win scene is entered
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("win")
+
         self.btn_play = ui.button_entity("Play Again", 300, 250, start_play_again)
         # Set minimum width to match longest button text in scene
         play_component = self.btn_play.get(ButtonComponent)
         if play_component:
             play_component.min_width = 140  # Fixed width for uniform buttons
 
-        self.btn_menu = ui.button_entity("Menu", 300, 310, to_menu)
+        def play_again_with_sound():
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+            start_play_again()
+
+        def menu_with_sound():
+            # Play button click sound
+            from engine import ServiceLocator
+            sound_system = ServiceLocator.get("sound_system")
+            if sound_system:
+                sound_system.play_sound("button_click")
+            to_menu()
+
+        self.btn_play = ui.button_entity("Play Again", 300, 250, play_again_with_sound)
+        # Set minimum width to match longest button text in scene
+        play_component = self.btn_play.get(ButtonComponent)
+        if play_component:
+            play_component.min_width = 140  # Fixed width for uniform buttons
+
+        self.btn_menu = ui.button_entity("Menu", 300, 310, menu_with_sound)
         # Set minimum width to match longest button text in scene
         menu_component = self.btn_menu.get(ButtonComponent)
         if menu_component:

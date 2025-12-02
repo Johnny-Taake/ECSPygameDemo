@@ -83,3 +83,16 @@ class UIBuilder:
             ProgressBarComponent(x, y, width, height, color, fill_color)
         )
         return e
+
+    def image_button_entity(self, image_path: str, x: int, y: int, onclick, width: int = 32, height: int = 32):
+        e = GameObject()
+        btn = ButtonComponent("")  # Empty text for image button
+        btn.on_click = onclick
+        # Set minimum width and height with padding around the image
+        btn.min_width = width + 16  # Add 16px padding: 8px on each side
+        btn.min_height = height + 16  # Add 16px padding: 8px on top and bottom
+        # Add image component to the button
+        from .components import ImageComponent
+        img = ImageComponent(image_path, width, height)
+        e.add(Position(x, y)).add(btn).add(img)
+        return e
