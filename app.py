@@ -1,10 +1,10 @@
 import logging
+
 import pygame
+
 from config import GameConfig
-
-from engine import RenderSystem, InputSystem, SceneManager, ServiceLocator
+from engine import InputSystem, RenderSystem, SceneManager, ServiceLocator
 from game import BootScene
-
 
 # Configure logging based on config
 logging.basicConfig(
@@ -16,7 +16,12 @@ log = logging.getLogger("main")
 
 
 class GameApp:
-    def __init__(self, width=GameConfig.WINDOW_WIDTH, height=GameConfig.WINDOW_HEIGHT, fps=GameConfig.FPS):
+    def __init__(
+        self,
+        width=GameConfig.WINDOW_WIDTH,
+        height=GameConfig.WINDOW_HEIGHT,
+        fps=GameConfig.FPS,
+    ):
         pygame.init()
 
         # Set the icon
@@ -29,7 +34,9 @@ class GameApp:
 
         self.clock = pygame.time.Clock()
         self.fps = fps
-        self.font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE)
+        self.font = pygame.font.SysFont(
+            GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE
+        )
         self.running = True
 
         self.render_system = RenderSystem(self.screen, self.font)
@@ -51,12 +58,14 @@ class GameApp:
                     mx, my = event.pos
                     if self.scene_manager.current:
                         self.input_system.handle_mouse(
-                            mx, my, self.scene_manager.current.entities)
+                            mx, my, self.scene_manager.current.entities
+                        )
                 if event.type == pygame.MOUSEMOTION:
                     mx, my = event.pos
                     if self.scene_manager.current:
                         self.input_system.handle_mouse_motion(
-                            mx, my, self.scene_manager.current.entities)
+                            mx, my, self.scene_manager.current.entities
+                        )
                 if event.type == pygame.KEYDOWN:
                     self.input_system.handle_key(event)
                     if self.scene_manager.current:
@@ -72,8 +81,7 @@ class GameApp:
             self.screen.fill(GameConfig.BACKGROUND_COLOR)
             if self.scene_manager.current:
                 try:
-                    self.render_system.update(
-                        self.scene_manager.current.entities)
+                    self.render_system.update(self.scene_manager.current.entities)
                 except Exception as e:
                     log.exception("Render error: %s", e)
 

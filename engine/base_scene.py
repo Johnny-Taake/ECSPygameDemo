@@ -1,4 +1,5 @@
 import logging
+
 from pygame.event import Event
 
 from .ecs import GameObject

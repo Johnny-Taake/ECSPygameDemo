@@ -1,29 +1,36 @@
 import pygame
-from pygame import draw, Rect
-from pygame.surface import Surface
+from pygame import Rect, draw
 from pygame.font import Font
+from pygame.surface import Surface
+
+from config import GameConfig
 
 from ..components import (
-    LabelComponent,
-    Position,
-    InputFieldComponent,
+    AlphaComponent,
     ButtonComponent,
     H1Component,
     H2Component,
     H3Component,
+    InputFieldComponent,
+    LabelComponent,
+    Position,
     ProgressBarComponent,
-    AlphaComponent,
 )
-from config import GameConfig
 
 
 class RenderSystem:
     def __init__(self, screen: Surface, font: Font):
         self.screen = screen
         self.font = font
-        self.h1_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 36)
-        self.h2_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 28)
-        self.h3_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 24)
+        self.h1_font = pygame.font.SysFont(
+            GameConfig.DEFAULT_FONT, GameConfig.H1_FONT_SIZE
+        )
+        self.h2_font = pygame.font.SysFont(
+            GameConfig.DEFAULT_FONT, GameConfig.H2_FONT_SIZE
+        )
+        self.h3_font = pygame.font.SysFont(
+            GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE
+        )
 
     def draw_label(self, label: LabelComponent, position: Position, alpha: float = 1.0):
         surf = self.font.render(label.text, True, label.color)
@@ -99,7 +106,9 @@ class RenderSystem:
         text = inp.text if inp.text else inp.placeholder
         text_color = GameConfig.TEXT_COLOR if inp.text else GameConfig.HINT_COLOR[:3]
 
-        large_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 28)
+        large_font = pygame.font.SysFont(
+            GameConfig.DEFAULT_FONT, GameConfig.INPUT_FIELD_FONT_SIZE
+        )
         surf = large_font.render(f"> {text}", True, text_color)
 
         # Apply transparency if alpha is less than 1.0
@@ -118,10 +127,10 @@ class RenderSystem:
 
         underline_y = position.y + int(large_font.get_linesize() / 1.8)
 
-        input_width = 300
+        input_width = GameConfig.INPUT_FIELD_WIDTH
         draw.line(
             self.screen,
-            (100, 100, 100),
+            GameConfig.INPUT_UNDERLINE_COLOR,
             (position.x - input_width, underline_y),
             (position.x + input_width, underline_y),
             4,
@@ -131,7 +140,11 @@ class RenderSystem:
         self, button: ButtonComponent, position: Position, alpha: float = 1.0
     ):
         # Muted color when inactive
-        color = (0, 0, 0) if button.active else (100, 100, 100)
+        color = (
+            GameConfig.ACTIVE_BUTTON_TEXT_COLOR
+            if button.active
+            else GameConfig.INACTIVE_BUTTON_GRAYED_COLOR
+        )
         surf = self.font.render(button.text, True, color)
 
         # Apply transparency if alpha is less than 1.0
@@ -157,7 +170,7 @@ class RenderSystem:
 
         # Calculate button color based on hover state and alpha
         if not button.active:
-            bg_color = (150, 150, 150)
+            bg_color = GameConfig.INACTIVE_BUTTON_BG_COLOR
         else:
             bg_color = (
                 GameConfig.BUTTON_HOVER_COLOR
@@ -212,11 +225,19 @@ class RenderSystem:
 
         # Draw border (also affected by alpha)
         if alpha < 1.0:
-            border_color = tuple(int(c * alpha) for c in (255, 255, 255))
+            border_color = tuple(
+                int(c * alpha) for c in GameConfig.PROGRESS_BAR_BORDER_COLOR
+            )
         else:
-            border_color = (255, 255, 255)
+            border_color = GameConfig.PROGRESS_BAR_BORDER_COLOR
 
-        draw.rect(self.screen, border_color, bg_rect, 2, border_radius=3)
+        draw.rect(
+            self.screen,
+            border_color,
+            bg_rect,
+            2,
+            border_radius=GameConfig.PROGRESS_BAR_BORDER_RADIUS,
+        )
 
     def update(self, entities: list):
         for e in entities:

@@ -1,6 +1,7 @@
 from pygame.event import Event
 
-from engine.components import Position, ButtonComponent, InputFieldComponent
+from config import GameConfig
+from engine.components import ButtonComponent, InputFieldComponent, Position
 
 
 class InputSystem:
@@ -49,7 +50,10 @@ class InputSystem:
                     ):  # Only respond to clicks if the button is active
                         btn.on_click()
             if inp:
-                if abs(mx - pos.x) <= 120 and abs(my - pos.y) <= 20:
+                if (
+                    abs(mx - pos.x) <= GameConfig.INPUT_MOUSE_DETECTION_WIDTH
+                    and abs(my - pos.y) <= GameConfig.INPUT_MOUSE_DETECTION_HEIGHT
+                ):
                     self.set_focus(inp)
 
     def handle_mouse_motion(self, mx, my, entities):

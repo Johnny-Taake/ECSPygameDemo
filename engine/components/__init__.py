@@ -11,10 +11,10 @@ __all__ = [
 ]
 
 
-from .position import Position
-from .label import LabelComponent
+from .alpha import AlphaComponent
+from .button import ButtonComponent
 from .headers import H1Component, H2Component, H3Component
 from .input import InputFieldComponent
-from .button import ButtonComponent
+from .label import LabelComponent
+from .position import Position
 from .progress_bar import ProgressBarComponent
-from .alpha import AlphaComponent

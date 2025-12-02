@@ -1,4 +1,7 @@
+from config import GameConfig
+
+
 class LabelComponent:
-    def __init__(self, text: str, color=(255, 255, 255)):
+    def __init__(self, text: str, color=GameConfig.LABEL_DEFAULT_COLOR):
         self.text = text
         self.color = color

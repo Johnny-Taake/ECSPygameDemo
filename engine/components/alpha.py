@@ -1,3 +1,6 @@
+from config import GameConfig
+
+
 class AlphaComponent:
     def __init__(self, alpha: float = 1.0):
         """
@@ -7,5 +10,5 @@ class AlphaComponent:
         self.alpha = alpha  # 0.0 (transparent) to 1.0 (opaque)
         self.target_alpha = alpha  # Target alpha for smooth transitions
         self.animation_speed = (
-            3.0  # How fast alpha changes - faster for more immediate response
+            GameConfig.ALPHA_ANIMATION_SPEED  # How fast alpha changes - faster for more immediate response
         )

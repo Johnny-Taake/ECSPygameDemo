@@ -18,21 +18,21 @@ __all__ = [
     "UIBuilder",
 ]
 
-from .ecs import GameObject
+from .base_scene import BaseScene
 from .components import (
-    Position,
-    LabelComponent,
+    AlphaComponent,
+    ButtonComponent,
     H1Component,
     H2Component,
     H3Component,
     InputFieldComponent,
-    ButtonComponent,
+    LabelComponent,
+    Position,
     ProgressBarComponent,
-    AlphaComponent,
 )
+from .ecs import GameObject
 from .event_bus import EventBus
-from .service_locator import ServiceLocator
-from .systems import RenderSystem, InputSystem
-from .base_scene import BaseScene
 from .scene_manager import SceneManager
+from .service_locator import ServiceLocator
+from .systems import InputSystem, RenderSystem
 from .ui_builder import UIBuilder

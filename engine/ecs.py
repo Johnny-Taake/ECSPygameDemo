@@ -4,6 +4,7 @@ class GameObject:
     It's a container that holds different components like position,
     graphics, physics, etc. following the Entity-Component-System pattern.
     """
+
     def __init__(self):
         self.components: dict = {}
 

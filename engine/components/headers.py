@@ -1,19 +1,22 @@
+from config import GameConfig
+
+
 class H1Component:
-    def __init__(self, text: str, color=(255, 255, 255)):
+    def __init__(self, text: str, color=GameConfig.H1_DEFAULT_COLOR):
         self.text = text
         self.color = color
-        self.size = 36
+        self.size = GameConfig.H1_FONT_SIZE
 
 
 class H2Component:
-    def __init__(self, text: str, color=(255, 255, 255)):
+    def __init__(self, text: str, color=GameConfig.H2_DEFAULT_COLOR):
         self.text = text
         self.color = color
-        self.size = 28
+        self.size = GameConfig.H2_FONT_SIZE
 
 
 class H3Component:
-    def __init__(self, text: str, color=(255, 255, 255)):
+    def __init__(self, text: str, color=GameConfig.H3_DEFAULT_COLOR):
         self.text = text
         self.color = color
-        self.size = 24
+        self.size = GameConfig.H3_FONT_SIZE

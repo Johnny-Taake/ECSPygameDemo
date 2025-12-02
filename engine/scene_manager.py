@@ -2,7 +2,6 @@ import logging
 
 from .base_scene import BaseScene
 
-
 log = logging.getLogger("engine/scene_manager")
 
 
