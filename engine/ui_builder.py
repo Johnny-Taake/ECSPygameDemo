@@ -7,6 +7,7 @@ from engine import (
     H3Component,
     InputFieldComponent,
     ButtonComponent,
+    ProgressBarComponent,
 )
 
 
@@ -54,4 +55,9 @@ class UIBuilder:
     def h3_entity(self, text: str, x: int, y: int, color=(255, 255, 255)):
         e = Entity()
         e.add(Position(x, y)).add(H3Component(text, color))
+        return e
+
+    def progress_bar_entity(self, x: int, y: int, width: int, height: int, color=(100, 100, 100), fill_color=(0, 200, 0)):
+        e = Entity()
+        e.add(Position(x, y)).add(ProgressBarComponent(x, y, width, height, color, fill_color))
         return e

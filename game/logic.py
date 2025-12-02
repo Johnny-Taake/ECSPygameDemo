@@ -18,16 +18,18 @@ class GameLogic:
     def __init__(self, min_number=1, max_number=100):
         self.min_number = min_number
         self.max_number = max_number
-        self.number_to_guess = randint(self.min_number, self.max_number)
         self.attempts = 0
+        # Initialize the number to guess
+        self.generate_new_number()
 
-        log.debug("GameLogic initialized: number_to_guess=%s",
-                  self.number_to_guess)
+    def generate_new_number(self):
+        """Generate a new random number to guess"""
+        self.number_to_guess = randint(self.min_number, self.max_number)
+        log.debug("New number generated: number_to_guess=%s", self.number_to_guess)
 
     def reset(self):
-        self.number_to_guess = randint(self.min_number, self.max_number)
+        self.generate_new_number()
         self.attempts = 0
-
         log.debug("GameLogic reset: number_to_guess=%s", self.number_to_guess)
 
     def check(self, guess_str: str) -> GuessStatus:

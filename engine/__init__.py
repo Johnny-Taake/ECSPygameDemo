@@ -7,6 +7,8 @@ __all__ = [
     "H3Component",
     "InputFieldComponent",
     "ButtonComponent",
+    "ProgressBarComponent",
+    "AlphaComponent",
     "EventBus",
     "ServiceLocator",
     "RenderSystem",
@@ -25,6 +27,8 @@ from .components import (
     H3Component,
     InputFieldComponent,
     ButtonComponent,
+    ProgressBarComponent,
+    AlphaComponent,
 )
 from .event_bus import EventBus
 from .service_locator import ServiceLocator

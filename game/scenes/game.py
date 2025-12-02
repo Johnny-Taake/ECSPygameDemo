@@ -15,6 +15,9 @@ class GameScene(BaseScene):
         ui = UIBuilder(self.app.font)
         self.game_logic: GameLogic = ServiceLocator.get("game_logic")  # type: ignore
 
+        # Generate a new random number for this game session
+        self.game_logic.generate_new_number()
+
         title_text = f"Guess the number game {self.game_logic.min_number}-{self.game_logic.max_number}"
         self.title = ui.h1_entity(title_text, 320, 50)
         self.instructions = ui.h2_entity(
@@ -45,18 +48,19 @@ class GameScene(BaseScene):
             # Update submit button state after reset
             self.update_submit_button_state()
 
-        # Create full-width buttons by setting a large min_width
-        btn_width = 250
+        # Create full-width buttons that span more of the container
+        btn_width = 280
         btn_y = 370
 
-        # Restart button
-        self.btn_restart = ui.button_entity_with_min_width("Reset", 180, btn_y, restart_click, btn_width)
+        # Restart button - reposition to better distribute space
+        self.btn_restart = ui.button_entity_with_min_width("Reset", 160, btn_y, restart_click, btn_width)
 
         def submit_click():
             self.submit_guess()
 
-        # Submit/Confirm button
-        self.btn_submit = ui.button_entity_with_min_width("Submit", 460, btn_y, submit_click, btn_width)
+        # Submit/Confirm button - reposition accordingly
+        self.btn_submit = ui.button_entity_with_min_width("Submit", 480, btn_y, submit_click, btn_width)
+
         # Initially set the submit button as inactive
         submit_component = self.btn_submit.get(ButtonComponent)
         if submit_component:

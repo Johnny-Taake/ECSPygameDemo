@@ -1,5 +1,17 @@
+from abc import ABC, abstractmethod
+from typing import List, Callable, Any
+
 import logging
-from engine import EventBus, ServiceLocator, BaseScene
+
+from engine import (
+    EventBus,
+    ServiceLocator,
+    BaseScene,
+    LabelComponent,
+    ProgressBarComponent,
+    AlphaComponent,
+    UIBuilder,
+)
 from game.logic import GameLogic
 from config import GameConfig
 
@@ -7,13 +19,217 @@ from config import GameConfig
 log = logging.getLogger("game/scenes")
 
 
+class LoadingTask(ABC):
+    """Abstract base class for loading tasks"""
+
+    def __init__(self, description: str):
+        self.description = description
+
+    @abstractmethod
+    def execute(self) -> Any:
+        """Execute the loading task and return the result"""
+        pass
+
+
+class SimpleTask(LoadingTask):
+    """A simple task that wraps a function"""
+
+    def __init__(self, description: str, function: Callable[[], Any]):
+        super().__init__(description)
+        self.function = function
+
+    def execute(self) -> Any:
+        return self.function()
+
+
+class AssetLoader:
+    """Handles loading assets with progress tracking and milestones"""
+
+    def __init__(self, frames_per_task: int = 3):
+        """
+        Initialize the asset loader
+
+        Args:
+            frames_per_task: Number of frames to wait before executing next task (at 60fps)
+        """
+        self.tasks: List[LoadingTask] = []
+        self.current_task_index = 0
+        self.progress = 0.0  # 0.0 to 1.0
+        self.completed = False
+        self.description = "Initializing..."
+        self.current_task_frame_counter = 0  # Counter to control execution timing
+        self.frames_per_task = frames_per_task
+
+    def add_task(self, task: LoadingTask):
+        """Add a task to be executed during asset loading"""
+        self.tasks.append(task)
+
+    def add_simple_task(self, description: str, function: Callable[[], Any]):
+        """Add a simple function as a loading task"""
+        self.add_task(SimpleTask(description, function))
+
+    def add_tasks(self, tasks: List[LoadingTask]):
+        """Add multiple tasks at once"""
+        self.tasks.extend(tasks)
+
+    def execute_next_task(self, dt: float):
+        """Execute the next task and update progress, with frame-based timing"""
+        if self.current_task_index < len(self.tasks):
+            # Increment frame counter
+            self.current_task_frame_counter += 1
+
+            # Execute task only after waiting a certain number of frames
+            if self.current_task_frame_counter >= self.frames_per_task:
+                task = self.tasks[self.current_task_index]
+
+                self.description = task.description
+                log.info(f"AssetLoader: Executing task - {task.description}")
+
+                # Execute the task
+                task.execute()
+
+                # Move to next task
+                self.current_task_index += 1
+                self.progress = self.current_task_index / len(self.tasks)
+
+                # Reset frame counter for next task
+                self.current_task_frame_counter = 0
+
+                log.info(f"AssetLoader: Progress updated - {self.progress:.2%}")
+        else:
+            self.completed = True
+
+    def reset(self):
+        """Reset the loader for reuse"""
+        self.current_task_index = 0
+        self.progress = 0.0
+        self.completed = False
+        self.current_task_frame_counter = 0
+        self.description = "Initializing..."
+
+
 class BootScene(BaseScene):
-    def enter(self):
+    def __init__(self, app):
+        super().__init__(app)
+        self.asset_loader = AssetLoader(frames_per_task=2)  # Faster progression
+        self.setup_asset_loading_tasks()
+        self.loading_complete = False
+        self.showing_progress = True
+
+    def setup_asset_loading_tasks(self):
+        """Define the asset loading tasks with milestones"""
+        # Initialize services first (these are light initializations)
+        self.asset_loader.add_simple_task(
+            "Initializing services", self.initialize_services
+        )
+
+        # Add other potential asset loading tasks here
+        # For example, loading fonts, images, sounds, etc.
+        self.asset_loader.add_simple_task("Loading UI assets", self.load_ui_assets)
+        self.asset_loader.add_simple_task("Loading game assets", self.load_game_assets)
+
+    def initialize_services(self):
+        """Initialize services for the game"""
         event_bus = EventBus()
         ServiceLocator.provide("event_bus", event_bus)
-        ServiceLocator.provide("game_logic", GameLogic(GameConfig.MIN_NUMBER, GameConfig.MAX_NUMBER))
+        ServiceLocator.provide(
+            "game_logic", GameLogic(GameConfig.MIN_NUMBER, GameConfig.MAX_NUMBER)
+        )
+        log.info("Services initialized")
 
+    def load_ui_assets(self):
+        """Load UI related assets (fonts, images, etc.)"""
+        # In a real game, this would load images, custom fonts, etc.
+        # We'll keep it lightweight for this example, but in a real game
+        # you might load button images, background images, icons, etc.
+        try:
+            # Example: Load icon or other UI assets
+            icon_path = "assets/icon.png"
+            # In a real implementation, you'd actually load the asset here
+            # icon = pygame.image.load(icon_path)
+            log.info(f"UI assets processed (e.g., {icon_path})")
+        except Exception as e:
+            log.warning(f"Error loading UI assets: {e}")
+
+    def load_game_assets(self):
+        """Load game specific assets"""
+        # This is where game-specific assets would be loaded
+        # In a real implementation, you might load game-specific images, sounds, etc. here
+        try:
+            # Example: Load any game-specific assets
+            log.info("Game assets processed")
+        except Exception as e:
+            log.warning(f"Error loading game assets: {e}")
+
+    def enter(self):
         log.info("BootScene enter")
 
-        from .menu import MenuScene
-        self.app.scene_manager.change(MenuScene(self.app))
+        # Create UI for loading screen
+        ui = UIBuilder(self.app.font)
+        self.title = ui.h1_entity("Guess The Number", 320, 150)
+        self.loading_text = ui.label_entity("Initializing...", 320, 250)
+        self.progress_bar = ui.progress_bar_entity(320, 300, 400, 20)
+
+        # Add alpha components to enable fade transitions
+        from engine import AlphaComponent
+        self.title.add(AlphaComponent(1.0))
+        self.loading_text.add(AlphaComponent(1.0))
+        self.progress_bar.add(AlphaComponent(1.0))
+
+        # Initialize entities
+        self.entities = [self.title, self.loading_text, self.progress_bar]
+
+        # Reset asset loader
+        self.asset_loader.reset()
+
+    def update(self, dt: float):
+        # Execute next asset loading task if not completed
+        if not self.asset_loader.completed:
+            self.asset_loader.execute_next_task(dt)
+
+            # Update progress bar component
+            pb_component = self.progress_bar.get(ProgressBarComponent)
+            if pb_component:
+                pb_component.target_progress = self.asset_loader.progress
+
+            # Update loading text - ensure it matches the visual progress bar
+            loading_component = self.loading_text.get(LabelComponent)
+            if loading_component:
+                # Show actual progress percentage that matches the visual bar
+                actual_percentage = int(self.asset_loader.progress * 100)
+                loading_component.text = (
+                    f"{self.asset_loader.description} - {actual_percentage}%"
+                )
+
+        # Check if loading is complete
+        if self.asset_loader.completed and not self.loading_complete:
+            self.loading_complete = True
+            log.info("BootScene - All assets loaded, transitioning to menu")
+            # Start fade out
+            self.start_fade_out()
+
+        # Handle fade out if needed
+        if hasattr(self, '_fading_out') and self._fading_out:
+            # Check if all entities have faded out (current alpha is at or near target alpha of 0)
+            all_faded = True
+            for entity in self.entities:
+                alpha_comp = entity.get(AlphaComponent)
+                if alpha_comp:
+                    # Check if alpha is still above a very small threshold (close enough to 0)
+                    if alpha_comp.alpha > 0.01:  # Still visible, not fully faded
+                        all_faded = False
+                        break
+
+            # If all entities are fully transparent, transition to menu
+            if all_faded:
+                from .menu import MenuScene
+                self.app.scene_manager.change(MenuScene(self.app))
+
+    def start_fade_out(self):
+        """Start the fade out animation before transitioning to the next scene"""
+        from engine import AlphaComponent
+        self._fading_out = True
+        for entity in self.entities:
+            alpha_comp = entity.get(AlphaComponent)
+            if alpha_comp:
+                alpha_comp.target_alpha = 0.0  # Fade to transparent
