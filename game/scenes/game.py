@@ -1,18 +1,18 @@
 import logging
+
 import pygame
 
+from config import GameConfig
 from engine import (
-    BaseScene,
-    LabelComponent,
-    InputFieldComponent,
-    UIBuilder,
-    ButtonComponent,
     AlphaComponent,
+    BaseScene,
+    ButtonComponent,
+    InputFieldComponent,
+    LabelComponent,
     ServiceLocator,
+    UIBuilder,
 )
 from game.logic import GameLogic, GuessStatus
-from config import GameConfig
-
 
 log = logging.getLogger("game/scenes")
 
@@ -24,14 +24,16 @@ class GameScene(BaseScene):
         self.game_logic: GameLogic = ServiceLocator.get("game_logic")  # type: ignore
 
         # Check if we're returning from dialog cancel (preserve all game state)
-        is_returning_from_dialog = hasattr(self, '_from_dialog_cancel') and self._from_dialog_cancel
+        is_returning_from_dialog = (
+            hasattr(self, "_from_dialog_cancel") and self._from_dialog_cancel
+        )
         if is_returning_from_dialog:
             # Clear the flag and preserve game state
             self._from_dialog_cancel = False
             # Preserve existing values for history and other state
-            preserved_history_list = getattr(self, 'history_list', [])
+            preserved_history_list = getattr(self, "history_list", [])
             preserved_input_value = ""
-            if hasattr(self, 'input_ent'):
+            if hasattr(self, "input_ent"):
                 input_comp = self.input_ent.get(InputFieldComponent)
                 if input_comp:
                     preserved_input_value = input_comp.text
@@ -113,6 +115,7 @@ class GameScene(BaseScene):
             def confirm_quit():
                 # Create menu scene and start fade out on the dialog
                 from .menu import MenuScene
+
                 menu_scene = MenuScene(self.app)
                 # Start fade out on the dialog scene itself and transition to menu
                 self.app.scene_manager.current.start_fade_out(menu_scene)

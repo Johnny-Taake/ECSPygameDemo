@@ -1,6 +1,7 @@
 import logging
-from engine import BaseScene, ButtonComponent, UIBuilder, AlphaComponent
 
+from config import GameConfig
+from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
 
 log = logging.getLogger("game/scenes")
 
@@ -12,7 +13,7 @@ class MenuScene(BaseScene):
         self._fading_out = False
         ui = UIBuilder(self.app.font)
         self.title = ui.h1_entity("Guess The Number", 300, 80)
-        self.subtitle = ui.h2_entity("Press Start", 300, 130, (200, 200, 200))
+        self.subtitle = ui.h2_entity("Press Start", 300, 130, GameConfig.HINT_COLOR)
 
         def start_game():
             log.info("Start pressed")
@@ -40,6 +41,7 @@ class MenuScene(BaseScene):
 
         # Add alpha components to enable fade transitions
         from engine import AlphaComponent
+
         for entity in [self.title, self.subtitle, self.btn_start, self.btn_exit]:
             entity.add(AlphaComponent(1.0))
 
@@ -51,7 +53,7 @@ class MenuScene(BaseScene):
 
     def update(self, delta_time: float):
         # Handle fade out if needed
-        if hasattr(self, '_fading_out') and self._fading_out:
+        if hasattr(self, "_fading_out") and self._fading_out:
             # Check if all entities have faded out (current alpha is at or near target alpha of 0)
             all_faded = True
             for entity in self.entities:
@@ -64,12 +66,13 @@ class MenuScene(BaseScene):
 
             # If all entities are fully transparent, handle the next action
             if all_faded:
-                if hasattr(self, '_exit_requested') and self._exit_requested:
+                if hasattr(self, "_exit_requested") and self._exit_requested:
                     # Exit the application
                     self.app.running = False
                 else:
                     # Start a new game
                     from .game import GameScene
+
                     self.app.scene_manager.change(GameScene(self.app))
 
     def start_fade_out(self):

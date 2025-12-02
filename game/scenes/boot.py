@@ -1,20 +1,18 @@
-from abc import ABC, abstractmethod
-from typing import List, Callable, Any
-
 import logging
+from abc import ABC, abstractmethod
+from typing import Any, Callable, List
 
+from config import GameConfig
 from engine import (
-    EventBus,
-    ServiceLocator,
+    AlphaComponent,
     BaseScene,
+    EventBus,
     LabelComponent,
     ProgressBarComponent,
-    AlphaComponent,
+    ServiceLocator,
     UIBuilder,
 )
 from game.logic import GameLogic
-from config import GameConfig
-
 
 log = logging.getLogger("game/scenes")
 
@@ -176,6 +174,7 @@ class BootScene(BaseScene):
 
         # Add alpha components to enable fade transitions
         from engine import AlphaComponent
+
         self.title.add(AlphaComponent(1.0))
         self.loading_text.add(AlphaComponent(1.0))
         self.progress_bar.add(AlphaComponent(1.0))
@@ -213,7 +212,7 @@ class BootScene(BaseScene):
             self.start_fade_out()
 
         # Handle fade out if needed
-        if hasattr(self, '_fading_out') and self._fading_out:
+        if hasattr(self, "_fading_out") and self._fading_out:
             # Check if all entities have faded out (current alpha is at or near target alpha of 0)
             all_faded = True
             for entity in self.entities:
@@ -227,11 +226,13 @@ class BootScene(BaseScene):
             # If all entities are fully transparent, transition to menu
             if all_faded:
                 from .menu import MenuScene
+
                 self.app.scene_manager.change(MenuScene(self.app))
 
     def start_fade_out(self):
         """Start the fade out animation before transitioning to the next scene"""
         from engine import AlphaComponent
+
         self._fading_out = True
         for entity in self.entities:
             alpha_comp = entity.get(AlphaComponent)

@@ -1,7 +1,7 @@
 import logging
-from engine import BaseScene, ButtonComponent, UIBuilder, AlphaComponent
-from config import GameConfig
 
+from config import GameConfig
+from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
 
 log = logging.getLogger("game/scenes")
 
@@ -22,11 +22,6 @@ class WinScene(BaseScene):
             f"Attempts: {self.attempts}", 300, 160, GameConfig.HINT_COLOR
         )
 
-        # def play_again():
-        #     log.info("Play again")
-        #     from .game import GameScene
-        #     self.app.scene_manager.change(GameScene(self.app))
-
         def to_menu():
             # Start fade out before changing scene
             self.start_fade_out()
@@ -35,6 +30,7 @@ class WinScene(BaseScene):
             # For play again, we can also add fade transition if desired
             log.info("Play again")
             from .game import GameScene
+
             # Start fade out before changing scene
             self._next_scene = GameScene(self.app)
             self.start_fade_out()
@@ -60,7 +56,7 @@ class WinScene(BaseScene):
 
     def update(self, delta_time: float):
         # Handle fade out if needed
-        if hasattr(self, '_fading_out') and self._fading_out:
+        if hasattr(self, "_fading_out") and self._fading_out:
             # Check if all entities have faded out (current alpha is at or near target alpha of 0)
             all_faded = True
             for entity in self.entities:
@@ -73,10 +69,11 @@ class WinScene(BaseScene):
 
             # If all entities are fully transparent, transition to the appropriate scene
             if all_faded:
-                if hasattr(self, '_next_scene') and self._next_scene is not None:
+                if hasattr(self, "_next_scene") and self._next_scene is not None:
                     self.app.scene_manager.change(self._next_scene)
                 else:
                     from .menu import MenuScene
+
                     self.app.scene_manager.change(MenuScene(self.app))
 
     def start_fade_out(self):
