@@ -1,9 +1,10 @@
-__all__ = ["setup_logging", "get_logger"]
+__all__ = ["setup_logging", "get_logger", "ColoredFormatter"]
 
 import logging
 
 from pathlib import Path
 from config import GameConfig
+from .colored_formatter import ColoredFormatter
 
 
 def setup_logging():
@@ -17,14 +18,14 @@ def setup_logging():
     if root_logger.handlers:
         root_logger.handlers.clear()
 
-    # Create file handler that overwrites the log file each time
+    # Create file handler that overwrites the log file each time (without colors)
     file_handler = logging.FileHandler(f"{GameConfig.logging.logs_dir}/app.log", mode="w")
     file_formatter = logging.Formatter(GameConfig.LOG_FORMAT)
     file_handler.setFormatter(file_formatter)
 
-    # Create console handler for stdout
+    # Create console handler for stdout with colored formatter
     console_handler = logging.StreamHandler()
-    console_formatter = logging.Formatter(GameConfig.LOG_FORMAT)
+    console_formatter = ColoredFormatter(GameConfig.LOG_FORMAT)
     console_handler.setFormatter(console_formatter)
 
     # Configure the root logger
