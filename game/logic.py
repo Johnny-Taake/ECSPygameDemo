@@ -19,8 +19,6 @@ class GameLogic:
         self.min_number = min_number
         self.max_number = max_number
         self.attempts = 0
-        # Initialize the number to guess
-        self.generate_new_number()
 
     def generate_new_number(self):
         """Generate a new random number to guess"""
