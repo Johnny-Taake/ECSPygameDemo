@@ -3,10 +3,8 @@ __all__ = [
     "MenuScene",
     "GameScene",
     "WinScene",
+    "DialogScene",
 ]
 
 
-from .scenes.boot import BootScene
-from .scenes.menu import MenuScene
-from .scenes.game import GameScene
-from .scenes.win import WinScene
+from .scenes import BootScene, MenuScene, GameScene, WinScene, DialogScene

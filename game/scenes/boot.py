@@ -19,6 +19,8 @@ from config import GameConfig
 log = logging.getLogger("game/scenes")
 
 
+# NOTE: Example with lading tasks when the boot scene is entered
+# LOADING TASKS
 class LoadingTask(ABC):
     """Abstract base class for loading tasks"""
 
@@ -42,6 +44,8 @@ class SimpleTask(LoadingTask):
         return self.function()
 
 
+# NOTE: Example asset loader with progress tracking and milestones
+# ASSET LOADER
 class AssetLoader:
     """Handles loading assets with progress tracking and milestones"""
 
@@ -182,10 +186,10 @@ class BootScene(BaseScene):
         # Reset asset loader
         self.asset_loader.reset()
 
-    def update(self, dt: float):
+    def update(self, delta_time: float):
         # Execute next asset loading task if not completed
         if not self.asset_loader.completed:
-            self.asset_loader.execute_next_task(dt)
+            self.asset_loader.execute_next_task(delta_time)
 
             # Update progress bar component
             pb_component = self.progress_bar.get(ProgressBarComponent)
