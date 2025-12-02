@@ -116,3 +116,22 @@ class InputSystem:
             if inp:
                 if abs(mx - pos.x) <= 120 and abs(my - pos.y) <= 20:
                     self.set_focus(inp)
+
+    def handle_mouse_motion(self, mx, my, entities):
+        # reset all button hover states first
+        for e in entities:
+            btn = e.get(ButtonComponent)
+            if btn:
+                btn.hover = False
+
+        # check which buttons are being hovered over
+        for e in entities:
+            pos = e.get(Position)
+            btn = e.get(ButtonComponent)
+            if not pos or not btn:
+                continue
+            # Use actual button dimensions to detect hover
+            half_width = btn.width // 2
+            half_height = btn.height // 2
+            if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
+                btn.hover = True

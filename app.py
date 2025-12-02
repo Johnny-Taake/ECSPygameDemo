@@ -52,6 +52,11 @@ class GameApp:
                     if self.scene_manager.current:
                         self.input_system.handle_mouse(
                             mx, my, self.scene_manager.current.entities)
+                if event.type == pygame.MOUSEMOTION:
+                    mx, my = event.pos
+                    if self.scene_manager.current:
+                        self.input_system.handle_mouse_motion(
+                            mx, my, self.scene_manager.current.entities)
                 if event.type == pygame.KEYDOWN:
                     self.input_system.handle_key(event)
                     if self.scene_manager.current:
