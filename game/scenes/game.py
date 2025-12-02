@@ -1,78 +1,13 @@
 import logging
 import pygame
-
-from engine import EventBus, ServiceLocator, LabelComponent, InputFieldComponent, BaseScene
-
-from .logic import GameLogic, GuessStatus
-from .ui_builder import UIBuilder
+from engine import BaseScene, LabelComponent, InputFieldComponent
+from game.ui_builder import UIBuilder
+from game.logic import GameLogic, GuessStatus
+from config import GameConfig
+from engine import ServiceLocator
 
 
 log = logging.getLogger("game/scenes")
-
-
-class BootScene(BaseScene):
-    def enter(self):
-        event_bus = EventBus()
-        ServiceLocator.provide("event_bus", event_bus)
-        ServiceLocator.provide("game_logic", GameLogic(1, 100))
-
-        log.info("BootScene enter")
-
-        self.app.scene_manager.change(MenuScene(self.app))
-
-
-class MenuScene(BaseScene):
-    def enter(self):
-        log.info("MenuScene enter")
-        ui = UIBuilder(self.app.font)
-        self.title = ui.label_entity("Guess The Number", 300, 80)
-        self.subtitle = ui.label_entity("Press Start", 300, 130, (200, 200, 200))
-
-        def start_game():
-            log.info("Start pressed")
-            self.app.scene_manager.change(GameScene(self.app))
-
-        self.btn_start = ui.button_entity("Start", 300, 240, start_game)
-
-        def exit_game():
-            log.info("Exit pressed")
-            self.app.running = False
-
-        self.btn_exit = ui.button_entity("EXIT", 300, 300, exit_game)
-
-        self.entities = [self.title, self.subtitle, self.btn_start, self.btn_exit]
-
-    def handle_event(self, event):
-        # mouse clicks routed by InputSystem
-        pass
-
-
-class WinScene(BaseScene):
-    def __init__(self, app, attempts: int):
-        super().__init__(app)
-        self.attempts = attempts
-
-    def enter(self):
-        log.info("WinScene enter")
-        ui = UIBuilder(self.app.font)
-
-        self.title = ui.label_entity("Correct!", 300, 100, (150, 255, 150))
-        self.stat = ui.label_entity(
-            f"Attempts: {self.attempts}", 300, 160, (230, 230, 230)
-        )
-
-        def play_again():
-            log.info("Play again")
-            self.app.scene_manager.change(GameScene(self.app))
-
-        def menu():
-            log.info("To menu")
-            self.app.scene_manager.change(MenuScene(self.app))
-
-        self.btn_play = ui.button_entity("Play Again", 300, 250, play_again)
-        self.btn_menu = ui.button_entity("Menu", 300, 310, menu)
-
-        self.entities = [self.title, self.stat, self.btn_play, self.btn_menu]
 
 
 class GameScene(BaseScene):
@@ -81,17 +16,17 @@ class GameScene(BaseScene):
         ui = UIBuilder(self.app.font)
         self.game_logic: GameLogic = ServiceLocator.get("game_logic")  # type: ignore
 
-        # TODO: Move out variables
+        # Use configuration values
         self.title = ui.label_entity("Guess the number game 1-100", 300, 50)
         self.instructions = ui.label_entity(
-            "Enter the number and press Submit or Enter", 300, 100, (200, 200, 200)
+            "Enter the number and press Submit or Enter", 300, 100, GameConfig.HINT_COLOR
         )
-        self.history_label = ui.label_entity("", 300, 200, (200, 180, 180))
+        self.history_label = ui.label_entity("", 300, 200, GameConfig.ERROR_COLOR)
         self.attempts_label = ui.label_entity(
-            f"Attempts: {self.game_logic.attempts}", 300, 260, (200, 200, 200)
+            f"Attempts: {self.game_logic.attempts}", 300, 260, GameConfig.HINT_COLOR
         )
 
-        self.input_ent = ui.input_entity("Enter the number", 300, 160, max_len=3)
+        self.input_ent = ui.input_entity("Enter the number", 300, 160, max_len=GameConfig.INPUT_MAX_LENGTH)
 
         def submit_click():
             self.submit_guess()
@@ -115,6 +50,8 @@ class GameScene(BaseScene):
 
         # Back to menu
         def to_menu():
+            # Import here to avoid circular imports
+            from .menu import MenuScene
             self.app.scene_manager.change(MenuScene(self.app))
 
         self.btn_menu = ui.button_entity("Menu", 550, 350, to_menu)
@@ -151,6 +88,8 @@ class GameScene(BaseScene):
                 self.history_list.insert(0, f"{text} - Too High")
             case GuessStatus.CORRECT:
                 log.info("User guessed correctly")
+                # Import here to avoid circular imports
+                from .win import WinScene
                 self.app.scene_manager.change(
                     WinScene(self.app, self.game_logic.attempts)
                 )
@@ -162,9 +101,9 @@ class GameScene(BaseScene):
         self.update_history_label()
 
     def update_history_label(self):
-        # show up to 6 last entries
+        # Use configuration value for max history entries
         compact = (
-            " | ".join(self.history_list[:6]) if self.history_list else "Empty History"
+            " | ".join(self.history_list[:GameConfig.SCENE_MAX_HISTORY_ENTRIES]) if self.history_list else "Empty History"
         )
         label_comp = self.history_label.get(LabelComponent)
         if label_comp is not None:
@@ -180,6 +119,8 @@ class GameScene(BaseScene):
                     if input_field is not None and input_field.text:
                         self.submit_guess()
                 case pygame.K_ESCAPE:
+                    # Import here to avoid circular imports
+                    from .menu import MenuScene
                     self.app.scene_manager.change(MenuScene(self.app))
 
     def update(self, dt: float):
