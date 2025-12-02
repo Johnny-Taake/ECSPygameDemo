@@ -1,6 +1,5 @@
 import logging
-from engine import BaseScene, LabelComponent, ButtonComponent
-from game.ui_builder import UIBuilder
+from engine import BaseScene, ButtonComponent, UIBuilder
 from config import GameConfig
 
 
@@ -16,20 +15,18 @@ class WinScene(BaseScene):
         log.info("WinScene enter")
         ui = UIBuilder(self.app.font)
 
-        self.title = ui.label_entity("Correct!", 300, 100, GameConfig.SUCCESS_COLOR)
-        self.stat = ui.label_entity(
+        self.title = ui.h1_entity("Correct!", 300, 100, GameConfig.SUCCESS_COLOR)
+        self.stat = ui.h2_entity(
             f"Attempts: {self.attempts}", 300, 160, GameConfig.HINT_COLOR
         )
 
         def play_again():
             log.info("Play again")
-            # Import here to avoid circular imports
             from .game import GameScene
             self.app.scene_manager.change(GameScene(self.app))
 
         def menu():
             log.info("To menu")
-            # Import here to avoid circular imports
             from .menu import MenuScene
             self.app.scene_manager.change(MenuScene(self.app))
 

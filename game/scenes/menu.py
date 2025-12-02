@@ -1,6 +1,5 @@
 import logging
-from engine import BaseScene, ButtonComponent
-from game.ui_builder import UIBuilder
+from engine import BaseScene, ButtonComponent, UIBuilder
 
 
 log = logging.getLogger("game/scenes")
@@ -10,12 +9,11 @@ class MenuScene(BaseScene):
     def enter(self):
         log.info("MenuScene enter")
         ui = UIBuilder(self.app.font)
-        self.title = ui.label_entity("Guess The Number", 300, 80)
-        self.subtitle = ui.label_entity("Press Start", 300, 130, (200, 200, 200))
+        self.title = ui.h1_entity("Guess The Number", 300, 80)
+        self.subtitle = ui.h2_entity("Press Start", 300, 130, (200, 200, 200))
 
         def start_game():
             log.info("Start pressed")
-            # Import here to avoid circular imports
             from .game import GameScene
             self.app.scene_manager.change(GameScene(self.app))
 

@@ -15,6 +15,5 @@ class BootScene(BaseScene):
 
         log.info("BootScene enter")
 
-        # Import here to avoid circular imports
         from .menu import MenuScene
         self.app.scene_manager.change(MenuScene(self.app))

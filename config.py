@@ -15,7 +15,6 @@ class GameConfig:
     # Game settings
     MIN_NUMBER = 1
     MAX_NUMBER = 100
-    INPUT_MAX_LENGTH = 3
 
     # Colors
     BACKGROUND_COLOR = (30, 30, 30)  # Dark gray

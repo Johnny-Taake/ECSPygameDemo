@@ -1,9 +1,6 @@
 import logging
 import pygame
-import threading
-import time
-from engine import BaseScene, LabelComponent, InputFieldComponent
-from game.ui_builder import UIBuilder
+from engine import BaseScene, LabelComponent, InputFieldComponent, UIBuilder, ButtonComponent
 from game.logic import GameLogic, GuessStatus
 from config import GameConfig
 from engine import ServiceLocator
@@ -18,29 +15,21 @@ class GameScene(BaseScene):
         ui = UIBuilder(self.app.font)
         self.game_logic: GameLogic = ServiceLocator.get("game_logic")  # type: ignore
 
-        # Use configuration values
-        self.title = ui.label_entity("Guess the number game 1-100", 300, 50)
-        self.instructions = ui.label_entity(
-            "Enter the number and press Submit or Enter", 300, 100, GameConfig.HINT_COLOR
+        title_text = f"Guess the number game {self.game_logic.min_number}-{self.game_logic.max_number}"
+        self.title = ui.h1_entity(title_text, 320, 50)
+        self.instructions = ui.h2_entity(
+            "Enter the number and press Submit or Enter", 320, 100, GameConfig.HINT_COLOR
         )
         # Error message positioned between instructions and input field
-        self.error_label = ui.label_entity("", 300, 130, GameConfig.ERROR_COLOR)
-        self.input_ent = ui.input_entity("Enter the number", 300, 160, max_len=GameConfig.INPUT_MAX_LENGTH + 2)
-        self.history_label = ui.label_entity("", 300, 210, GameConfig.HINT_COLOR)  # Only valid attempts (moved down)
+        self.error_label = ui.label_entity("", 320, 140, GameConfig.ERROR_COLOR)
+        # Calculate max input length based on the max possible number
+        max_input_len = len(str(self.game_logic.max_number))
+        self.input_ent = ui.input_entity("Enter the number", 320, 200, max_len=max_input_len)
+        self.history_label = ui.label_entity("", 320, 270, GameConfig.HINT_COLOR)
         self.attempts_label = ui.label_entity(
-            f"Attempts: {self.game_logic.attempts}", 300, 260, GameConfig.HINT_COLOR
+            f"Attempts: {self.game_logic.attempts}", 320, 310, GameConfig.HINT_COLOR
         )
 
-        def submit_click():
-            self.submit_guess()
-
-        # Center buttons at the bottom of the screen
-        btn_spacing = 150  # Space between buttons
-        center_x = 300
-        btn_y = 350
-        self.btn_submit = ui.button_entity("Submit", center_x - btn_spacing//2, btn_y, submit_click)
-
-        # Restart button
         def restart_click():
             log.info("Restart clicked")
             self.game_logic.reset()
@@ -53,19 +42,34 @@ class GameScene(BaseScene):
             attempts_label_comp = self.attempts_label.get(LabelComponent)
             if attempts_label_comp is not None:
                 attempts_label_comp.text = f"Attempts: {self.game_logic.attempts}"
+            # Update submit button state after reset
+            self.update_submit_button_state()
 
-        self.btn_restart = ui.button_entity("Reset", center_x + btn_spacing//2, btn_y, restart_click)
+        # Create full-width buttons by setting a large min_width
+        btn_width = 250
+        btn_y = 370
+
+        # Restart button
+        self.btn_restart = ui.button_entity_with_min_width("Reset", 180, btn_y, restart_click, btn_width)
+
+        def submit_click():
+            self.submit_guess()
+
+        # Submit/Confirm button
+        self.btn_submit = ui.button_entity_with_min_width("Submit", 460, btn_y, submit_click, btn_width)
+        # Initially set the submit button as inactive
+        submit_component = self.btn_submit.get(ButtonComponent)
+        if submit_component:
+            submit_component.active = False
 
         # Back to menu - move to top right with appropriate padding
         def to_menu():
-            # Import here to avoid circular imports
             from .menu import MenuScene
             self.app.scene_manager.change(MenuScene(self.app))
 
         # Menu button at top right with appropriate padding
-        # Using a safe distance from the right edge to prevent going off screen
         menu_x = GameConfig.WINDOW_WIDTH - 50  # Positioned from right edge
-        menu_y = 30  # More top padding to avoid being stuck to the top
+        menu_y = 50  # Top padding to avoid being stuck to the top
         self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, to_menu)
 
         self.entities = [
@@ -83,7 +87,7 @@ class GameScene(BaseScene):
         self.update_history_label()
         self.clear_error_label()  # Initially clear the error label
 
-        # input system focus the input on enter to scene
+        # Input system focus the input on enter to scene
         self.app.input_system.set_focus(self.input_ent.get(InputFieldComponent))
 
     def submit_guess(self):
@@ -99,7 +103,9 @@ class GameScene(BaseScene):
                 self.show_error(f"Invalid input: '{text}'")
                 return  # Don't clear input for invalid format
             case GuessStatus.OUT_OF_RANGE:
-                self.show_error(f"Number out of range: '{text}' (use {self.game_logic.min_number}-{self.game_logic.max_number})")
+                error_msg = f"Number out of range: '{text}'"
+                range_info = f"(use {self.game_logic.min_number}-{self.game_logic.max_number})"
+                self.show_error(f"{error_msg} {range_info}")
                 return  # Don't clear input for out of range
             case GuessStatus.TOO_LOW:
                 self.history_list.insert(0, f"{text} - Too Low")
@@ -107,7 +113,6 @@ class GameScene(BaseScene):
                 self.history_list.insert(0, f"{text} - Too High")
             case GuessStatus.CORRECT:
                 log.info("User guessed correctly")
-                # Import here to avoid circular imports
                 from .win import WinScene
                 self.app.scene_manager.change(
                     WinScene(self.app, self.game_logic.attempts)
@@ -134,6 +139,7 @@ class GameScene(BaseScene):
 
         # Clear the error message after 3 seconds
         import threading
+
         def clear_error_after_delay():
             import time
             time.sleep(3)
@@ -170,7 +176,6 @@ class GameScene(BaseScene):
                     if input_field is not None and input_field.text:
                         self.submit_guess()
                 case pygame.K_ESCAPE:
-                    # Import here to avoid circular imports
                     from .menu import MenuScene
                     self.app.scene_manager.change(MenuScene(self.app))
         # Handle custom event to clear error message
@@ -178,4 +183,42 @@ class GameScene(BaseScene):
             self.clear_error_label()
 
     def update(self, dt: float):
-        pass
+        # Update the submit button's active state based on input validity
+        self.update_submit_button_state()
+
+    def update_submit_button_state(self):
+        """Update the submit button's active state and error message based on input validity"""
+        input_field = self.input_ent.get(InputFieldComponent)
+        submit_btn = self.btn_submit.get(ButtonComponent)
+        error_label = self.error_label.get(LabelComponent)
+
+        if input_field and submit_btn:
+            text = input_field.text.strip()
+
+            # Check for various validation errors
+            if text == "":
+                # No error when empty, just inactive button
+                submit_btn.active = False
+                if error_label:
+                    error_label.text = ""
+            elif not text.isdigit():
+                # Not a number
+                submit_btn.active = False
+                if error_label:
+                    error_label.text = "Invalid: Enter a number"
+                    error_label.color = GameConfig.ERROR_COLOR
+            else:
+                # It's a number, check if it's in range using game logic's min/max
+                num = int(text)
+                if num < self.game_logic.min_number or num > self.game_logic.max_number:
+                    submit_btn.active = False
+                    if error_label:
+                        invalid_msg = "Invalid: Number out of range"
+                        range_vals = f"({self.game_logic.min_number}-{self.game_logic.max_number})"
+                        error_label.text = f"{invalid_msg} {range_vals}"
+                        error_label.color = GameConfig.ERROR_COLOR
+                else:
+                    # Valid input
+                    submit_btn.active = True
+                    if error_label:
+                        error_label.text = ""
