@@ -87,7 +87,7 @@ class StatsManager:
         self._stats[difficulty_key]["top_attempts"].sort(key=lambda x: x["attempts"])
         self._stats[difficulty_key]["top_attempts"] = self._stats[difficulty_key][
             "top_attempts"
-        ][:GameConfig.STATS_MAX_TOP_ATTEMPTS]
+        ][: GameConfig.STATS_MAX_TOP_ATTEMPTS]
         log.info(
             "Recorded game result for %s: attempts=%s",
             difficulty_key,

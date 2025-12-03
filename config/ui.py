@@ -35,7 +35,9 @@ class UIConfig(BaseModel):
 
     # Scene settings
     scene_max_history_entries: int = 3
-    scene_max_win_top_scores: int = 5  # Max number of top scores to display on win screen
+    scene_max_win_top_scores: int = (
+        5  # Max number of top scores to display on win screen
+    )
     scene_title_position: Tuple[int, int] = (300, 80)
     scene_subtitle_position: Tuple[int, int] = (300, 130)
     scene_button_start_position: Tuple[int, int] = (300, 240)

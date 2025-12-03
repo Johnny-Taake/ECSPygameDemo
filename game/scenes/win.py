@@ -72,7 +72,9 @@ class WinScene(BaseScene):
             if top_attempts:
                 start_y = stats_start_y + 60  # Start below the header
                 # Show top stats up to the configured max to avoid crowding the UI
-                max_display_attempts = min(len(top_attempts), GameConfig.SCENE_MAX_WIN_TOP_SCORES)
+                max_display_attempts = min(
+                    len(top_attempts), GameConfig.SCENE_MAX_WIN_TOP_SCORES
+                )
                 for i, attempt in enumerate(
                     top_attempts[:max_display_attempts]
                 ):  # Show top attempts

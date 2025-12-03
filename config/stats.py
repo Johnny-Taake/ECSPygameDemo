@@ -17,7 +17,6 @@ class StatsConfig(BaseModel):
     # High scores settings
     max_top_attempts: int = 10  # Maximum number of top scores to keep per difficulty
 
-
     @field_validator("max_top_attempts")
     @classmethod
     def validate_max_top_attempts(cls, v: int) -> int:

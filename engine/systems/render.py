@@ -22,7 +22,7 @@ from ..components import (
 class RenderSystem:
     def __init__(self, screen: Surface, font: Font):
         self.screen = screen
-        self.font = font  # This should already be the custom font loaded from file
+        self.font = font
         # Load custom fonts from file paths for headers, fallback to system if custom fails
         try:
             self.h1_font = pygame.font.Font(
@@ -79,10 +79,14 @@ class RenderSystem:
         self.screen.blit(surf, rect)
 
     def draw_h1(self, h1: H1Component, position: Position, alpha: float = 1.0):
+        from config import GameConfig
+
         surf = self.h1_font.render(h1.text, True, h1.color)
 
         # Check if the text is too wide for the screen and scale if necessary
-        max_width = 600  # Maximum width for H1 text (less than full screen width)
+        max_width = (
+            GameConfig.TEXT_MAX_WIDTH
+        )  # Maximum width for H1 text (less than full screen width)
         if surf.get_width() > max_width:
             # Scale the text surface down to fit within max_width
             aspect_ratio = surf.get_height() / surf.get_width()
@@ -105,10 +109,13 @@ class RenderSystem:
         self.screen.blit(surf, rect)
 
     def draw_h2(self, h2: H2Component, position: Position, alpha: float = 1.0):
+        from config import GameConfig
+
         surf = self.h2_font.render(h2.text, True, h2.color)
 
         # Check if the text is too wide for the screen and scale if necessary
-        max_width = 600  # Maximum width for H2 text (less than full screen width)
+        max_width = GameConfig.TEXT_MAX_WIDTH
+        
         if surf.get_width() > max_width:
             # Scale the text surface down to fit within max_width
             aspect_ratio = surf.get_height() / surf.get_width()
@@ -131,10 +138,12 @@ class RenderSystem:
         self.screen.blit(surf, rect)
 
     def draw_h3(self, h3: H3Component, position: Position, alpha: float = 1.0):
+        from config import GameConfig
+
         surf = self.h3_font.render(h3.text, True, h3.color)
 
         # Check if the text is too wide for the screen and scale if necessary
-        max_width = 600  # Maximum width for H3 text (less than full screen width)
+        max_width = GameConfig.TEXT_MAX_WIDTH
         if surf.get_width() > max_width:
             # Scale the text surface down to fit within max_width
             aspect_ratio = surf.get_height() / surf.get_width()

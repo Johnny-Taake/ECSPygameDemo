@@ -231,6 +231,12 @@ class GameConfig(BaseModel):
     def INPUT_MOUSE_DETECTION_HEIGHT(self) -> int:
         return self.ui.input_mouse_detection_height
 
+    @property
+    def TEXT_MAX_WIDTH(self) -> int:
+        # Calculate max text width as a percentage of screen width to maintain proper proportions
+        # Use 90% of screen width as default maximum text width
+        return int(self.window.width * 0.90)
+
     # Stats configuration
     @property
     def STATS_ENCRYPTION_KEY(self) -> str:
@@ -247,4 +253,3 @@ class GameConfig(BaseModel):
     @property
     def STATS_MAX_TOP_ATTEMPTS(self) -> int:
         return self.stats.max_top_attempts
-
