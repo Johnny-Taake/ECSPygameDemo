@@ -100,13 +100,14 @@ class WinScene(BaseScene):
                 sound_system.play_sound("button_click")
             to_menu()
 
-        self.btn_play = ui.button_entity("Play Again", 300, 250, play_again_with_sound)
+        # Create buttons with keyboard shortcut tags
+        self.btn_play = ui.button_entity("Play Again", 300, 250, play_again_with_sound, "[ENTER]")
         # Set minimum width to match longest button text in scene
         play_component = self.btn_play.get(ButtonComponent)
         if play_component:
             play_component.min_width = 140  # Fixed width for uniform buttons
 
-        self.btn_menu = ui.button_entity("Menu", 300, 310, menu_with_sound)
+        self.btn_menu = ui.button_entity("Menu", 300, 310, menu_with_sound, "[ESC]")
         # Set minimum width to match longest button text in scene
         menu_component = self.btn_menu.get(ButtonComponent)
         if menu_component:
@@ -117,6 +118,66 @@ class WinScene(BaseScene):
             entity.add(AlphaComponent(1.0))
 
         self.entities = [self.title, self.stat, self.btn_play, self.btn_menu]
+
+    def handle_event(self, event):
+        import pygame
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:  # ENTER to play again
+                self.start_play_again()
+            elif event.key == pygame.K_ESCAPE:  # ESC to go to menu
+                self.to_menu()
+
+    def to_menu(self):
+        # Store the current difficulty in service locator before going to menu
+        if self.game_logic is not None:
+            from engine import ServiceLocator
+            from config import GameConfig
+
+            # Find the corresponding difficulty index to store
+            config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+            matching_index = None
+            for i, mode in enumerate(config_difficulty_modes):
+                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                    matching_index = i
+                    break
+
+            if matching_index is not None:
+                ServiceLocator.provide("last_selected_difficulty", matching_index)
+
+        # Start fade out with callback to go to menu
+        def on_fade_complete():
+            from .menu import MenuScene
+            self.app.scene_manager.change(MenuScene(self.app))
+
+        self.start_fade_out(on_complete_callback=on_fade_complete)
+
+    def start_play_again(self):
+        # For play again, we can also add fade transition if desired
+        log.info("Play again")
+
+        # Store the current difficulty in service locator for the new game
+        if self.game_logic is not None:
+            from engine import ServiceLocator
+            from config import GameConfig
+
+            # Find the corresponding difficulty index to store
+            config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+            matching_index = None
+            for i, mode in enumerate(config_difficulty_modes):
+                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                    matching_index = i
+                    break
+
+            if matching_index is not None:
+                ServiceLocator.provide("last_selected_difficulty", matching_index)
+
+        from .game import GameScene
+
+        # Start fade out with callback to go to game scene
+        def on_fade_complete():
+            self.app.scene_manager.change(GameScene(self.app))
+
+        self.start_fade_out(on_complete_callback=on_fade_complete)
 
     def update(self, delta_time: float):
         # Call parent update to handle fade-out if in progress

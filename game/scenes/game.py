@@ -115,20 +115,7 @@ class GameScene(BaseScene):
         self._restart_requested = False
 
         def restart_click():
-            log.info("Restart clicked")
-
-            # Play button click sound
-            from engine import ServiceLocator
-            sound_system = ServiceLocator.get("sound_system")
-            if sound_system:
-                sound_system.play_sound("button_click")
-
-            # Start fade out with a callback to reset and recreate the scene
-            def on_fade_complete():
-                # Change to a new GameScene which will start fresh
-                self.app.scene_manager.change(GameScene(self.app))
-
-            self.start_fade_out(on_complete_callback=on_fade_complete)
+            self.restart_click()
 
         # Create full-width buttons that span more of the container
         btn_width = 280
@@ -136,7 +123,7 @@ class GameScene(BaseScene):
 
         # Restart button - reposition to better distribute space
         self.btn_restart = ui.button_entity_with_min_width(
-            "Reset", 160, btn_y, restart_click, btn_width
+            "Reset", 160, btn_y, restart_click, btn_width, "[Ctrl+R]"
         )
 
         def submit_click():
@@ -150,7 +137,7 @@ class GameScene(BaseScene):
 
         # Submit/Confirm button - reposition accordingly
         self.btn_submit = ui.button_entity_with_min_width(
-            "Submit", 480, btn_y, submit_click, btn_width
+            "Submit", 480, btn_y, submit_click, btn_width, "[ENTER]"
         )
 
         # Initially set the submit button as inactive
@@ -272,7 +259,7 @@ class GameScene(BaseScene):
             label_comp.text = compact
 
     def handle_event(self, event: pygame.event.Event):
-        # keyboard: Enter triggers submit, ESC -> menu with confirmation
+        # keyboard: Enter triggers submit, ESC -> menu with confirmation, Ctrl+R -> restart
         if event.type == pygame.KEYDOWN:
             match event.key:
                 case pygame.K_RETURN:
@@ -289,6 +276,9 @@ class GameScene(BaseScene):
                 case pygame.K_ESCAPE:
                     # Show quit confirmation dialog when ESC is pressed (same as menu button)
                     self.show_quit_confirmation()
+                case pygame.K_r if event.mod & pygame.KMOD_CTRL:
+                    # Restart the game when Ctrl+R is pressed (same as restart button)
+                    self.restart_click()
 
     def update_submit_button_state(self):
         """Update the submit button's active state and error message based on input validity"""
@@ -326,6 +316,22 @@ class GameScene(BaseScene):
                     submit_btn.active = True
                     if error_label:
                         error_label.text = ""
+
+    def restart_click(self):
+        log.info("Restart clicked")
+
+        # Play button click sound
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("button_click")
+
+        # Start fade out with a callback to reset and recreate the scene
+        def on_fade_complete():
+            # Change to a new GameScene which will start fresh
+            self.app.scene_manager.change(GameScene(self.app))
+
+        self.start_fade_out(on_complete_callback=on_fade_complete)
 
     def show_quit_confirmation(self):
         # Play button click sound
