@@ -3,6 +3,7 @@ from random import randint
 
 from config import GameConfig
 from logger import get_logger
+import stats
 
 log = get_logger("game/logic")
 
@@ -84,4 +85,15 @@ class GameLogic:
             case g if g > self.number_to_guess:
                 return GuessStatus.TOO_HIGH
             case _:
+                # Game won - record the result
+                difficulty_name = self._get_difficulty_name()
+                stats.record_game_completion(self.attempts, difficulty_name, self.min_number, self.max_number)
                 return GuessStatus.CORRECT
+
+    def _get_difficulty_name(self) -> str:
+        """Get the name of the current difficulty based on range."""
+        for difficulty in GameConfig.DIFFICULTY_MODES:
+            if difficulty.min == self.min_number and difficulty.max == self.max_number:
+                return difficulty.name
+        # If no predefined difficulty matches, create a custom name
+        return f"Custom_{self.min_number}-{self.max_number}"

@@ -233,6 +233,12 @@ class MenuScene(BaseScene):
     def exit_game(self):
         log.info("Exit pressed")
 
+        # Play button click sound
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("button_click")
+
         # Start fade out with callback to exit the application
         def on_fade_complete():
             self.app.running = False

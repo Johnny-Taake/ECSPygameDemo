@@ -12,9 +12,13 @@ wheels/
 # Tools
 .mypy_cache/
 .ruff_cache/
+.vscode/
 
 # Environment variables
 .env
 
 # Log files
 logs/
+
+# Game stats
+game_stats.json
