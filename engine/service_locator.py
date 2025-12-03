@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+
 class ServiceLocator:
     _services: Dict[str, Any] = {}
 

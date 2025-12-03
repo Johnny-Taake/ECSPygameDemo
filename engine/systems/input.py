@@ -47,6 +47,7 @@ class InputSystem:
 
                 # Check if this entity has an ImageComponent (for image buttons)
                 from engine.components import ImageComponent
+
                 img_component = e.get(ImageComponent)
                 if img_component:
                     # For image buttons, provide minimum click area for better clickability

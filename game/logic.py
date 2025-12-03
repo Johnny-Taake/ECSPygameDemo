@@ -17,21 +17,24 @@ class GuessStatus(Enum):
 
 
 class GameLogic:
-    def __init__(
-        self, min_number=None, max_number=None
-    ):
+    def __init__(self, min_number=None, max_number=None):
         # If no range is provided, use the default difficulty from config
         if min_number is None or max_number is None:
             from config import GameConfig
+
             default_difficulty_modes = GameConfig.DIFFICULTY_MODES
             default_index = GameConfig.DEFAULT_DIFFICULTY_INDEX
-            if default_difficulty_modes and 0 <= default_index < len(default_difficulty_modes):
+            if default_difficulty_modes and 0 <= default_index < len(
+                default_difficulty_modes
+            ):
                 default_mode = default_difficulty_modes[default_index]
                 min_number = default_mode.min
                 max_number = default_mode.max
             else:
                 # Fallback if configuration is invalid
-                log.warning("Invalid default difficulty configuration - using fallback range (1-100)")
+                log.warning(
+                    "Invalid default difficulty configuration - using fallback range (1-100)"
+                )
                 min_number = 1
                 max_number = 100
 
@@ -87,7 +90,9 @@ class GameLogic:
             case _:
                 # Game won - record the result
                 difficulty_name = self._get_difficulty_name()
-                stats.record_game_completion(self.attempts, difficulty_name, self.min_number, self.max_number)
+                stats.record_game_completion(
+                    self.attempts, difficulty_name, self.min_number, self.max_number
+                )
                 return GuessStatus.CORRECT
 
     def _get_difficulty_name(self) -> str:

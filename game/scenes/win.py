@@ -8,10 +8,15 @@ import stats
 
 log = get_logger("game/scenes")
 
+
 def format_timestamp(ts: str) -> str:
     """Convert ISO timestamp into short readable format: 3 Dec'25"""
     dt = datetime.fromisoformat(ts)
-    return dt.strftime("%-d %b '%y") if sys.platform != "win32" else dt.strftime("%#d %b'%y")
+    return (
+        dt.strftime("%-d %b '%y")
+        if sys.platform != "win32"
+        else dt.strftime("%#d %b'%y")
+    )
 
 
 class WinScene(BaseScene):
@@ -33,15 +38,12 @@ class WinScene(BaseScene):
         if self.game_logic:
             # Find the difficulty name based on range
             difficulty_name = self._get_difficulty_name_from_range(
-                self.game_logic.min_number,
-                self.game_logic.max_number
+                self.game_logic.min_number, self.game_logic.max_number
             )
 
             # Get stats for current difficulty
             difficulty_stats = stats.get_difficulty_stats(
-                difficulty_name,
-                self.game_logic.min_number,
-                self.game_logic.max_number
+                difficulty_name, self.game_logic.min_number, self.game_logic.max_number
             )
 
             # Create statistics display - positioned in the top-right corner
@@ -55,22 +57,35 @@ class WinScene(BaseScene):
 
             # Add games played label in the top-right
             self.games_played_label = ui.label_entity(
-                f"Games played: {games_played}", stats_x, stats_start_y, GameConfig.HINT_COLOR
+                f"Games played: {games_played}",
+                stats_x,
+                stats_start_y,
+                GameConfig.HINT_COLOR,
             )
 
             # Add top scores header in the top-right
-            self.top_scores_header = ui.h3_entity("Top Scores:", stats_x, stats_start_y + 30, GameConfig.TEXT_COLOR)
+            self.top_scores_header = ui.h3_entity(
+                "Top Scores:", stats_x, stats_start_y + 30, GameConfig.TEXT_COLOR
+            )
 
             # Add top 10 attempts (or fewer if available) in the top-right
             if top_attempts:
                 start_y = stats_start_y + 60  # Start below the header
-                for i, attempt in enumerate(top_attempts[:5]):  # Show top 5 to avoid crowding
+                for i, attempt in enumerate(
+                    top_attempts[:5]
+                ):  # Show top 5 to avoid crowding
                     y_pos = start_y + (i * 20)  # 20px spacing between entries
                     attempt_text = f"#{i+1}: {attempt['attempts']} att. - {format_timestamp(attempt['timestamp'])}"
-                    label = ui.label_entity(attempt_text, stats_x, y_pos, GameConfig.TEXT_COLOR)
-                    setattr(self, f'top_score_label_{i}', label)  # Store as instance attribute
+                    label = ui.label_entity(
+                        attempt_text, stats_x, y_pos, GameConfig.TEXT_COLOR
+                    )
+                    setattr(
+                        self, f"top_score_label_{i}", label
+                    )  # Store as instance attribute
             else:
-                no_scores = ui.label_entity("No scores yet", stats_x, stats_start_y + 60, GameConfig.HINT_COLOR)
+                no_scores = ui.label_entity(
+                    "No scores yet", stats_x, stats_start_y + 60, GameConfig.HINT_COLOR
+                )
                 self.no_scores_label = no_scores
 
         def to_menu():
@@ -83,7 +98,10 @@ class WinScene(BaseScene):
                 config_difficulty_modes = GameConfig.DIFFICULTY_MODES
                 matching_index = None
                 for i, mode in enumerate(config_difficulty_modes):
-                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                    if (
+                        mode.min == self.game_logic.min_number
+                        and mode.max == self.game_logic.max_number
+                    ):
                         matching_index = i
                         break
 
@@ -93,6 +111,7 @@ class WinScene(BaseScene):
             # Start fade out with callback to go to menu
             def on_fade_complete():
                 from .menu import MenuScene
+
                 self.app.scene_manager.change(MenuScene(self.app))
 
             self.start_fade_out(on_complete_callback=on_fade_complete)
@@ -110,7 +129,10 @@ class WinScene(BaseScene):
                 config_difficulty_modes = GameConfig.DIFFICULTY_MODES
                 matching_index = None
                 for i, mode in enumerate(config_difficulty_modes):
-                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                    if (
+                        mode.min == self.game_logic.min_number
+                        and mode.max == self.game_logic.max_number
+                    ):
                         matching_index = i
                         break
 
@@ -127,6 +149,7 @@ class WinScene(BaseScene):
 
         # Play win sound when the win scene is entered
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("win")
@@ -134,6 +157,7 @@ class WinScene(BaseScene):
         def play_again_with_sound():
             # Play button click sound
             from engine import ServiceLocator
+
             sound_system = ServiceLocator.get("sound_system")
             if sound_system:
                 sound_system.play_sound("button_click")
@@ -142,13 +166,16 @@ class WinScene(BaseScene):
         def menu_with_sound():
             # Play button click sound
             from engine import ServiceLocator
+
             sound_system = ServiceLocator.get("sound_system")
             if sound_system:
                 sound_system.play_sound("button_click")
             to_menu()
 
         # Create buttons with keyboard shortcut tags
-        self.btn_play = ui.button_entity("Play Again", 470, 270, play_again_with_sound, "[ENTER]")
+        self.btn_play = ui.button_entity(
+            "Play Again", 470, 270, play_again_with_sound, "[ENTER]"
+        )
         # Set minimum width to match longest button text in scene
         play_component = self.btn_play.get(ButtonComponent)
         if play_component:
@@ -164,16 +191,16 @@ class WinScene(BaseScene):
         entities_list = [self.title, self.stat, self.btn_play, self.btn_menu]
 
         # Add stat display entities if they were created
-        if hasattr(self, 'games_played_label'):
+        if hasattr(self, "games_played_label"):
             entities_list.append(self.games_played_label)
-        if hasattr(self, 'top_scores_header'):
+        if hasattr(self, "top_scores_header"):
             entities_list.append(self.top_scores_header)
-        if hasattr(self, 'no_scores_label'):
+        if hasattr(self, "no_scores_label"):
             entities_list.append(self.no_scores_label)
 
         # Add top score labels if they exist
         for i in range(5):
-            label_attr = f'top_score_label_{i}'
+            label_attr = f"top_score_label_{i}"
             if hasattr(self, label_attr):
                 entities_list.append(getattr(self, label_attr))
 
@@ -192,6 +219,7 @@ class WinScene(BaseScene):
 
     def handle_event(self, event):
         import pygame
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 self.start_play_again()
@@ -201,6 +229,7 @@ class WinScene(BaseScene):
     def to_menu(self):
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -214,7 +243,10 @@ class WinScene(BaseScene):
             config_difficulty_modes = GameConfig.DIFFICULTY_MODES
             matching_index = None
             for i, mode in enumerate(config_difficulty_modes):
-                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                if (
+                    mode.min == self.game_logic.min_number
+                    and mode.max == self.game_logic.max_number
+                ):
                     matching_index = i
                     break
 
@@ -224,6 +256,7 @@ class WinScene(BaseScene):
         # Start fade out with callback to go to menu
         def on_fade_complete():
             from .menu import MenuScene
+
             self.app.scene_manager.change(MenuScene(self.app))
 
         self.start_fade_out(on_complete_callback=on_fade_complete)
@@ -231,6 +264,7 @@ class WinScene(BaseScene):
     def start_play_again(self):
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -247,7 +281,10 @@ class WinScene(BaseScene):
             config_difficulty_modes = GameConfig.DIFFICULTY_MODES
             matching_index = None
             for i, mode in enumerate(config_difficulty_modes):
-                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                if (
+                    mode.min == self.game_logic.min_number
+                    and mode.max == self.game_logic.max_number
+                ):
                     matching_index = i
                     break
 
@@ -264,4 +301,6 @@ class WinScene(BaseScene):
 
     def update(self, delta_time: float):
         # Call parent update to handle fade-out if in progress
-        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
+        super().update(
+            delta_time
+        )  # This calls the BaseScene's update method which handles fade-out

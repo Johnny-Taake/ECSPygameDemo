@@ -26,7 +26,7 @@ class ColorConfig(BaseModel):
     background_color: Tuple[int, int, int] = (30, 30, 30)  # Dark gray
     text_color: Tuple[int, int, int] = (255, 255, 255)  # White
     hint_color: Tuple[int, int, int] = (200, 200, 200)  # Light gray
-    shortcut_tag_color: Tuple[int, int, int] = (100, 100, 100)  # Medium gray for shortcut tags
+    shortcut_tag_color: Tuple[int, int, int] = (100, 100, 100)  # Medium gray
     success_color: Tuple[int, int, int] = (150, 255, 150)  # Light green
     error_color: Tuple[int, int, int] = (200, 180, 180)  # Light red
     button_bg_color: Tuple[int, int, int] = (220, 220, 220)  # Light gray
@@ -60,6 +60,7 @@ class ColorConfig(BaseModel):
 
 class DifficultyModel(BaseModel):
     """Model for a single difficulty setting."""
+
     name: str
     min: int
     max: int
@@ -74,14 +75,16 @@ class DifficultyModel(BaseModel):
 
 class DifficultyConfig(BaseModel):
     """Configuration for all difficulty modes."""
+
     modes: List[DifficultyModel] = [
         DifficultyModel(name="Easy", min=1, max=10),
         DifficultyModel(name="Medium", min=1, max=100),
         DifficultyModel(name="Hard", min=1, max=1000),
         DifficultyModel(name="Very Hard", min=1, max=10000),
-        DifficultyModel(name="Extreme", min=1, max=100000)
+        DifficultyModel(name="Extreme", min=1, max=100000),
     ]
-    default_index: int = 1  # Index of default difficulty mode (0-based), defaulting to "Medium" at index 1
+    # Index of default difficulty mode (0-based), defaulting to "Medium" at index 1
+    default_index: int = 1
 
     @field_validator("modes")
     @classmethod
@@ -94,7 +97,9 @@ class DifficultyConfig(BaseModel):
     @classmethod
     def validate_default_index(cls, v: int, values) -> int:
         if "modes" in values.data and v >= len(values.data["modes"]):
-            raise ValueError(f"Default index {v} is out of range for {len(values.data['modes'])} difficulty modes")
+            raise ValueError(
+                f"Default index {v} is out of range for {len(values.data['modes'])} difficulty modes"
+            )
         if v < 0:
             raise ValueError("Default index must be non-negative")
         return v

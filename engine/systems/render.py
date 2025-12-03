@@ -25,25 +25,41 @@ class RenderSystem:
         self.font = font  # This should already be the custom font loaded from file
         # Load custom fonts from file paths for headers, fallback to system if custom fails
         try:
-            self.h1_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.H1_FONT_SIZE)
+            self.h1_font = pygame.font.Font(
+                GameConfig.DEFAULT_FONT_PATH, GameConfig.H1_FONT_SIZE
+            )
         except:
-            self.h1_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.H1_FONT_SIZE)
+            self.h1_font = pygame.font.SysFont(
+                GameConfig.DEFAULT_FONT, GameConfig.H1_FONT_SIZE
+            )
 
         try:
-            self.h2_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.H2_FONT_SIZE)
+            self.h2_font = pygame.font.Font(
+                GameConfig.DEFAULT_FONT_PATH, GameConfig.H2_FONT_SIZE
+            )
         except:
-            self.h2_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.H2_FONT_SIZE)
+            self.h2_font = pygame.font.SysFont(
+                GameConfig.DEFAULT_FONT, GameConfig.H2_FONT_SIZE
+            )
 
         try:
-            self.h3_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.H3_FONT_SIZE)
+            self.h3_font = pygame.font.Font(
+                GameConfig.DEFAULT_FONT_PATH, GameConfig.H3_FONT_SIZE
+            )
         except:
-            self.h3_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE)
+            self.h3_font = pygame.font.SysFont(
+                GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE
+            )
 
         # Load font for keyboard shortcut tags
         try:
-            self.shortcut_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.BUTTON_TAG_FONT_SIZE)
+            self.shortcut_font = pygame.font.Font(
+                GameConfig.DEFAULT_FONT_PATH, GameConfig.BUTTON_TAG_FONT_SIZE
+            )
         except:
-            self.shortcut_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.BUTTON_TAG_FONT_SIZE)
+            self.shortcut_font = pygame.font.SysFont(
+                GameConfig.DEFAULT_FONT, GameConfig.BUTTON_TAG_FONT_SIZE
+            )
 
     def draw_label(self, label: LabelComponent, position: Position, alpha: float = 1.0):
         surf = self.font.render(label.text, True, label.color)
@@ -214,7 +230,10 @@ class RenderSystem:
         box_width = max(text_width, button.min_width)
         box_height = max(text_height, button.min_height)
         box = Rect(
-            position.x - box_width // 2, position.y - box_height // 2, box_width, box_height
+            position.x - box_width // 2,
+            position.y - box_height // 2,
+            box_width,
+            box_height,
         )
 
         # Calculate button color based on hover state and alpha
@@ -241,11 +260,15 @@ class RenderSystem:
         # Draw keyboard shortcut tag if available
         if button.keyboard_shortcut:
             # Render the keyboard shortcut in small font with muted color for white backgrounds
-            shortcut_surf = self.shortcut_font.render(button.keyboard_shortcut, True, GameConfig.SHORTCUT_TAG_COLOR)
+            shortcut_surf = self.shortcut_font.render(
+                button.keyboard_shortcut, True, GameConfig.SHORTCUT_TAG_COLOR
+            )
             # Position it at the top right of the button
             shortcut_rect = shortcut_surf.get_rect()
             # Position the shortcut tag in the top right corner inside the button
-            shortcut_x = box.right - shortcut_rect.width - 4  # 4px padding from right edge
+            shortcut_x = (
+                box.right - shortcut_rect.width - 4
+            )  # 4px padding from right edge
             shortcut_y = box.top + 2  # 2px padding from top edge
             self.screen.blit(shortcut_surf, (shortcut_x, shortcut_y))
 
@@ -300,9 +323,7 @@ class RenderSystem:
             border_radius=GameConfig.PROGRESS_BAR_BORDER_RADIUS,
         )
 
-    def draw_image(
-        self, image: ImageComponent, position: Position, alpha: float = 1.0
-    ):
+    def draw_image(self, image: ImageComponent, position: Position, alpha: float = 1.0):
         # Load the image if not already loaded
         if image.pygame_image is None:
             try:
@@ -310,20 +331,26 @@ class RenderSystem:
 
                 # Resize if dimensions are specified
                 if image.width and image.height:
-                    loaded_image = pygame.transform.scale(loaded_image, (image.width, image.height))
+                    loaded_image = pygame.transform.scale(
+                        loaded_image, (image.width, image.height)
+                    )
 
                 image.pygame_image = loaded_image
             except pygame.error:
                 # Create a placeholder surface if image fails to load
                 image.pygame_image = pygame.Surface((50, 50), pygame.SRCALPHA)
                 # Draw a red rectangle to indicate missing image
-                pygame.draw.rect(image.pygame_image, (255, 0, 0), pygame.Rect(0, 0, 50, 50))
+                pygame.draw.rect(
+                    image.pygame_image, (255, 0, 0), pygame.Rect(0, 0, 50, 50)
+                )
 
         # Safety check: ensure image.pygame_image is not None before using it
         # This handles the edge case where something went wrong in the loading process
         if image.pygame_image is None:
             image.pygame_image = pygame.Surface((50, 50), pygame.SRCALPHA)
-            pygame.draw.rect(image.pygame_image, (255, 0, 255), pygame.Rect(0, 0, 50, 50))  # Magenta for error
+            pygame.draw.rect(
+                image.pygame_image, (255, 0, 255), pygame.Rect(0, 0, 50, 50)
+            )  # Magenta for error
 
         # Create a temporary surface for alpha transparency
         if alpha < 1.0:

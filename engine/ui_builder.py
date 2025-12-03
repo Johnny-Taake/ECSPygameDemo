@@ -1,3 +1,5 @@
+from typing import Optional
+
 from config import GameConfig
 
 from .components import (
@@ -37,7 +39,9 @@ class UIBuilder:
         e.add(Position(x, y)).add(inp)
         return e
 
-    def button_entity(self, text: str, x: int, y: int, onclick, keyboard_shortcut: str = None):
+    def button_entity(
+        self, text: str, x: int, y: int, onclick, keyboard_shortcut: Optional[str] = None
+    ):
         e = GameObject()
         btn = ButtonComponent(text, keyboard_shortcut)
         btn.on_click = onclick
@@ -45,7 +49,13 @@ class UIBuilder:
         return e
 
     def button_entity_with_min_width(
-        self, text: str, x: int, y: int, onclick, min_width: int, keyboard_shortcut: str = None
+        self,
+        text: str,
+        x: int,
+        y: int,
+        onclick,
+        min_width: int,
+        keyboard_shortcut: Optional[str] = None,
     ):
         e = GameObject()
         btn = ButtonComponent(text, keyboard_shortcut)
@@ -84,7 +94,16 @@ class UIBuilder:
         )
         return e
 
-    def image_button_entity(self, image_path: str, x: int, y: int, onclick, width: int = 32, height: int = 32, keyboard_shortcut: str = None):
+    def image_button_entity(
+        self,
+        image_path: str,
+        x: int,
+        y: int,
+        onclick,
+        width: int = 32,
+        height: int = 32,
+        keyboard_shortcut: Optional[str] = None,
+    ):
         e = GameObject()
         btn = ButtonComponent("", keyboard_shortcut)  # Empty text for image button
         btn.on_click = onclick
@@ -93,6 +112,7 @@ class UIBuilder:
         btn.min_height = height + 16  # Add 16px padding: 8px on top and bottom
         # Add image component to the button
         from .components import ImageComponent
+
         img = ImageComponent(image_path, width, height)
         e.add(Position(x, y)).add(btn).add(img)
         return e

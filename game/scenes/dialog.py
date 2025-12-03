@@ -51,7 +51,9 @@ class DialogScene(BaseScene):
             self.cancel()
 
         # Position buttons with appropriate spacing
-        self.btn_confirm = ui.button_entity(self.confirm_text, 250, 270, confirm, "[ENTER]")
+        self.btn_confirm = ui.button_entity(
+            self.confirm_text, 250, 270, confirm, "[ENTER]"
+        )
         self.btn_cancel = ui.button_entity(self.cancel_text, 400, 270, cancel, "[ESC]")
 
         # Set minimum width to match
@@ -82,6 +84,7 @@ class DialogScene(BaseScene):
 
     def handle_event(self, event):
         import pygame
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:  # ENTER key for confirm
                 self.confirm()
@@ -90,12 +93,15 @@ class DialogScene(BaseScene):
 
     def update(self, delta_time: float):
         # Call parent update to handle fade-out if in progress
-        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
+        super().update(
+            delta_time
+        )  # This calls the BaseScene's update method which handles fade-out
 
     def confirm(self):
         log.info("Dialog confirm")
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -107,6 +113,7 @@ class DialogScene(BaseScene):
         log.info("Dialog cancel")
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")

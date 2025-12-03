@@ -55,7 +55,9 @@ class MenuScene(BaseScene):
 
         difficulty_btn_center_x = 320
         btn_spacing = 60  # Space between the center and each button
-        self.btn_prev = ui.button_entity("<", difficulty_btn_center_x - btn_spacing, 220, prev_difficulty, "[<-]")
+        self.btn_prev = ui.button_entity(
+            "<", difficulty_btn_center_x - btn_spacing, 220, prev_difficulty, "[<-]"
+        )
         prev_component = self.btn_prev.get(ButtonComponent)
         if prev_component:
             prev_component.min_width = 100
@@ -64,7 +66,9 @@ class MenuScene(BaseScene):
         def next_difficulty():
             self.next_difficulty()
 
-        self.btn_next = ui.button_entity(">", difficulty_btn_center_x + btn_spacing, 220, next_difficulty, "[->]")
+        self.btn_next = ui.button_entity(
+            ">", difficulty_btn_center_x + btn_spacing, 220, next_difficulty, "[->]"
+        )
         next_component = self.btn_next.get(ButtonComponent)
         if next_component:
             next_component.min_width = 100
@@ -107,7 +111,11 @@ class MenuScene(BaseScene):
         sound_btn_x = GameConfig.WINDOW_WIDTH - 50  # Same as in GameScene
         sound_btn_y = 50  # Same as in GameScene
         self.btn_sound = ui.image_button_entity(
-            "assets/images/volume.png", sound_btn_x, sound_btn_y, toggle_sound, keyboard_shortcut="[Ctrl+M]"
+            "assets/images/volume.png",
+            sound_btn_x,
+            sound_btn_y,
+            toggle_sound,
+            keyboard_shortcut="[Ctrl+M]",
         )
 
         # Set initial image based on sound system state
@@ -168,6 +176,7 @@ class MenuScene(BaseScene):
     def prev_difficulty(self):
         # Play keyboard click sound specifically for difficulty selection
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("keyboard_click")
@@ -180,6 +189,7 @@ class MenuScene(BaseScene):
     def next_difficulty(self):
         # Play keyboard click sound specifically for difficulty selection
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("keyboard_click")
@@ -194,6 +204,7 @@ class MenuScene(BaseScene):
 
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -235,6 +246,7 @@ class MenuScene(BaseScene):
 
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -247,6 +259,7 @@ class MenuScene(BaseScene):
 
     def toggle_sound(self):
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             # Toggle the sound system's state
@@ -267,9 +280,13 @@ class MenuScene(BaseScene):
         img_component = self.btn_sound.get(ImageComponent)
         if img_component:
             if sounds_enabled:
-                img_component.image_path = "assets/images/volume.png"  # Unmuted icon when sounds are enabled
+                img_component.image_path = (
+                    "assets/images/volume.png"  # Unmuted icon when sounds are enabled
+                )
             else:
-                img_component.image_path = "assets/images/mute.png"    # Muted icon when sounds are disabled
+                img_component.image_path = (
+                    "assets/images/mute.png"  # Muted icon when sounds are disabled
+                )
             img_component.pygame_image = None  # Reset to force reload
 
     def update(self, delta_time: float):

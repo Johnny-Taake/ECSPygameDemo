@@ -28,8 +28,12 @@ class BootScene(BaseScene):
         )
         self.asset_loader.add_simple_task("Loading UI assets", self.load_ui_assets)
         self.asset_loader.add_simple_task("Loading game assets", self.load_game_assets)
-        self.asset_loader.add_simple_task("Loading sound assets", self.load_sound_assets)
-        self.asset_loader.add_simple_task("Loading image assets", self.load_image_assets)
+        self.asset_loader.add_simple_task(
+            "Loading sound assets", self.load_sound_assets
+        )
+        self.asset_loader.add_simple_task(
+            "Loading image assets", self.load_image_assets
+        )
         self.asset_loader.add_simple_task("Loading font assets", self.load_font_assets)
 
     def initialize_services(self):
@@ -58,12 +62,19 @@ class BootScene(BaseScene):
         """Load sound assets"""
         try:
             from engine import ServiceLocator
+
             sound_system = ServiceLocator.get("sound_system")
 
             if sound_system:
-                sound_system.load_sound("button_click", "assets/sounds/button-click.mp3")
-                sound_system.load_sound("keyboard_click", "assets/sounds/keyboard-click.mp3")
-                sound_system.load_sound("win", "assets/sounds/soft-treble-win-fade-out.mp3")
+                sound_system.load_sound(
+                    "button_click", "assets/sounds/button-click.mp3"
+                )
+                sound_system.load_sound(
+                    "keyboard_click", "assets/sounds/keyboard-click.mp3"
+                )
+                sound_system.load_sound(
+                    "win", "assets/sounds/soft-treble-win-fade-out.mp3"
+                )
                 log.info("Sound assets loaded successfully")
             else:
                 log.warning("Sound system not found in ServiceLocator")
@@ -74,6 +85,7 @@ class BootScene(BaseScene):
         """Preload image assets to cache them for later use"""
         try:
             import pygame
+
             pygame.image.load("assets/images/volume.png")
             pygame.image.load("assets/images/mute.png")
             pygame.image.load("assets/icon.png")
@@ -86,6 +98,7 @@ class BootScene(BaseScene):
         try:
             import pygame
             from config import GameConfig
+
             pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, 16)
             pygame.font.Font(GameConfig.ITALIC_FONT_PATH, 16)
             pygame.font.Font(GameConfig.BOLD_FONT_PATH, 16)
@@ -102,6 +115,7 @@ class BootScene(BaseScene):
         self.progress_bar = ui.progress_bar_entity(320, 300, 400, 20)
 
         from engine import AlphaComponent
+
         self.title.add(AlphaComponent(1.0))
         self.loading_text.add(AlphaComponent(1.0))
         self.progress_bar.add(AlphaComponent(1.0))
@@ -133,6 +147,7 @@ class BootScene(BaseScene):
 
             def on_fade_complete():
                 from .menu import MenuScene
+
                 self.app.scene_manager.change(MenuScene(self.app))
 
             self.start_fade_out(on_complete_callback=on_fade_complete)

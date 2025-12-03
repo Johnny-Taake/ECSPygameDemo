@@ -82,6 +82,6 @@ class BaseScene:
             if self._fade_out_complete_callback:
                 # Execute the callback
                 self._fade_out_complete_callback()
-            elif hasattr(self, '_target_scene') and self._target_scene is not None:
+            elif hasattr(self, "_target_scene") and self._target_scene is not None:
                 # Change to the target scene if no callback was provided
                 self.app.scene_manager.change(self._target_scene)

@@ -1,4 +1,5 @@
 """Image component for the ECS system."""
+
 from typing import Optional
 import pygame
 
@@ -6,7 +7,12 @@ import pygame
 class ImageComponent:
     """Component to hold image-related data."""
 
-    def __init__(self, image_path: str, width: Optional[int] = None, height: Optional[int] = None):
+    def __init__(
+        self,
+        image_path: str,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+    ):
         """
         Initialize the image component.
 
@@ -17,4 +23,4 @@ class ImageComponent:
         self.image_path = image_path
         self.width = width
         self.height = height
-        self.pygame_image: Optional[pygame.Surface] = None  # Explicitly type as Surface or None
+        self.pygame_image: Optional[pygame.Surface] = None

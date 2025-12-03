@@ -27,11 +27,14 @@ class GameScene(BaseScene):
         if event_bus_raw is not None:
             event_bus: Optional[EventBus] = event_bus_raw  # type: ignore
         else:
-            log.error("EventBus not found in ServiceLocator. Difficulty selection will not be handled.")
+            log.error(
+                "EventBus not found in ServiceLocator. Difficulty selection will not be handled."
+            )
             event_bus = None
 
         # Subscribe to difficulty selection event to get the most recent settings
         self.difficulty_params: Optional[Dict[str, Any]] = None
+
         def handle_difficulty_selection(data: Optional[Dict[str, Any]]) -> None:
             if data:
                 self.difficulty_params = data
@@ -39,7 +42,9 @@ class GameScene(BaseScene):
         if event_bus is not None:
             event_bus.subscribe("difficulty_selected", handle_difficulty_selection)
         else:
-            log.error("EventBus not found in ServiceLocator. Difficulty selection will not be handled.")
+            log.error(
+                "EventBus not found in ServiceLocator. Difficulty selection will not be handled."
+            )
 
         # Get the game logic from ServiceLocator
         game_logic_raw = ServiceLocator.get("game_logic")
@@ -47,7 +52,9 @@ class GameScene(BaseScene):
             self.game_logic: GameLogic = game_logic_raw  # type: ignore
         else:
             log.error("GameLogic not found in ServiceLocator. Using default.")
-            self.game_logic = GameLogic()  # Use default if not available in service locator
+            self.game_logic = (
+                GameLogic()
+            )  # Use default if not available in service locator
 
         # Check if we're returning from dialog cancel (preserve all game state)
         is_returning_from_dialog = (
@@ -67,9 +74,10 @@ class GameScene(BaseScene):
             # Apply the selected difficulty by creating new game logic if parameters were provided
             if self.difficulty_params:
                 from game.logic import GameLogic as GL
+
                 new_game_logic = GL(
                     min_number=self.difficulty_params["min_number"],
-                    max_number=self.difficulty_params["max_number"]
+                    max_number=self.difficulty_params["max_number"],
                 )
                 self.game_logic = new_game_logic
                 # Update service locator with new game logic
@@ -83,9 +91,13 @@ class GameScene(BaseScene):
 
         # Split the title into two lines: main title and range
         title_text = "Guess the number game"
-        self.title = ui.h2_entity(title_text, 320, 40, GameConfig.H1_DEFAULT_COLOR)  # Use H2 size for better fit
+        self.title = ui.h2_entity(
+            title_text, 320, 40, GameConfig.H1_DEFAULT_COLOR
+        )  # Use H2 size for better fit
         range_text = f"{self.game_logic.min_number}-{self.game_logic.max_number}"
-        self.range_label = ui.h3_entity(range_text, 320, 70, GameConfig.H2_DEFAULT_COLOR)  # Range on separate line
+        self.range_label = ui.h3_entity(
+            range_text, 320, 70, GameConfig.H2_DEFAULT_COLOR
+        )  # Range on separate line
         self.instructions = ui.h3_entity(
             "Enter the number and press Submit or Enter",
             320,
@@ -93,7 +105,9 @@ class GameScene(BaseScene):
             GameConfig.HINT_COLOR,
         )
         # Error message positioned between instructions and input field
-        self.error_label = ui.label_entity("", 320, 160, GameConfig.ERROR_COLOR)  # Moved lower
+        self.error_label = ui.label_entity(
+            "", 320, 160, GameConfig.ERROR_COLOR
+        )  # Moved lower
         # Calculate max input length based on the max possible number
         max_input_len = len(str(self.game_logic.max_number))
         self.input_ent = ui.input_entity(
@@ -110,7 +124,6 @@ class GameScene(BaseScene):
         self.attempts_label = ui.label_entity(
             f"Attempts: {self.game_logic.attempts}", 320, 300, GameConfig.HINT_COLOR
         )
-
 
         self._restart_requested = False
 
@@ -129,6 +142,7 @@ class GameScene(BaseScene):
         def submit_click():
             # Play button click sound
             from engine import ServiceLocator
+
             sound_system = ServiceLocator.get("sound_system")
             if sound_system:
                 sound_system.play_sound("button_click")
@@ -148,7 +162,9 @@ class GameScene(BaseScene):
         # Menu button at top right with appropriate padding
         menu_x = GameConfig.WINDOW_WIDTH - 50  # Positioned from right edge
         menu_y = 50  # Top padding to avoid being stuck to the top
-        self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, self.show_quit_confirmation, "[ESC]")
+        self.btn_menu = ui.button_entity(
+            "Menu", menu_x, menu_y, self.show_quit_confirmation, "[ESC]"
+        )
 
         # Add alpha components to enable fade transitions
         from engine import AlphaComponent
@@ -268,6 +284,7 @@ class GameScene(BaseScene):
                     if input_field is not None and input_field.text:
                         # Play keyboard click sound for Enter key submission
                         from engine import ServiceLocator
+
                         sound_system = ServiceLocator.get("sound_system")
                         if sound_system:
                             sound_system.play_sound("keyboard_click")
@@ -322,6 +339,7 @@ class GameScene(BaseScene):
 
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -336,6 +354,7 @@ class GameScene(BaseScene):
     def show_quit_confirmation(self):
         # Play button click sound
         from engine import ServiceLocator
+
         sound_system = ServiceLocator.get("sound_system")
         if sound_system:
             sound_system.play_sound("button_click")
@@ -354,7 +373,10 @@ class GameScene(BaseScene):
             config_difficulty_modes = GameConfig.DIFFICULTY_MODES
             matching_index = None
             for i, mode in enumerate(config_difficulty_modes):
-                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                if (
+                    mode.min == self.game_logic.min_number
+                    and mode.max == self.game_logic.max_number
+                ):
                     matching_index = i
                     break
 
@@ -367,10 +389,13 @@ class GameScene(BaseScene):
 
             # Start fade out with callback to go to menu
             from .menu import MenuScene
+
             def on_fade_complete():
                 self.app.scene_manager.change(MenuScene(self.app))
 
-            self.app.scene_manager.current.start_fade_out(on_complete_callback=on_fade_complete)
+            self.app.scene_manager.current.start_fade_out(
+                on_complete_callback=on_fade_complete
+            )
 
         def cancel_quit():
             # Go back to the game scene without quitting, preserve game state
@@ -393,4 +418,6 @@ class GameScene(BaseScene):
         self.update_submit_button_state()
 
         # Call parent update to handle fade-out if in progress
-        super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
+        super().update(
+            delta_time
+        )  # This calls the BaseScene's update method which handles fade-out
