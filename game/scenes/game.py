@@ -158,66 +158,10 @@ class GameScene(BaseScene):
         if submit_component:
             submit_component.active = False
 
-        # Back to menu - move to top right with appropriate padding
-        def show_quit_confirmation():
-            # Play button click sound
-            from engine import ServiceLocator
-            sound_system = ServiceLocator.get("sound_system")
-            if sound_system:
-                sound_system.play_sound("button_click")
-
-            from .dialog import DialogScene
-
-            def confirm_quit():
-                # Store the current difficulty in service locator before going to menu
-                # Get difficulty info from current game_logic
-                difficulty_info = {
-                    "min_number": self.game_logic.min_number,
-                    "max_number": self.game_logic.max_number,
-                }
-
-                # Find the corresponding difficulty index to store
-                config_difficulty_modes = GameConfig.DIFFICULTY_MODES
-                matching_index = None
-                for i, mode in enumerate(config_difficulty_modes):
-                    if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
-                        matching_index = i
-                        break
-
-                if matching_index is not None:
-                    ServiceLocator.provide("last_selected_difficulty", matching_index)
-                else:
-                    # If not found in predefined modes, store as a custom difficulty
-                    # For now, just store the current index if available or default
-                    pass
-
-                # Start fade out with callback to go to menu
-                from .menu import MenuScene
-                def on_fade_complete():
-                    self.app.scene_manager.change(MenuScene(self.app))
-
-                self.app.scene_manager.current.start_fade_out(on_complete_callback=on_fade_complete)
-
-            def cancel_quit():
-                # Go back to the game scene without quitting, preserve game state
-                self._from_dialog_cancel = True
-                self.app.scene_manager.change(self)
-
-            dialog_scene = DialogScene(
-                self.app,
-                "Confirm Exit",
-                "Are you sure you want to go to Menu?",
-                confirm_quit,
-                cancel_quit,
-                "Yes",
-                "No",
-            )
-            self.app.scene_manager.change(dialog_scene)
-
         # Menu button at top right with appropriate padding
         menu_x = GameConfig.WINDOW_WIDTH - 50  # Positioned from right edge
         menu_y = 50  # Top padding to avoid being stuck to the top
-        self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, show_quit_confirmation)
+        self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, self.show_quit_confirmation)
 
         # Add alpha components to enable fade transitions
         from engine import AlphaComponent
@@ -328,7 +272,7 @@ class GameScene(BaseScene):
             label_comp.text = compact
 
     def handle_event(self, event: pygame.event.Event):
-        # keyboard: Enter triggers submit, ESC -> menu
+        # keyboard: Enter triggers submit, ESC -> menu with confirmation
         if event.type == pygame.KEYDOWN:
             match event.key:
                 case pygame.K_RETURN:
@@ -343,12 +287,8 @@ class GameScene(BaseScene):
 
                         self.submit_guess()
                 case pygame.K_ESCAPE:
-                    # Start fade out with callback to go to menu
-                    def on_fade_complete():
-                        from .menu import MenuScene
-                        self.app.scene_manager.change(MenuScene(self.app))
-
-                    self.start_fade_out(on_complete_callback=on_fade_complete)
+                    # Show quit confirmation dialog when ESC is pressed (same as menu button)
+                    self.show_quit_confirmation()
 
     def update_submit_button_state(self):
         """Update the submit button's active state and error message based on input validity"""
@@ -386,6 +326,61 @@ class GameScene(BaseScene):
                     submit_btn.active = True
                     if error_label:
                         error_label.text = ""
+
+    def show_quit_confirmation(self):
+        # Play button click sound
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("button_click")
+
+        from .dialog import DialogScene
+
+        def confirm_quit():
+            # Store the current difficulty in service locator before going to menu
+            # Get difficulty info from current game_logic
+            difficulty_info = {
+                "min_number": self.game_logic.min_number,
+                "max_number": self.game_logic.max_number,
+            }
+
+            # Find the corresponding difficulty index to store
+            config_difficulty_modes = GameConfig.DIFFICULTY_MODES
+            matching_index = None
+            for i, mode in enumerate(config_difficulty_modes):
+                if mode.min == self.game_logic.min_number and mode.max == self.game_logic.max_number:
+                    matching_index = i
+                    break
+
+            if matching_index is not None:
+                ServiceLocator.provide("last_selected_difficulty", matching_index)
+            else:
+                # If not found in predefined modes, store as a custom difficulty
+                # For now, just store the current index if available or default
+                pass
+
+            # Start fade out with callback to go to menu
+            from .menu import MenuScene
+            def on_fade_complete():
+                self.app.scene_manager.change(MenuScene(self.app))
+
+            self.app.scene_manager.current.start_fade_out(on_complete_callback=on_fade_complete)
+
+        def cancel_quit():
+            # Go back to the game scene without quitting, preserve game state
+            self._from_dialog_cancel = True
+            self.app.scene_manager.change(self)
+
+        dialog_scene = DialogScene(
+            self.app,
+            "Confirm Exit",
+            "Are you sure you want to go to Menu?",
+            confirm_quit,
+            cancel_quit,
+            "Yes",
+            "No",
+        )
+        self.app.scene_manager.change(dialog_scene)
 
     def update(self, delta_time: float):
         # Update button states
