@@ -41,9 +41,9 @@ class RenderSystem:
 
         # Load font for keyboard shortcut tags
         try:
-            self.shortcut_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, 10)
+            self.shortcut_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, GameConfig.BUTTON_TAG_FONT_SIZE)
         except:
-            self.shortcut_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 10)
+            self.shortcut_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.BUTTON_TAG_FONT_SIZE)
 
     def draw_label(self, label: LabelComponent, position: Position, alpha: float = 1.0):
         surf = self.font.render(label.text, True, label.color)

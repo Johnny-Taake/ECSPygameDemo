@@ -188,6 +188,10 @@ class GameConfig(BaseModel):
     def H3_FONT_SIZE(self) -> int:
         return self.ui.h3_font_size
 
+    @property
+    def BUTTON_TAG_FONT_SIZE(self) -> int:
+        return self.ui.button_tag_font_size
+
     # Component defaults
     @property
     def INPUT_FIELD_DEFAULT_MAX_LENGTH(self) -> int:

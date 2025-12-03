@@ -73,9 +73,27 @@ class GameApp:
                         )
 
                 if event.type == pygame.KEYDOWN:
-                    self.input_system.handle_key(event)
-                    if self.scene_manager.current:
-                        self.scene_manager.current.handle_event(event)
+                    # Handle global sound toggle (Ctrl+M) - works in all scenes
+                    if event.key == pygame.K_m and (event.mod & pygame.KMOD_CTRL):
+                        if self.sound_system:
+                            was_enabled = self.sound_system.enabled
+                            if self.sound_system.enabled:
+                                self.sound_system.disable_sounds()
+                            else:
+                                self.sound_system.enable_sounds()
+
+                            # Play button click sound if sound was just enabled
+                            if not was_enabled and self.sound_system.enabled:
+                                self.sound_system.play_sound("button_click")
+
+                            # Update the sound button image (safe to call on any scene)
+                            if self.scene_manager.current:
+                                self.scene_manager.current.update_sound_button_image(self.sound_system.enabled)
+                    else:
+                        # Handle other keyboard events
+                        self.input_system.handle_key(event)
+                        if self.scene_manager.current:
+                            self.scene_manager.current.handle_event(event)
 
             if self.scene_manager.current:
                 try:

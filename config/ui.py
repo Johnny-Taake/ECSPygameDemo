@@ -21,6 +21,8 @@ class UIConfig(BaseModel):
     h2_font_size: int = 28
     h3_font_size: int = 24
 
+    button_tag_font_size: int = 8
+
     # Progress bar settings
     progress_bar_border_radius: int = 3
 

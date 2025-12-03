@@ -31,6 +31,11 @@ class BaseScene:
         """Handle events like key presses, mouse clicks, etc."""
         pass
 
+    def update_sound_button_image(self, sounds_enabled: bool):
+        """Update sound button image - default implementation does nothing.
+        Override in subclasses that have sound toggle functionality."""
+        pass
+
     def render(self):
         """Render the scene - though typically handled by RenderSystem"""
         pass
