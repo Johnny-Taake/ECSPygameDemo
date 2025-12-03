@@ -161,7 +161,7 @@ class GameScene(BaseScene):
         # Menu button at top right with appropriate padding
         menu_x = GameConfig.WINDOW_WIDTH - 50  # Positioned from right edge
         menu_y = 50  # Top padding to avoid being stuck to the top
-        self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, self.show_quit_confirmation)
+        self.btn_menu = ui.button_entity("Menu", menu_x, menu_y, self.show_quit_confirmation, "[ESC]")
 
         # Add alpha components to enable fade transitions
         from engine import AlphaComponent

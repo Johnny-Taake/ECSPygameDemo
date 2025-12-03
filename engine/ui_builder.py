@@ -37,18 +37,18 @@ class UIBuilder:
         e.add(Position(x, y)).add(inp)
         return e
 
-    def button_entity(self, text: str, x: int, y: int, onclick):
+    def button_entity(self, text: str, x: int, y: int, onclick, keyboard_shortcut: str = None):
         e = GameObject()
-        btn = ButtonComponent(text)
+        btn = ButtonComponent(text, keyboard_shortcut)
         btn.on_click = onclick
         e.add(Position(x, y)).add(btn)
         return e
 
     def button_entity_with_min_width(
-        self, text: str, x: int, y: int, onclick, min_width: int
+        self, text: str, x: int, y: int, onclick, min_width: int, keyboard_shortcut: str = None
     ):
         e = GameObject()
-        btn = ButtonComponent(text)
+        btn = ButtonComponent(text, keyboard_shortcut)
         btn.on_click = onclick
         btn.min_width = min_width
         e.add(Position(x, y)).add(btn)
@@ -84,9 +84,9 @@ class UIBuilder:
         )
         return e
 
-    def image_button_entity(self, image_path: str, x: int, y: int, onclick, width: int = 32, height: int = 32):
+    def image_button_entity(self, image_path: str, x: int, y: int, onclick, width: int = 32, height: int = 32, keyboard_shortcut: str = None):
         e = GameObject()
-        btn = ButtonComponent("")  # Empty text for image button
+        btn = ButtonComponent("", keyboard_shortcut)  # Empty text for image button
         btn.on_click = onclick
         # Set minimum width and height with padding around the image
         btn.min_width = width + 16  # Add 16px padding: 8px on each side

@@ -35,48 +35,24 @@ class DialogScene(BaseScene):
         overlay_entity.add(AlphaComponent(0.5))
 
         # Dialog title
-        self.title = ui.h2_entity(self.title_text, 320, 180, GameConfig.TEXT_COLOR)
+        self.title = ui.h2_entity(self.title_text, 320, 140, GameConfig.TEXT_COLOR)
 
         # Dialog message
         self.message_label = ui.label_entity(
-            self.message, 320, 220, GameConfig.TEXT_COLOR
+            self.message, 320, 180, GameConfig.TEXT_COLOR
         )
 
         # Confirmation button
         def confirm():
-            log.info("Dialog confirm")
-            # Play button click sound
-            from engine import ServiceLocator
-            sound_system = ServiceLocator.get("sound_system")
-            if sound_system:
-                sound_system.play_sound("button_click")
-
-            # Execute the confirm callback
-            self.on_confirm()
+            self.confirm()
 
         # Cancel button
         def cancel():
-            log.info("Dialog cancel")
-            # Play button click sound
-            from engine import ServiceLocator
-            sound_system = ServiceLocator.get("sound_system")
-            if sound_system:
-                sound_system.play_sound("button_click")
-
-            if self.on_cancel is not None:
-                self.on_cancel()
-            # If no cancel callback is provided, go back to previous scene
-            elif self.previous_scene is not None:
-                self.app.scene_manager.change(self.previous_scene)
-            else:
-                # Fallback behavior
-                from .menu import MenuScene
-
-                self.app.scene_manager.change(MenuScene(self.app))
+            self.cancel()
 
         # Position buttons with appropriate spacing
-        self.btn_confirm = ui.button_entity(self.confirm_text, 250, 270, confirm)
-        self.btn_cancel = ui.button_entity(self.cancel_text, 400, 270, cancel)
+        self.btn_confirm = ui.button_entity(self.confirm_text, 250, 270, confirm, "[ENTER]")
+        self.btn_cancel = ui.button_entity(self.cancel_text, 400, 270, cancel, "[ESC]")
 
         # Set minimum width to match
         confirm_component = self.btn_confirm.get(ButtonComponent)
@@ -104,6 +80,44 @@ class DialogScene(BaseScene):
             self.btn_cancel,
         ]
 
+    def handle_event(self, event):
+        import pygame
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:  # ENTER key for confirm
+                self.confirm()
+            elif event.key == pygame.K_ESCAPE:  # ESC key for cancel
+                self.cancel()
+
     def update(self, delta_time: float):
         # Call parent update to handle fade-out if in progress
         super().update(delta_time)  # This calls the BaseScene's update method which handles fade-out
+
+    def confirm(self):
+        log.info("Dialog confirm")
+        # Play button click sound
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("button_click")
+
+        # Execute the confirm callback
+        self.on_confirm()
+
+    def cancel(self):
+        log.info("Dialog cancel")
+        # Play button click sound
+        from engine import ServiceLocator
+        sound_system = ServiceLocator.get("sound_system")
+        if sound_system:
+            sound_system.play_sound("button_click")
+
+        if self.on_cancel is not None:
+            self.on_cancel()
+        # If no cancel callback is provided, go back to previous scene
+        elif self.previous_scene is not None:
+            self.app.scene_manager.change(self.previous_scene)
+        else:
+            # Fallback behavior
+            from .menu import MenuScene
+
+            self.app.scene_manager.change(MenuScene(self.app))

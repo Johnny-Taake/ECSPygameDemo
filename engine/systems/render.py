@@ -39,6 +39,12 @@ class RenderSystem:
         except:
             self.h3_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE)
 
+        # Load font for keyboard shortcut tags
+        try:
+            self.shortcut_font = pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, 10)
+        except:
+            self.shortcut_font = pygame.font.SysFont(GameConfig.DEFAULT_FONT, 10)
+
     def draw_label(self, label: LabelComponent, position: Position, alpha: float = 1.0):
         surf = self.font.render(label.text, True, label.color)
 
@@ -231,6 +237,17 @@ class RenderSystem:
         if button.text:  # Only blit text if it exists
             text_rect = surf.get_rect(center=(position.x, position.y))
             self.screen.blit(surf, text_rect)
+
+        # Draw keyboard shortcut tag if available
+        if button.keyboard_shortcut:
+            # Render the keyboard shortcut in small font with muted color for white backgrounds
+            shortcut_surf = self.shortcut_font.render(button.keyboard_shortcut, True, GameConfig.SHORTCUT_TAG_COLOR)
+            # Position it at the top right of the button
+            shortcut_rect = shortcut_surf.get_rect()
+            # Position the shortcut tag in the top right corner inside the button
+            shortcut_x = box.right - shortcut_rect.width - 4  # 4px padding from right edge
+            shortcut_y = box.top + 2  # 2px padding from top edge
+            self.screen.blit(shortcut_surf, (shortcut_x, shortcut_y))
 
         # Store button dimensions for click detection
         button.width = box.width

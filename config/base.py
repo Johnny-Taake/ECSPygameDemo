@@ -26,6 +26,7 @@ class ColorConfig(BaseModel):
     background_color: Tuple[int, int, int] = (30, 30, 30)  # Dark gray
     text_color: Tuple[int, int, int] = (255, 255, 255)  # White
     hint_color: Tuple[int, int, int] = (200, 200, 200)  # Light gray
+    shortcut_tag_color: Tuple[int, int, int] = (110, 110, 110)  # Medium gray for shortcut tags
     success_color: Tuple[int, int, int] = (150, 255, 150)  # Light green
     error_color: Tuple[int, int, int] = (200, 180, 180)  # Light red
     button_bg_color: Tuple[int, int, int] = (220, 220, 220)  # Light gray

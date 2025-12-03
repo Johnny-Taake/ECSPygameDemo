@@ -45,6 +45,10 @@ class GameConfig(BaseModel):
         return self.colors.hint_color
 
     @property
+    def SHORTCUT_TAG_COLOR(self) -> tuple:
+        return self.colors.shortcut_tag_color
+
+    @property
     def SUCCESS_COLOR(self) -> tuple:
         return self.colors.success_color
 
