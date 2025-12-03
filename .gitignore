@@ -21,4 +21,4 @@ wheels/
 logs/
 
 # Game stats
-game_stats.json
+**/game_stats.json

@@ -40,7 +40,12 @@ class UIBuilder:
         return e
 
     def button_entity(
-        self, text: str, x: int, y: int, onclick, keyboard_shortcut: Optional[str] = None
+        self,
+        text: str,
+        x: int,
+        y: int,
+        onclick,
+        keyboard_shortcut: Optional[str] = None,
     ):
         e = GameObject()
         btn = ButtonComponent(text, keyboard_shortcut)

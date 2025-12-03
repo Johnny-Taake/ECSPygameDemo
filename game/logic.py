@@ -3,7 +3,7 @@ from random import randint
 
 from config import GameConfig
 from logger import get_logger
-import stats
+from stats import record_game_completion
 
 log = get_logger("game/logic")
 
@@ -90,8 +90,11 @@ class GameLogic:
             case _:
                 # Game won - record the result
                 difficulty_name = self._get_difficulty_name()
-                stats.record_game_completion(
-                    self.attempts, difficulty_name, self.min_number, self.max_number
+                record_game_completion(
+                    self.attempts,
+                    difficulty_name,
+                    self.min_number,
+                    self.max_number,
                 )
                 return GuessStatus.CORRECT
 

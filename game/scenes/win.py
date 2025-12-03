@@ -4,7 +4,7 @@ import sys
 from config import GameConfig
 from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
 from logger import get_logger
-import stats
+from stats import get_difficulty_stats
 
 log = get_logger("game/scenes")
 
@@ -42,7 +42,7 @@ class WinScene(BaseScene):
             )
 
             # Get stats for current difficulty
-            difficulty_stats = stats.get_difficulty_stats(
+            difficulty_stats = get_difficulty_stats(
                 difficulty_name, self.game_logic.min_number, self.game_logic.max_number
             )
 
