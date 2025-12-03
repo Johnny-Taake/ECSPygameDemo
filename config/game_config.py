@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from .base import ColorConfig, WindowConfig, DifficultyConfig
 from .logging import LoggingConfig
+from .stats import StatsConfig
 from .ui import UIConfig
 
 
@@ -13,6 +14,7 @@ class GameConfig(BaseModel):
     window: WindowConfig = WindowConfig()
     difficulty: DifficultyConfig = DifficultyConfig()
     colors: ColorConfig = ColorConfig()
+    stats: StatsConfig = StatsConfig()
     ui: UIConfig = UIConfig()
     logging: LoggingConfig = LoggingConfig()
 
@@ -121,6 +123,10 @@ class GameConfig(BaseModel):
         return self.ui.scene_max_history_entries
 
     @property
+    def SCENE_MAX_WIN_TOP_SCORES(self) -> int:
+        return self.ui.scene_max_win_top_scores
+
+    @property
     def DIFFICULTY_MODES(self):
         """Get the list of difficulty modes."""
         return self.difficulty.modes
@@ -224,3 +230,21 @@ class GameConfig(BaseModel):
     @property
     def INPUT_MOUSE_DETECTION_HEIGHT(self) -> int:
         return self.ui.input_mouse_detection_height
+
+    # Stats configuration
+    @property
+    def STATS_ENCRYPTION_KEY(self) -> str:
+        return self.stats.encryption_key
+
+    @property
+    def STATS_FILE_NAME(self) -> str:
+        return self.stats.stats_file_name
+
+    @property
+    def STATS_APP_DATA_DIR_NAME(self) -> str:
+        return self.stats.app_data_dir_name
+
+    @property
+    def STATS_MAX_TOP_ATTEMPTS(self) -> int:
+        return self.stats.max_top_attempts
+

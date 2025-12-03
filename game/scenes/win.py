@@ -68,12 +68,14 @@ class WinScene(BaseScene):
                 "Top Scores:", stats_x, stats_start_y + 30, GameConfig.TEXT_COLOR
             )
 
-            # Add top 10 attempts (or fewer if available) in the top-right
+            # Add top attempts (or fewer if available) in the top-right
             if top_attempts:
                 start_y = stats_start_y + 60  # Start below the header
+                # Show top stats up to the configured max to avoid crowding the UI
+                max_display_attempts = min(len(top_attempts), GameConfig.SCENE_MAX_WIN_TOP_SCORES)
                 for i, attempt in enumerate(
-                    top_attempts[:5]
-                ):  # Show top 5 to avoid crowding
+                    top_attempts[:max_display_attempts]
+                ):  # Show top attempts
                     y_pos = start_y + (i * 20)  # 20px spacing between entries
                     attempt_text = f"#{i+1}: {attempt['attempts']} att. - {format_timestamp(attempt['timestamp'])}"
                     label = ui.label_entity(

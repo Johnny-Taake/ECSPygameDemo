@@ -8,6 +8,7 @@ import sys
 from typing import Any, Dict
 from pathlib import Path
 
+from config import GameConfig
 from logger import get_logger
 
 
@@ -17,7 +18,7 @@ log = get_logger("stats.storage")
 IS_FROZEN = getattr(sys, "frozen", False)
 
 # Simple XOR-based "encryption" key for exe mode
-_ENCRYPTION_KEY = b"GuessTheNumberPygameKey"
+_ENCRYPTION_KEY = GameConfig.STATS_ENCRYPTION_KEY.encode("utf-8")
 
 
 def _xor_bytes(data: bytes, key: bytes) -> bytes:
@@ -43,19 +44,19 @@ def _get_app_data_dir() -> str:
     """Return a platform-appropriate app data directory for the game."""
     system = platform.system()
 
-    # Windows: %APPDATA%\GuessTheNumberPygame
+    # Windows: %APPDATA%\[AppName]
     if system == "Windows":
         base_dir = os.getenv("APPDATA") or os.path.expanduser("~")
-        return os.path.join(base_dir, "GuessTheNumberPygame")
+        return os.path.join(base_dir, GameConfig.STATS_APP_DATA_DIR_NAME)
 
-    # macOS: ~/Library/Application Support/GuessTheNumberPygame
+    # macOS: ~/Library/Application Support/[AppName]
     if system == "Darwin":
         base_dir = os.path.expanduser("~/Library/Application Support")
-        return os.path.join(base_dir, "GuessTheNumberPygame")
+        return os.path.join(base_dir, GameConfig.STATS_APP_DATA_DIR_NAME)
 
-    # Linux / other: ~/.local/share/GuessTheNumberPygame
+    # Linux / other: ~/.local/share/[AppName]
     base_dir = os.path.expanduser("~/.local/share")
-    return os.path.join(base_dir, "GuessTheNumberPygame")
+    return os.path.join(base_dir, GameConfig.STATS_APP_DATA_DIR_NAME)
 
 
 def load_stats_from_file(file_path: str) -> Dict[str, Any]:
@@ -129,4 +130,4 @@ def get_stats_file_path(is_frozen: bool) -> str:
         # Running as script - get the directory containing this file (project root)
         application_path = Path(__file__).resolve().parent.parent
 
-    return os.path.join(application_path, "game_stats.json")
+    return os.path.join(application_path, GameConfig.STATS_FILE_NAME)

@@ -23,6 +23,15 @@ class Settings(BaseSettings):
     # Difficulty settings
     difficulty_default_index: Optional[int] = None
 
+    # Stats settings
+    stats_encryption_key: Optional[str] = None
+    stats_file_name: Optional[str] = None
+    stats_app_data_dir_name: Optional[str] = None
+    stats_max_top_attempts: Optional[int] = None
+
+    # UI settings
+    scene_max_win_top_scores: Optional[int] = None
+
     def get_config(self) -> GameConfig:
         """Get the game configuration, potentially modified by environment variables."""
         config = GameConfig()
@@ -36,6 +45,16 @@ class Settings(BaseSettings):
             config.logging.log_level = self.log_level
         if self.difficulty_default_index is not None:
             config.difficulty.default_index = self.difficulty_default_index
+        if self.stats_encryption_key is not None:
+            config.stats.encryption_key = self.stats_encryption_key
+        if self.stats_file_name is not None:
+            config.stats.stats_file_name = self.stats_file_name
+        if self.stats_app_data_dir_name is not None:
+            config.stats.app_data_dir_name = self.stats_app_data_dir_name
+        if self.stats_max_top_attempts is not None:
+            config.stats.max_top_attempts = self.stats_max_top_attempts
+        if self.scene_max_win_top_scores is not None:
+            config.ui.scene_max_win_top_scores = self.scene_max_win_top_scores
 
         return config
 

@@ -81,13 +81,13 @@ class StatsManager:
             timestamp=datetime.datetime.now().isoformat(),
         )
 
-        # Add to top attempts and keep only top 10
+        # Add to top attempts and keep only the configured number of top attempts
         self._stats[difficulty_key]["top_attempts"].append(asdict(result))
-        # Sort by attempts (ascending) and keep top 10
+        # Sort by attempts (ascending) and keep the configured number of top attempts
         self._stats[difficulty_key]["top_attempts"].sort(key=lambda x: x["attempts"])
         self._stats[difficulty_key]["top_attempts"] = self._stats[difficulty_key][
             "top_attempts"
-        ][:10]
+        ][:GameConfig.STATS_MAX_TOP_ATTEMPTS]
         log.info(
             "Recorded game result for %s: attempts=%s",
             difficulty_key,
