@@ -63,7 +63,17 @@ class GameApp:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mx, my = event.pos
                     if self.scene_manager.current:
-                        self.input_system.handle_mouse(
+                        self.input_system.handle_mouse_down(
+                            mx, my, self.scene_manager.current.entities
+                        )
+                    # Process sound system for clicked buttons
+                    if self.scene_manager.current:
+                        self.sound_system.update(self.scene_manager.current.entities)
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mx, my = event.pos
+                    if self.scene_manager.current:
+                        self.input_system.handle_mouse_up(
                             mx, my, self.scene_manager.current.entities
                         )
                     # Process sound system for clicked buttons

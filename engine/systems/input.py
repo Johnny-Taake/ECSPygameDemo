@@ -33,40 +33,64 @@ class InputSystem:
                 self.focused_input.text += ch
 
     def handle_mouse(self, mx, my, entities):
-        # click detection: if click in input area -> focus it
+        self.handle_mouse_down(mx, my, entities)
+
+    def handle_mouse_down(self, mx, my, entities):
+        """Handle mouse button DOWN event."""
         for e in entities:
             pos = e.get(Position)
             btn = e.get(ButtonComponent)
             inp = e.get(InputFieldComponent)
             if not pos:
                 continue
+
             if btn:
-                # Use actual button dimensions for click detection
+                from engine.components import ImageComponent
+                img_component = e.get(ImageComponent)
+
                 half_width = btn.width // 2
                 half_height = btn.height // 2
 
-                # Check if this entity has an ImageComponent (for image buttons)
-                from engine.components import ImageComponent
-
-                img_component = e.get(ImageComponent)
+                # Larger click area for image buttons
                 if img_component:
-                    # For image buttons, provide minimum click area for better clickability
-                    min_click_width = 40  # Minimum 40px width for click area
-                    min_click_height = 40  # Minimum 40px height for click area
+                    min_click_width = 40
+                    min_click_height = 40
                     half_width = max(half_width, min_click_width // 2)
                     half_height = max(half_height, min_click_height // 2)
 
                 if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
-                    if (
-                        btn.on_click and btn.active
-                    ):  # Only respond to clicks if the button is active
-                        btn.on_click()
+                    if btn.active:
+                        # Only set pressed state, do NOT trigger click yet
+                        btn.pressed = True
+
+            # Focus input field
             if inp:
                 if (
                     abs(mx - pos.x) <= GameConfig.INPUT_MOUSE_DETECTION_WIDTH
                     and abs(my - pos.y) <= GameConfig.INPUT_MOUSE_DETECTION_HEIGHT
                 ):
                     self.set_focus(inp)
+
+    def handle_mouse_up(self, mx, my, entities):
+        """Handle mouse button UP event."""
+        for e in entities:
+            pos = e.get(Position)
+            btn = e.get(ButtonComponent)
+            if not pos or not btn:
+                continue
+
+            # Only check buttons that were pressed
+            if btn.pressed:
+                half_width = btn.width // 2
+                half_height = btn.height // 2
+
+                # If cursor still over the button = valid click
+                if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
+                    if btn.on_click and btn.active:
+                        btn.on_click()
+
+                # Reset pressed state regardless
+                btn.pressed = False
 
     def handle_mouse_motion(self, mx, my, entities):
         # reset all button hover states first

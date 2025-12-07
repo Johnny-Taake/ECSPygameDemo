@@ -14,3 +14,5 @@ class ButtonComponent:
 
         # Optional keyboard shortcut tag to display
         self.keyboard_shortcut = keyboard_shortcut
+
+        self.pressed: bool = False

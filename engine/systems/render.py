@@ -214,40 +214,39 @@ class RenderSystem:
         )
 
         # Handle text rendering
-        if button.text:  # If there's text, render it normally
+        if button.text:
             surf = self.font.render(button.text, True, color)
-        else:  # If no text (like for image buttons), create an empty surface
-            # For image buttons with empty text, create a transparent surface
-            surf = pygame.Surface((1, 1), pygame.SRCALPHA)  # Tiny transparent surface
+        else:
+            surf = pygame.Surface((1, 1), pygame.SRCALPHA)
 
         # Apply transparency if alpha is less than 1.0
         if alpha < 1.0:
-            # Create a temporary surface with per-pixel alpha
             temp_surf = pygame.Surface(surf.get_size(), pygame.SRCALPHA)
             temp_surf.blit(surf, (0, 0))
-            # Make it transparent
             temp_surf.fill(
                 (255, 255, 255, int(255 * alpha)), special_flags=pygame.BLEND_RGBA_MULT
             )
             surf = temp_surf
 
-        rect = surf.get_rect(center=(position.x, position.y))
+        text_rect = surf.get_rect(center=(position.x, position.y))
         pad = GameConfig.BUTTON_PADDING
 
-        # Calculate box width and height: use the larger of text dimensions or min dimensions
-        # For image buttons (empty text), we rely on min_width and min_height to determine the padding area
-        text_width = rect.width + pad * 2
-        text_height = rect.height + pad * 2
+        # Sizes of the button
+        text_width = text_rect.width + pad * 2
+        text_height = text_rect.height + pad * 2
         box_width = max(text_width, button.min_width)
         box_height = max(text_height, button.min_height)
+
+        # Offset for button press animation
+        press_offset = 2 if getattr(button, "pressed", False) and button.active else 0
+
         box = Rect(
             position.x - box_width // 2,
-            position.y - box_height // 2,
+            position.y - box_height // 2 + press_offset,
             box_width,
             box_height,
         )
 
-        # Calculate button color based on hover state and alpha
         if not button.active:
             bg_color = GameConfig.INACTIVE_BUTTON_BG_COLOR
         else:
@@ -257,30 +256,68 @@ class RenderSystem:
                 else GameConfig.BUTTON_BG_COLOR
             )
 
-        # Apply alpha to the background color
-        if alpha < 1.0:
-            bg_color = tuple(int(c * alpha) for c in bg_color)
+        shadow_color = tuple(max(c - 40, 0) for c in bg_color)
 
-        # Draw rounded rectangle for border radius effect
-        draw.rect(self.screen, bg_color, box, border_radius=GameConfig.BUTTON_RADIUS)
-        # Center the text in the button (only if it's not an image button)
-        if button.text:  # Only blit text if it exists
-            text_rect = surf.get_rect(center=(position.x, position.y))
+        def apply_alpha(col):
+            return tuple(int(c * alpha) for c in col)
+
+        if alpha < 1.0:
+            bg_color = apply_alpha(bg_color)
+            shadow_color = apply_alpha(shadow_color)
+
+        # Shadow under the button (a bit lower)
+        shadow_offset = 3
+        shadow_rect = box.move(0, shadow_offset)
+        draw.rect(
+            self.screen,
+            shadow_color,
+            shadow_rect,
+            border_radius=GameConfig.BUTTON_RADIUS,
+        )
+
+        # Main button box
+        draw.rect(
+            self.screen,
+            bg_color,
+            box,
+            border_radius=GameConfig.BUTTON_RADIUS,
+        )
+
+        # Sofr gradient highlight
+        highlight_height = max(4, box.height // 2)  #  top half of the button
+        highlight_surf = pygame.Surface(
+            (box.width - 4, highlight_height), pygame.SRCALPHA
+        )
+
+        # Draw a vertical gradient
+        max_alpha = 70
+        for y in range(highlight_height):
+            t = y / highlight_height  # 0..1
+            a = int(max_alpha * (1.0 - t))  # from max_alpha to 0
+            pygame.draw.line(
+                highlight_surf,
+                (255, 255, 255, a),
+                (0, y),
+                (highlight_surf.get_width(), y),
+            )
+
+        self.screen.blit(
+            highlight_surf,
+            (box.left + 2, box.top + 2),
+        )
+
+        if button.text:
+            text_rect = surf.get_rect(center=box.center)
             self.screen.blit(surf, text_rect)
 
-        # Draw keyboard shortcut tag if available
+        # Keyboard shortcut tag (как было)
         if button.keyboard_shortcut:
-            # Render the keyboard shortcut in small font with muted color for white backgrounds
             shortcut_surf = self.shortcut_font.render(
                 button.keyboard_shortcut, True, GameConfig.SHORTCUT_TAG_COLOR
             )
-            # Position it at the top right of the button
             shortcut_rect = shortcut_surf.get_rect()
-            # Position the shortcut tag in the top right corner inside the button
-            shortcut_x = (
-                box.right - shortcut_rect.width - 4
-            )  # 4px padding from right edge
-            shortcut_y = box.top + 2  # 2px padding from top edge
+            shortcut_x = box.right - shortcut_rect.width - 4
+            shortcut_y = box.top + 2
             self.screen.blit(shortcut_surf, (shortcut_x, shortcut_y))
 
         # Store button dimensions for click detection
@@ -423,8 +460,20 @@ class RenderSystem:
             if inp:
                 self.draw_input(inp, pos, alpha)
             btn = e.get(ButtonComponent)
-            if btn:
-                self.draw_button(btn, pos, alpha)
+            img = e.get(ImageComponent)
+
+            # If this entity has both button and image components, handle press animation together
+            if btn and img:
+                # Calculate press offset for the image to match button press animation
+                press_offset = 2 if getattr(btn, "pressed", False) and btn.active else 0
+                adjusted_pos = Position(pos.x, pos.y + press_offset)
+                self.draw_button(btn, pos, alpha)  # Button draws with its own internal offset
+                self.draw_image(img, adjusted_pos, alpha)  # Image drawn with matching offset
+            else:
+                if btn:
+                    self.draw_button(btn, pos, alpha)
+                if img:
+                    self.draw_image(img, pos, alpha)
             pb = e.get(ProgressBarComponent)
             if pb:
                 # Update progress with smooth animation towards target
@@ -438,6 +487,3 @@ class RenderSystem:
                     )
 
                 self.draw_progress_bar(pb, pos, alpha)
-            img = e.get(ImageComponent)
-            if img:
-                self.draw_image(img, pos, alpha)
