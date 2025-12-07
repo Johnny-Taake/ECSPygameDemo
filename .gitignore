@@ -13,6 +13,7 @@ wheels/
 .mypy_cache/
 .ruff_cache/
 .vscode/
+.pytest_cache/
 
 # Environment variables
 .env

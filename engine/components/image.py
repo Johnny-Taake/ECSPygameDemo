@@ -20,7 +20,7 @@ class ImageComponent:
         :param width: Optional width to resize the image
         :param height: Optional height to resize the image
         """
-        self.image_path = image_path
-        self.width = width
-        self.height = height
+        self.image_path: str = image_path
+        self.width: Optional[int] = width
+        self.height: Optional[int] = height
         self.pygame_image: Optional[pygame.Surface] = None

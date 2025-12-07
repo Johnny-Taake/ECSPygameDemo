@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pygame.event import Event
 
 from config import GameConfig
@@ -6,7 +8,7 @@ from engine.components import ButtonComponent, InputFieldComponent, Position
 
 class InputSystem:
     def __init__(self):
-        self.focused_input = None
+        self.focused_input: Optional[InputFieldComponent] = None
 
     def set_focus(self, input_component: InputFieldComponent):
         if self.focused_input:
@@ -32,10 +34,10 @@ class InputSystem:
             ):
                 self.focused_input.text += ch
 
-    def handle_mouse(self, mx, my, entities):
+    def handle_mouse(self, mx: int, my: int, entities: list) -> None:
         self.handle_mouse_down(mx, my, entities)
 
-    def handle_mouse_down(self, mx, my, entities):
+    def handle_mouse_down(self, mx: int, my: int, entities: list) -> None:
         """Handle mouse button DOWN event."""
         for e in entities:
             pos = e.get(Position)
@@ -71,7 +73,7 @@ class InputSystem:
                 ):
                     self.set_focus(inp)
 
-    def handle_mouse_up(self, mx, my, entities):
+    def handle_mouse_up(self, mx: int, my: int, entities: list) -> None:
         """Handle mouse button UP event."""
         for e in entities:
             pos = e.get(Position)
@@ -92,7 +94,7 @@ class InputSystem:
                 # Reset pressed state regardless
                 btn.pressed = False
 
-    def handle_mouse_motion(self, mx, my, entities):
+    def handle_mouse_motion(self, mx: int, my: int, entities: list) -> None:
         # reset all button hover states first
         for e in entities:
             btn = e.get(ButtonComponent)

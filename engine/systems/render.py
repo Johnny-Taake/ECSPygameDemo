@@ -29,7 +29,7 @@ class RenderSystem:
             self.h1_font = pygame.font.Font(
                 get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H1_FONT_SIZE
             )
-        except:
+        except (pygame.error, FileNotFoundError):
             self.h1_font = pygame.font.SysFont(
                 GameConfig.DEFAULT_FONT, GameConfig.H1_FONT_SIZE
             )
@@ -38,7 +38,7 @@ class RenderSystem:
             self.h2_font = pygame.font.Font(
                 get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H2_FONT_SIZE
             )
-        except:
+        except (pygame.error, FileNotFoundError):
             self.h2_font = pygame.font.SysFont(
                 GameConfig.DEFAULT_FONT, GameConfig.H2_FONT_SIZE
             )
@@ -47,7 +47,7 @@ class RenderSystem:
             self.h3_font = pygame.font.Font(
                 get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H3_FONT_SIZE
             )
-        except:
+        except (pygame.error, FileNotFoundError):
             self.h3_font = pygame.font.SysFont(
                 GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE
             )
@@ -58,7 +58,7 @@ class RenderSystem:
                 get_resource_path(GameConfig.DEFAULT_FONT_PATH),
                 GameConfig.BUTTON_TAG_FONT_SIZE,
             )
-        except:
+        except (pygame.error, FileNotFoundError):
             self.shortcut_font = pygame.font.SysFont(
                 GameConfig.DEFAULT_FONT, GameConfig.BUTTON_TAG_FONT_SIZE
             )

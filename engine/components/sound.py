@@ -10,7 +10,7 @@ class SoundComponent:
 
         :param sound_name: Name of the sound to play (will be mapped to a sound file)
         """
-        self.sound_name = sound_name
-        self.play_on_add = False  # Whether to play the sound when component is added
-        self.volume = 1.0  # Volume level (0.0 to 1.0)
-        self.loop = False  # Whether to loop the sound
+        self.sound_name: str = sound_name
+        self.play_on_add: bool = False  # Whether to play the sound when component is added
+        self.volume: float = 1.0  # Volume level (0.0 to 1.0)
+        self.loop: bool = False  # Whether to loop the sound

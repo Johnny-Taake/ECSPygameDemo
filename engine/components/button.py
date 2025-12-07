@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import Callable, Optional
 
 
 class ButtonComponent:
     def __init__(self, text: str, keyboard_shortcut: Optional[str] = None):
         self.text = text
-        self.on_click = None
+        self.on_click: Optional[Callable[[], None]] = None
         self.hover = False
         self.active = True
         self.width = 0

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
     # Logging settings
     log_level: Optional[LogLevel] = None
+    write_to_file: Optional[bool] = None
 
     # Difficulty settings
     difficulty_default_index: Optional[int] = None
@@ -43,6 +44,8 @@ class Settings(BaseSettings):
             config.window.title = self.window_title
         if self.log_level is not None:
             config.logging.log_level = self.log_level
+        if self.write_to_file is not None:
+            config.logging.write_to_file = self.write_to_file
         if self.difficulty_default_index is not None:
             config.difficulty.default_index = self.difficulty_default_index
         if self.stats_encryption_key is not None:

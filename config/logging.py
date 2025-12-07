@@ -1,10 +1,9 @@
 """Logging configuration models using Pydantic."""
 
 from typing import Literal
-from pathlib import Path
 
 import logging
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -15,6 +14,8 @@ class LoggingConfig(BaseModel):
     log_level: LogLevel = "DEBUG"
     log_format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     logs_dir: str = "logs"
+
+    write_to_file: bool = False
 
     @property
     def log_level_enum(self) -> int:
@@ -27,9 +28,3 @@ class LoggingConfig(BaseModel):
             "CRITICAL": logging.CRITICAL,
         }
         return level_map[self.log_level]
-
-    @field_validator("logs_dir")
-    @classmethod
-    def validate_positive_float(cls, v: str) -> str:
-        Path(v).mkdir(exist_ok=True)
-        return v

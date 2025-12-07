@@ -34,7 +34,7 @@ class GameApp:
         try:
             font_path = get_resource_path(GameConfig.DEFAULT_FONT_PATH)
             self.font = pygame.font.Font(font_path, GameConfig.DEFAULT_FONT_SIZE)
-        except:
+        except (pygame.error, FileNotFoundError):
             # Fallback to system font if custom font fails to load
             self.font = pygame.font.SysFont(
                 GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE
