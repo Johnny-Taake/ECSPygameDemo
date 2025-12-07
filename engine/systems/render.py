@@ -4,6 +4,7 @@ from pygame.font import Font
 from pygame.surface import Surface
 
 from config import GameConfig
+from utils.resources import get_resource_path
 
 from ..components import (
     AlphaComponent,
@@ -26,7 +27,7 @@ class RenderSystem:
         # Load custom fonts from file paths for headers, fallback to system if custom fails
         try:
             self.h1_font = pygame.font.Font(
-                GameConfig.DEFAULT_FONT_PATH, GameConfig.H1_FONT_SIZE
+                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H1_FONT_SIZE
             )
         except:
             self.h1_font = pygame.font.SysFont(
@@ -35,7 +36,7 @@ class RenderSystem:
 
         try:
             self.h2_font = pygame.font.Font(
-                GameConfig.DEFAULT_FONT_PATH, GameConfig.H2_FONT_SIZE
+                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H2_FONT_SIZE
             )
         except:
             self.h2_font = pygame.font.SysFont(
@@ -44,7 +45,7 @@ class RenderSystem:
 
         try:
             self.h3_font = pygame.font.Font(
-                GameConfig.DEFAULT_FONT_PATH, GameConfig.H3_FONT_SIZE
+                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H3_FONT_SIZE
             )
         except:
             self.h3_font = pygame.font.SysFont(
@@ -54,7 +55,7 @@ class RenderSystem:
         # Load font for keyboard shortcut tags
         try:
             self.shortcut_font = pygame.font.Font(
-                GameConfig.DEFAULT_FONT_PATH, GameConfig.BUTTON_TAG_FONT_SIZE
+                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.BUTTON_TAG_FONT_SIZE
             )
         except:
             self.shortcut_font = pygame.font.SysFont(
@@ -336,7 +337,7 @@ class RenderSystem:
         # Load the image if not already loaded
         if image.pygame_image is None:
             try:
-                loaded_image = pygame.image.load(image.image_path).convert_alpha()
+                loaded_image = pygame.image.load(get_resource_path(image.image_path)).convert_alpha()
 
                 # Resize if dimensions are specified
                 if image.width and image.height:

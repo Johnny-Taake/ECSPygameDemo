@@ -4,6 +4,7 @@ from config import GameConfig
 from engine import InputSystem, RenderSystem, SoundSystem, SceneManager, ServiceLocator
 from game import BootScene
 from logger import get_logger
+from utils.resources import get_resource_path
 
 log = get_logger("main")
 
@@ -18,7 +19,8 @@ class GameApp:
         pygame.init()
 
         # Set the icon
-        icon = pygame.image.load("assets/icon.png")
+        icon_path = get_resource_path("assets/icon.png")
+        icon = pygame.image.load(icon_path)
         pygame.display.set_caption(GameConfig.WINDOW_TITLE)
 
         self.screen = pygame.display.set_mode((width, height))
@@ -30,8 +32,9 @@ class GameApp:
 
         # Load custom font from file, fallback to system font if file is not available
         try:
+            font_path = get_resource_path(GameConfig.DEFAULT_FONT_PATH)
             self.font = pygame.font.Font(
-                GameConfig.DEFAULT_FONT_PATH, GameConfig.DEFAULT_FONT_SIZE
+                font_path, GameConfig.DEFAULT_FONT_SIZE
             )
         except:
             # Fallback to system font if custom font fails to load

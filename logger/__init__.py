@@ -9,8 +9,8 @@ from .colored_formatter import ColoredFormatter
 
 def setup_logging():
     """Configure logging based on the game configuration."""
-    # Create logs directory if it doesn't exist
-    log_dir = Path("logs")
+    # Create logs directory if it doesn't exist - use the configured directory
+    log_dir = Path(GameConfig.logging.logs_dir)
     log_dir.mkdir(exist_ok=True)
 
     # Clear any existing handlers to prevent duplicates on multiple calls
@@ -19,8 +19,10 @@ def setup_logging():
         root_logger.handlers.clear()
 
     # Create file handler that overwrites the log file each time (without colors)
+    # Use the configuration from GameConfig for log format
+    log_file_path = log_dir / "app.log"
     file_handler = logging.FileHandler(
-        f"{GameConfig.logging.logs_dir}/app.log", mode="w"
+        str(log_file_path), mode="w"
     )
     file_formatter = logging.Formatter(GameConfig.LOG_FORMAT)
     file_handler.setFormatter(file_formatter)

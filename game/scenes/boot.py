@@ -9,6 +9,7 @@ from engine import (
 )
 from game.logic import GameLogic
 from logger import get_logger
+from utils.resources import get_resource_path
 
 log = get_logger("game/scenes")
 
@@ -67,13 +68,13 @@ class BootScene(BaseScene):
 
             if sound_system:
                 sound_system.load_sound(
-                    "button_click", "assets/sounds/button-click.mp3"
+                    "button_click", get_resource_path("assets/sounds/button-click.mp3")
                 )
                 sound_system.load_sound(
-                    "keyboard_click", "assets/sounds/keyboard-click.mp3"
+                    "keyboard_click", get_resource_path("assets/sounds/keyboard-click.mp3")
                 )
                 sound_system.load_sound(
-                    "win", "assets/sounds/soft-treble-win-fade-out.mp3"
+                    "win", get_resource_path("assets/sounds/soft-treble-win-fade-out.mp3")
                 )
                 log.info("Sound assets loaded successfully")
             else:
@@ -86,9 +87,9 @@ class BootScene(BaseScene):
         try:
             import pygame
 
-            pygame.image.load("assets/images/volume.png")
-            pygame.image.load("assets/images/mute.png")
-            pygame.image.load("assets/icon.png")
+            pygame.image.load(get_resource_path("assets/images/volume.png"))
+            pygame.image.load(get_resource_path("assets/images/mute.png"))
+            pygame.image.load(get_resource_path("assets/icon.png"))
             log.info("Image assets preloaded successfully")
         except Exception as e:
             log.warning(f"Error preloading image assets: {e}")
@@ -99,9 +100,9 @@ class BootScene(BaseScene):
             import pygame
             from config import GameConfig
 
-            pygame.font.Font(GameConfig.DEFAULT_FONT_PATH, 16)
-            pygame.font.Font(GameConfig.ITALIC_FONT_PATH, 16)
-            pygame.font.Font(GameConfig.BOLD_FONT_PATH, 16)
+            pygame.font.Font(get_resource_path(GameConfig.DEFAULT_FONT_PATH), 16)
+            pygame.font.Font(get_resource_path(GameConfig.ITALIC_FONT_PATH), 16)
+            pygame.font.Font(get_resource_path(GameConfig.BOLD_FONT_PATH), 16)
             log.info("Font assets preloaded successfully")
         except Exception as e:
             log.warning(f"Error preloading font assets: {e}")
