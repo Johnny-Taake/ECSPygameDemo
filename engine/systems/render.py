@@ -55,7 +55,8 @@ class RenderSystem:
         # Load font for keyboard shortcut tags
         try:
             self.shortcut_font = pygame.font.Font(
-                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.BUTTON_TAG_FONT_SIZE
+                get_resource_path(GameConfig.DEFAULT_FONT_PATH),
+                GameConfig.BUTTON_TAG_FONT_SIZE,
             )
         except:
             self.shortcut_font = pygame.font.SysFont(
@@ -116,7 +117,7 @@ class RenderSystem:
 
         # Check if the text is too wide for the screen and scale if necessary
         max_width = GameConfig.TEXT_MAX_WIDTH
-        
+
         if surf.get_width() > max_width:
             # Scale the text surface down to fit within max_width
             aspect_ratio = surf.get_height() / surf.get_width()
@@ -337,7 +338,9 @@ class RenderSystem:
         # Load the image if not already loaded
         if image.pygame_image is None:
             try:
-                loaded_image = pygame.image.load(get_resource_path(image.image_path)).convert_alpha()
+                loaded_image = pygame.image.load(
+                    get_resource_path(image.image_path)
+                ).convert_alpha()
 
                 # Resize if dimensions are specified
                 if image.width and image.height:

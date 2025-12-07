@@ -71,10 +71,12 @@ class BootScene(BaseScene):
                     "button_click", get_resource_path("assets/sounds/button-click.mp3")
                 )
                 sound_system.load_sound(
-                    "keyboard_click", get_resource_path("assets/sounds/keyboard-click.mp3")
+                    "keyboard_click",
+                    get_resource_path("assets/sounds/keyboard-click.mp3"),
                 )
                 sound_system.load_sound(
-                    "win", get_resource_path("assets/sounds/soft-treble-win-fade-out.mp3")
+                    "win",
+                    get_resource_path("assets/sounds/soft-treble-win-fade-out.mp3"),
                 )
                 log.info("Sound assets loaded successfully")
             else:

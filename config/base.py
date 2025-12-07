@@ -48,6 +48,15 @@ class ColorConfig(BaseModel):
     active_button_text_color: Tuple[int, int, int] = (0, 0, 0)
     progress_bar_border_color: Tuple[int, int, int] = (255, 255, 255)
 
+    # Colors for top score highlights
+    top_score_1_color: Tuple[int, int, int] = (150, 255, 150)  # Light green for #1
+    top_score_2_to_3_color: Tuple[int, int, int] = (0, 200, 255)  # Light blue for top 3
+    top_score_4_to_5_color: Tuple[int, int, int] = (
+        255,
+        200,
+        0,
+    )  # Yellow/orange for top 5
+
     @field_validator("*", mode="before")
     @classmethod
     def validate_color(cls, v) -> Tuple[int, int, int]:

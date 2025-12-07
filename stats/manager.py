@@ -83,8 +83,14 @@ class StatsManager:
 
         # Add to top attempts and keep only the configured number of top attempts
         self._stats[difficulty_key]["top_attempts"].append(asdict(result))
-        # Sort by attempts (ascending) and keep the configured number of top attempts
-        self._stats[difficulty_key]["top_attempts"].sort(key=lambda x: x["attempts"])
+        # Sort by attempts (ascending), and for equal attempts, by timestamp (oldest first) to ensure
+        # that older games with the same attempt count keep their better ranking
+        self._stats[difficulty_key]["top_attempts"].sort(
+            key=lambda x: (
+                x["attempts"],
+                datetime.datetime.fromisoformat(x["timestamp"]).timestamp(),
+            )
+        )
         self._stats[difficulty_key]["top_attempts"] = self._stats[difficulty_key][
             "top_attempts"
         ][: GameConfig.STATS_MAX_TOP_ATTEMPTS]
@@ -122,3 +128,33 @@ class StatsManager:
         log.info("Resetting statistics to default values.")
         self._stats = self._get_default_stats()
         self.save_stats()
+
+    def get_ranking_for_new_score(
+        self, new_attempts: int, difficulty_name: str, min_num: int, max_num: int
+    ) -> int:
+        """Get the ranking for a new score without recording it yet."""
+        difficulty_key = f"{difficulty_name}_{min_num}-{max_num}"
+
+        if difficulty_key not in self._stats:
+            # If no stats exist for this difficulty, this would be rank #1
+            return 1
+
+        top_attempts = self._stats[difficulty_key]["top_attempts"]
+
+        # If there are no previous attempts, this is automatically rank #1
+        if not top_attempts:
+            return 1
+
+        # Check the position where the new attempt would fit
+        for i, attempt in enumerate(top_attempts):
+            if new_attempts < attempt["attempts"]:
+                # New attempt is better than this stored attempt
+                return i + 1
+        else:
+            # If the loop completed without break, check if there's space in the list
+            if len(top_attempts) < GameConfig.STATS_MAX_TOP_ATTEMPTS:
+                # There's still space in the top scores
+                return len(top_attempts) + 1
+
+        # If the new score doesn't beat any in the top list, return 0
+        return 0

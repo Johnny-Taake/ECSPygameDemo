@@ -181,6 +181,18 @@ class GameConfig(BaseModel):
     def PROGRESS_BAR_BORDER_COLOR(self) -> tuple:
         return self.colors.progress_bar_border_color
 
+    @property
+    def TOP_SCORE_1_COLOR(self) -> tuple:
+        return self.colors.top_score_1_color
+
+    @property
+    def TOP_SCORE_2_TO_3_COLOR(self) -> tuple:
+        return self.colors.top_score_2_to_3_color
+
+    @property
+    def TOP_SCORE_4_TO_5_COLOR(self) -> tuple:
+        return self.colors.top_score_4_to_5_color
+
     # Font sizes
     @property
     def H1_FONT_SIZE(self) -> int:

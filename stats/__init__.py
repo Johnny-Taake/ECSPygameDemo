@@ -38,6 +38,16 @@ def get_all_stats() -> dict:
     return manager.get_all_stats()
 
 
+def get_ranking_for_new_score(
+    new_attempts: int, difficulty_name: str, min_num: int, max_num: int
+) -> int:
+    """Convenience function to get ranking for a new score."""
+    manager = get_stats_manager()
+    return manager.get_ranking_for_new_score(
+        new_attempts, difficulty_name, min_num, max_num
+    )
+
+
 # For backward compatibility
 __all__ = [
     "StatsManager",
@@ -46,4 +56,5 @@ __all__ = [
     "record_game_completion",
     "get_difficulty_stats",
     "get_all_stats",
+    "get_ranking_for_new_score",
 ]

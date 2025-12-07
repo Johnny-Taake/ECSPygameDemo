@@ -21,9 +21,7 @@ def setup_logging():
     # Create file handler that overwrites the log file each time (without colors)
     # Use the configuration from GameConfig for log format
     log_file_path = log_dir / "app.log"
-    file_handler = logging.FileHandler(
-        str(log_file_path), mode="w"
-    )
+    file_handler = logging.FileHandler(str(log_file_path), mode="w")
     file_formatter = logging.Formatter(GameConfig.LOG_FORMAT)
     file_handler.setFormatter(file_formatter)
 
