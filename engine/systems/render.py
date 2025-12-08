@@ -5,6 +5,7 @@ from pygame.surface import Surface
 
 from config import GameConfig
 from utils.resources import get_resource_path
+from logger import get_logger
 
 from ..components import (
     AlphaComponent,
@@ -18,6 +19,8 @@ from ..components import (
     Position,
     ProgressBarComponent,
 )
+
+log = get_logger("engine/render_system")
 
 
 class RenderSystem:
@@ -431,6 +434,7 @@ class RenderSystem:
 
             # Update alpha component if it exists (for smooth transitions)
             if alpha_comp:
+                old_alpha = alpha_comp.alpha
                 # Update alpha with smooth animation towards target
                 if alpha_comp.alpha < alpha_comp.target_alpha:
                     alpha_comp.alpha = min(
@@ -442,6 +446,10 @@ class RenderSystem:
                         alpha_comp.alpha - alpha_comp.animation_speed * 0.016,
                         alpha_comp.target_alpha,
                     )
+
+                # Log transparency changes if significant
+                if abs(alpha_comp.alpha - old_alpha) > 0.01:
+                    log.debug(f"Alpha component updated: {old_alpha:.3f} -> {alpha_comp.alpha:.3f}")
 
             h1 = e.get(H1Component)
             if h1:

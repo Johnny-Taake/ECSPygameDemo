@@ -5,6 +5,7 @@ from engine import InputSystem, RenderSystem, SoundSystem, SceneManager, Service
 from game import BootScene
 from logger import get_logger
 from utils.resources import get_resource_path
+from utils.responsive import ResponsiveScaleManager
 
 log = get_logger("main")
 
@@ -23,12 +24,23 @@ class GameApp:
         icon = pygame.image.load(icon_path)
         pygame.display.set_caption(GameConfig.WINDOW_TITLE)
 
-        self.screen = pygame.display.set_mode((width, height))
+        # Initialize screen with RESIZABLE flag
+        self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 
         pygame.display.set_icon(icon)
 
         self.clock = pygame.time.Clock()
         self.fps = fps
+
+        # Create virtual surface for fixed aspect ratio rendering
+        self.virtual_surface = pygame.Surface((GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT))
+
+        # Create and configure scale manager
+        self.scale_manager = ResponsiveScaleManager(
+            base_width=GameConfig.WINDOW_WIDTH,
+            base_height=GameConfig.WINDOW_HEIGHT
+        )
+        self.scale_manager.update_window_size(width, height)
 
         # Load custom font from file, fallback to system font if file is not available
         try:
@@ -42,7 +54,8 @@ class GameApp:
 
         self.running = True
 
-        self.render_system = RenderSystem(self.screen, self.font)
+        # Initialize render system with virtual surface instead of screen
+        self.render_system = RenderSystem(self.virtual_surface, self.font)
         self.input_system = InputSystem()
         self.sound_system = SoundSystem()
 
@@ -60,31 +73,42 @@ class GameApp:
                     self.running = False
                     break
 
+                # Handle window resize events
+                if event.type == pygame.VIDEORESIZE:
+                    log.debug(f"Window resized to: {event.w}x{event.h}")
+                    self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                    self.scale_manager.update_window_size(event.w, event.h)
+                    log.debug(f"Scale factor updated to: {self.scale_manager.scale}")
+                    log.debug(f"Offset calculated as: ({self.scale_manager.offset_x}, {self.scale_manager.offset_y})")
+
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    mx, my = event.pos
+                    # Convert screen coordinates to virtual coordinates before processing
+                    vx, vy = self.scale_manager.screen_to_world(*event.pos)
                     if self.scene_manager.current:
                         self.input_system.handle_mouse_down(
-                            mx, my, self.scene_manager.current.entities
+                            vx, vy, self.scene_manager.current.entities
                         )
                     # Process sound system for clicked buttons
                     if self.scene_manager.current:
                         self.sound_system.update(self.scene_manager.current.entities)
 
                 if event.type == pygame.MOUSEBUTTONUP:
-                    mx, my = event.pos
+                    # Convert screen coordinates to virtual coordinates before processing
+                    vx, vy = self.scale_manager.screen_to_world(*event.pos)
                     if self.scene_manager.current:
                         self.input_system.handle_mouse_up(
-                            mx, my, self.scene_manager.current.entities
+                            vx, vy, self.scene_manager.current.entities
                         )
                     # Process sound system for clicked buttons
                     if self.scene_manager.current:
                         self.sound_system.update(self.scene_manager.current.entities)
 
                 if event.type == pygame.MOUSEMOTION:
-                    mx, my = event.pos
+                    # Convert screen coordinates to virtual coordinates before processing
+                    vx, vy = self.scale_manager.screen_to_world(*event.pos)
                     if self.scene_manager.current:
                         self.input_system.handle_mouse_motion(
-                            mx, my, self.scene_manager.current.entities
+                            vx, vy, self.scene_manager.current.entities
                         )
 
                 if event.type == pygame.KEYDOWN:
@@ -122,13 +146,32 @@ class GameApp:
             if self.scene_manager.current:
                 self.sound_system.update(self.scene_manager.current.entities)
 
-            # Render
-            self.screen.fill(GameConfig.BACKGROUND_COLOR)
+            # Render to virtual surface first
+            self.virtual_surface.fill(GameConfig.BACKGROUND_COLOR)
             if self.scene_manager.current:
                 try:
                     self.render_system.update(self.scene_manager.current.entities)
                 except Exception as e:
                     log.exception("Render error: %s", e)
+
+            # Scale and blit virtual surface to actual screen with letterboxing
+            self.screen.fill((30, 30, 30))  # Letterbox background (same as BACKGROUND_COLOR)
+
+            # Calculate scaled dimensions
+            scaled_width = int(self.virtual_surface.get_width() * self.scale_manager.scale)
+            scaled_height = int(self.virtual_surface.get_height() * self.scale_manager.scale)
+
+            # Scale the virtual surface
+            scaled_surface = pygame.transform.scale(
+                self.virtual_surface,
+                (scaled_width, scaled_height)
+            )
+
+            # Blit scaled surface to screen with offset for centering
+            self.screen.blit(
+                scaled_surface,
+                (self.scale_manager.offset_x, self.scale_manager.offset_y)
+            )
 
             pygame.display.flip()
 
