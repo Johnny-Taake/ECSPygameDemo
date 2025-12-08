@@ -1,5 +1,4 @@
-import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from engine.scene_manager import SceneManager
 from engine.base_scene import BaseScene
 from engine.ecs import GameObject
@@ -266,8 +265,6 @@ class TestSceneIntegration:
         mock_app.scene_manager = Mock()
 
         # Create a scene
-        scene = BaseScene(mock_app)
-
         # Test that GameLogic can be used in the scene context
         game_logic = GameLogic(min_number=1, max_number=10)
         game_logic.generate_new_number()
@@ -285,7 +282,6 @@ class TestSceneIntegration:
         assert result.name == "INVALID_FORMAT"
 
         # Reset game logic
-        original_number = game_logic.number_to_guess
         game_logic.reset()
         assert game_logic.attempts == 0
         # The number should be regenerated (though might be the same value)

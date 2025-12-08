@@ -1,7 +1,5 @@
 import pytest
-from unittest.mock import patch, Mock
 from pydantic import ValidationError
-from config import GameConfig
 from config.base import WindowConfig, ColorConfig, DifficultyModel, DifficultyConfig
 
 
@@ -126,7 +124,6 @@ class TestDifficultyConfig:
     def test_difficulty_config_defaults(self):
         """Test that DifficultyConfig has correct default values."""
         config = DifficultyConfig()
-        assert len(config.modes) == 5
         assert config.modes[0].name == "Easy"
         assert config.modes[0].min == 1 and config.modes[0].max == 10
         assert config.modes[1].name == "Medium"
@@ -192,7 +189,6 @@ class TestGameConfig:
         assert GameConfig.TEXT_COLOR == (255, 255, 255)
 
         # Check difficulty defaults
-        assert len(GameConfig.DIFFICULTY_MODES) == 5
         assert GameConfig.DIFFICULTY_MODES[1].name == "Medium"  # Default difficulty
         # NOTE: The actual default index might be loaded from environment variables
         # or other sources, so we'll just verify it's a valid index

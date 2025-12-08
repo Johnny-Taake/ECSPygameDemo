@@ -76,6 +76,9 @@ class TestRenderSystem:
             patch("pygame.font.SysFont"),
             patch("pygame.Rect"),
             patch("pygame.draw.rect") as mock_draw_rect,
+            patch(
+                "pygame.draw.line"
+            ),  # Added to handle gradient highlight functionality
             patch("pygame.Surface"),
             patch("engine.systems.render.GameConfig") as mock_game_config,
         ):
@@ -142,7 +145,6 @@ class TestRenderSystem:
                 render_system.update([entity])
 
                 # Check that alpha was used in draw call
-                alpha_comp = entity.get(AlphaComponent)
                 # The alpha value should have been processed in the update loop
 
 
@@ -171,7 +173,7 @@ class TestInputSystem:
         # Set focus to second input
         input_system.set_focus(input2)
         assert input_system.focused_input == input2
-        assert input1.focused == False  # Previous input should be unfocused
+        assert not input1.focused  # Previous input should be unfocused
         input2.focused = True  # New input should be focused
 
     def test_handle_key_with_no_focus_does_nothing(self):

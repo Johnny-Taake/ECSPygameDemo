@@ -1,4 +1,3 @@
-import pytest
 from engine.components import (
     Position,
     LabelComponent,
