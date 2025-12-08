@@ -22,7 +22,7 @@ def build_executable():
 
     _ = subprocess.run([sys.executable, "-m", "PyInstaller", "build.spec"], check=True)
 
-    print(f"Build completed successfully! Executable is in the 'dist' folder.")
+    print("Build completed successfully! Executable is in the 'dist' folder.")
 
 
 if __name__ == "__main__":

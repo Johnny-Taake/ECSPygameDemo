@@ -128,6 +128,6 @@ def get_stats_file_path(is_frozen: bool) -> str:
         application_path = _get_app_data_dir()
     else:
         # Running as script - get the directory containing this file (project root)
-        application_path = Path(__file__).resolve().parent.parent
+        application_path = str(Path(__file__).resolve().parent.parent)
 
     return os.path.join(application_path, GameConfig.STATS_FILE_NAME)

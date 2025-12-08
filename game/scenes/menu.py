@@ -144,7 +144,7 @@ class MenuScene(BaseScene):
     def get_current_difficulty_text(self):
         """Get text for current difficulty"""
         current = self.difficulty_modes[self.current_difficulty_index]
-        return f"{current['name']}: {current['min']}-{current['max']}"
+        return f"{current['name']}: {current['min']} - {current['max']}"
 
     def update_difficulty_display(self):
         """Update the difficulty display text"""

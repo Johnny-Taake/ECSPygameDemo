@@ -1,22 +1,9 @@
-from datetime import datetime
-import sys
-
 from config import GameConfig
 from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
 from logger import get_logger
 from stats import get_difficulty_stats
 
 log = get_logger("game/scenes")
-
-
-def format_timestamp(ts: str) -> str:
-    """Convert ISO timestamp into short readable format: 3 Dec'25"""
-    dt = datetime.fromisoformat(ts)
-    return (
-        dt.strftime("%-d %b '%y")
-        if sys.platform != "win32"
-        else dt.strftime("%#d %b'%y")
-    )
 
 
 class WinScene(BaseScene):

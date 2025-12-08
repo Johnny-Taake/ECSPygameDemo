@@ -4,6 +4,7 @@ from config import GameConfig
 from engine import InputSystem, RenderSystem, SoundSystem, SceneManager, ServiceLocator
 from game import BootScene
 from logger import get_logger
+from utils import load_font_with_fallback
 from utils.resources import get_resource_path
 from utils.responsive import ResponsiveScaleManager
 
@@ -33,24 +34,18 @@ class GameApp:
         self.fps = fps
 
         # Create virtual surface for fixed aspect ratio rendering
-        self.virtual_surface = pygame.Surface((GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT))
+        self.virtual_surface = pygame.Surface(
+            (GameConfig.WINDOW_WIDTH, GameConfig.WINDOW_HEIGHT)
+        )
 
         # Create and configure scale manager
         self.scale_manager = ResponsiveScaleManager(
-            base_width=GameConfig.WINDOW_WIDTH,
-            base_height=GameConfig.WINDOW_HEIGHT
+            base_width=GameConfig.WINDOW_WIDTH, base_height=GameConfig.WINDOW_HEIGHT
         )
         self.scale_manager.update_window_size(width, height)
 
         # Load custom font from file, fallback to system font if file is not available
-        try:
-            font_path = get_resource_path(GameConfig.DEFAULT_FONT_PATH)
-            self.font = pygame.font.Font(font_path, GameConfig.DEFAULT_FONT_SIZE)
-        except (pygame.error, FileNotFoundError):
-            # Fallback to system font if custom font fails to load
-            self.font = pygame.font.SysFont(
-                GameConfig.DEFAULT_FONT, GameConfig.DEFAULT_FONT_SIZE
-            )
+        self.font = load_font_with_fallback(GameConfig.DEFAULT_FONT_SIZE)
 
         self.running = True
 
@@ -76,10 +71,14 @@ class GameApp:
                 # Handle window resize events
                 if event.type == pygame.VIDEORESIZE:
                     log.debug(f"Window resized to: {event.w}x{event.h}")
-                    self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                    self.screen = pygame.display.set_mode(
+                        (event.w, event.h), pygame.RESIZABLE
+                    )
                     self.scale_manager.update_window_size(event.w, event.h)
                     log.debug(f"Scale factor updated to: {self.scale_manager.scale}")
-                    log.debug(f"Offset calculated as: ({self.scale_manager.offset_x}, {self.scale_manager.offset_y})")
+                    log.debug(
+                        f"Offset calculated as: ({self.scale_manager.offset_x}, {self.scale_manager.offset_y})"
+                    )
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Convert screen coordinates to virtual coordinates before processing
@@ -155,22 +154,27 @@ class GameApp:
                     log.exception("Render error: %s", e)
 
             # Scale and blit virtual surface to actual screen with letterboxing
-            self.screen.fill((30, 30, 30))  # Letterbox background (same as BACKGROUND_COLOR)
+            self.screen.fill(
+                (30, 30, 30)
+            )  # Letterbox background (same as BACKGROUND_COLOR)
 
             # Calculate scaled dimensions
-            scaled_width = int(self.virtual_surface.get_width() * self.scale_manager.scale)
-            scaled_height = int(self.virtual_surface.get_height() * self.scale_manager.scale)
+            scaled_width = int(
+                self.virtual_surface.get_width() * self.scale_manager.scale
+            )
+            scaled_height = int(
+                self.virtual_surface.get_height() * self.scale_manager.scale
+            )
 
             # Scale the virtual surface
             scaled_surface = pygame.transform.scale(
-                self.virtual_surface,
-                (scaled_width, scaled_height)
+                self.virtual_surface, (scaled_width, scaled_height)
             )
 
             # Blit scaled surface to screen with offset for centering
             self.screen.blit(
                 scaled_surface,
-                (self.scale_manager.offset_x, self.scale_manager.offset_y)
+                (self.scale_manager.offset_x, self.scale_manager.offset_y),
             )
 
             pygame.display.flip()

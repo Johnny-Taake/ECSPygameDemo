@@ -5,6 +5,7 @@ from pygame.event import Event
 from config import GameConfig
 from engine.components import ButtonComponent, InputFieldComponent, Position
 from logger import get_logger
+from utils import is_point_in_rect
 
 log = get_logger("engine/input_system")
 
@@ -56,6 +57,7 @@ class InputSystem:
 
             if btn:
                 from engine.components import ImageComponent
+
                 img_component = e.get(ImageComponent)
 
                 half_width = btn.width // 2
@@ -68,12 +70,14 @@ class InputSystem:
                     half_width = max(half_width, min_click_width // 2)
                     half_height = max(half_height, min_click_height // 2)
 
-                if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
+                if is_point_in_rect(mx, my, pos.x, pos.y, btn.width, btn.height):
                     if btn.active:
                         # Only set pressed state, do NOT trigger click yet
                         btn.pressed = True
                         button_desc = _get_button_description(btn, pos)
-                        log.debug(f"Button '{button_desc}' pressed animation started at ({mx}, {my})")
+                        log.debug(
+                            f"Button '{button_desc}' pressed animation started at ({mx}, {my})"
+                        )
 
             # Focus input field
             if inp:
@@ -93,21 +97,24 @@ class InputSystem:
 
             # Only check buttons that were pressed
             if btn.pressed:
-                half_width = btn.width // 2
-                half_height = btn.height // 2
-
                 # If cursor still over the button = valid click
-                if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
+                if is_point_in_rect(mx, my, pos.x, pos.y, btn.width, btn.height):
                     if btn.on_click and btn.active:
                         button_desc = _get_button_description(btn, pos)
-                        log.debug(f"Button '{button_desc}' click executed at ({mx}, {my})")
+                        log.debug(
+                            f"Button '{button_desc}' click executed at ({mx}, {my})"
+                        )
                         btn.on_click()
                     else:
                         button_desc = _get_button_description(btn, pos)
-                        log.debug(f"Button '{button_desc}' released (inactive or no click handler) at ({mx}, {my})")
+                        log.debug(
+                            f"Button '{button_desc}' released (inactive or no click handler) at ({mx}, {my})"
+                        )
                 else:
                     button_desc = _get_button_description(btn, pos)
-                    log.debug(f"Button '{button_desc}' press cancelled (released outside button area) at ({mx}, {my})")
+                    log.debug(
+                        f"Button '{button_desc}' press cancelled (released outside button area) at ({mx}, {my})"
+                    )
 
                 # Reset pressed state regardless
                 btn.pressed = False
@@ -128,9 +135,7 @@ class InputSystem:
             if not pos or not btn:
                 continue
             # Use actual button dimensions to detect hover
-            half_width = btn.width // 2
-            half_height = btn.height // 2
-            if abs(mx - pos.x) <= half_width and abs(my - pos.y) <= half_height:
+            if is_point_in_rect(mx, my, pos.x, pos.y, btn.width, btn.height):
                 if not btn.hover:  # Only log when entering hover state
                     button_desc = _get_button_description(btn, pos)
                     log.debug(f"Button '{button_desc}' hover started at ({mx}, {my})")

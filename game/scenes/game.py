@@ -13,6 +13,7 @@ from engine import (
 from engine.event_bus import EventBus
 from game.logic import GameLogic, GuessStatus
 from logger import get_logger
+from utils import is_signed_integer
 
 log = get_logger("game/scenes")
 
@@ -94,7 +95,7 @@ class GameScene(BaseScene):
         self.title = ui.h2_entity(
             title_text, 320, 40, GameConfig.H1_DEFAULT_COLOR
         )  # Use H2 size for better fit
-        range_text = f"{self.game_logic.min_number}-{self.game_logic.max_number}"
+        range_text = f"{self.game_logic.min_number} - {self.game_logic.max_number}"
         self.range_label = ui.h3_entity(
             range_text, 320, 70, GameConfig.H2_DEFAULT_COLOR
         )  # Range on separate line
@@ -312,16 +313,32 @@ class GameScene(BaseScene):
                 submit_btn.active = False
                 if error_label:
                     error_label.text = ""
-            elif not text.isdigit():
+            elif text == "-":
+                # Special case: user is typing a negative number
+                submit_btn.active = False
+                if error_label:
+                    # Check if the current game allows negative numbers
+                    if self.game_logic.min_number < 0:
+                        # Game allows negative numbers, don't show error yet
+                        error_label.text = ""
+                    else:
+                        # Game doesn't allow negative numbers
+                        error_label.text = "Number should be positive"
+                        error_label.color = GameConfig.ERROR_COLOR
+            elif not is_signed_integer(text):
                 # Not a number
                 submit_btn.active = False
                 if error_label:
                     error_label.text = "Invalid: Enter a number"
                     error_label.color = GameConfig.ERROR_COLOR
             else:
+                from utils import is_in_range
+
                 # It's a number, check if it's in range using game logic's min/max
                 num = int(text)
-                if num < self.game_logic.min_number or num > self.game_logic.max_number:
+                if not is_in_range(
+                    num, self.game_logic.min_number, self.game_logic.max_number
+                ):
                     submit_btn.active = False
                     if error_label:
                         invalid_msg = "Invalid: Number out of range"
@@ -362,13 +379,6 @@ class GameScene(BaseScene):
         from .dialog import DialogScene
 
         def confirm_quit():
-            # Store the current difficulty in service locator before going to menu
-            # Get difficulty info from current game_logic
-            difficulty_info = {
-                "min_number": self.game_logic.min_number,
-                "max_number": self.game_logic.max_number,
-            }
-
             # Find the corresponding difficulty index to store
             config_difficulty_modes = GameConfig.DIFFICULTY_MODES
             matching_index = None

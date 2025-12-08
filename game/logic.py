@@ -52,10 +52,10 @@ class GameLogic:
         self.attempts = 0
 
     def check(self, guess_str: str) -> GuessStatus:
+        from utils import is_signed_integer
+
         # First check if the input is a valid number format
-        if not guess_str or not all(
-            ch.isdigit() or ch == "-" for ch in guess_str.lstrip("-")
-        ):
+        if not guess_str or not is_signed_integer(guess_str):
             if not guess_str:
                 log.warning("INVALID_FORMAT - empty input")
             else:
@@ -68,8 +68,10 @@ class GameLogic:
             log.debug('INVALID_FORMAT input (not a valid integer): "%s"', guess_str)
             return GuessStatus.INVALID_FORMAT
 
+        from utils import is_in_range
+
         # Check if the number is within the valid range
-        if guess < self.min_number or guess > self.max_number:
+        if not is_in_range(guess, self.min_number, self.max_number):
             log.debug(
                 "OUT_OF_RANGE input: %s (valid range: %s-%s)",
                 guess,

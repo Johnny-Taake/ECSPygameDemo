@@ -4,7 +4,12 @@ from pygame.font import Font
 from pygame.surface import Surface
 
 from config import GameConfig
-from utils.resources import get_resource_path
+from utils import (
+    apply_alpha,
+    scale_text_to_width,
+    load_font_with_fallback,
+    load_image_with_fallback,
+)
 from logger import get_logger
 
 from ..components import (
@@ -28,43 +33,10 @@ class RenderSystem:
         self.screen = screen
         self.font = font
         # Load custom fonts from file paths for headers, fallback to system if custom fails
-        try:
-            self.h1_font = pygame.font.Font(
-                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H1_FONT_SIZE
-            )
-        except (pygame.error, FileNotFoundError):
-            self.h1_font = pygame.font.SysFont(
-                GameConfig.DEFAULT_FONT, GameConfig.H1_FONT_SIZE
-            )
-
-        try:
-            self.h2_font = pygame.font.Font(
-                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H2_FONT_SIZE
-            )
-        except (pygame.error, FileNotFoundError):
-            self.h2_font = pygame.font.SysFont(
-                GameConfig.DEFAULT_FONT, GameConfig.H2_FONT_SIZE
-            )
-
-        try:
-            self.h3_font = pygame.font.Font(
-                get_resource_path(GameConfig.DEFAULT_FONT_PATH), GameConfig.H3_FONT_SIZE
-            )
-        except (pygame.error, FileNotFoundError):
-            self.h3_font = pygame.font.SysFont(
-                GameConfig.DEFAULT_FONT, GameConfig.H3_FONT_SIZE
-            )
-
-        # Load font for keyboard shortcut tags
-        try:
-            self.shortcut_font = pygame.font.Font(
-                get_resource_path(GameConfig.DEFAULT_FONT_PATH),
-                GameConfig.BUTTON_TAG_FONT_SIZE,
-            )
-        except (pygame.error, FileNotFoundError):
-            self.shortcut_font = pygame.font.SysFont(
-                GameConfig.DEFAULT_FONT, GameConfig.BUTTON_TAG_FONT_SIZE
-            )
+        self.h1_font = load_font_with_fallback(GameConfig.H1_FONT_SIZE)
+        self.h2_font = load_font_with_fallback(GameConfig.H2_FONT_SIZE)
+        self.h3_font = load_font_with_fallback(GameConfig.H3_FONT_SIZE)
+        self.shortcut_font = load_font_with_fallback(GameConfig.BUTTON_TAG_FONT_SIZE)
 
     def draw_label(self, label: LabelComponent, position: Position, alpha: float = 1.0):
         surf = self.font.render(label.text, True, label.color)
@@ -92,12 +64,7 @@ class RenderSystem:
         max_width = (
             GameConfig.TEXT_MAX_WIDTH
         )  # Maximum width for H1 text (less than full screen width)
-        if surf.get_width() > max_width:
-            # Scale the text surface down to fit within max_width
-            aspect_ratio = surf.get_height() / surf.get_width()
-            new_width = max_width
-            new_height = int(new_width * aspect_ratio)
-            surf = pygame.transform.smoothscale(surf, (new_width, new_height))
+        surf = scale_text_to_width(surf, max_width)
 
         # Apply transparency if alpha is less than 1.0
         if alpha < 1.0:
@@ -120,13 +87,7 @@ class RenderSystem:
 
         # Check if the text is too wide for the screen and scale if necessary
         max_width = GameConfig.TEXT_MAX_WIDTH
-
-        if surf.get_width() > max_width:
-            # Scale the text surface down to fit within max_width
-            aspect_ratio = surf.get_height() / surf.get_width()
-            new_width = max_width
-            new_height = int(new_width * aspect_ratio)
-            surf = pygame.transform.smoothscale(surf, (new_width, new_height))
+        surf = scale_text_to_width(surf, max_width)
 
         # Apply transparency if alpha is less than 1.0
         if alpha < 1.0:
@@ -149,12 +110,7 @@ class RenderSystem:
 
         # Check if the text is too wide for the screen and scale if necessary
         max_width = GameConfig.TEXT_MAX_WIDTH
-        if surf.get_width() > max_width:
-            # Scale the text surface down to fit within max_width
-            aspect_ratio = surf.get_height() / surf.get_width()
-            new_width = max_width
-            new_height = int(new_width * aspect_ratio)
-            surf = pygame.transform.smoothscale(surf, (new_width, new_height))
+        surf = scale_text_to_width(surf, max_width)
 
         # Apply transparency if alpha is less than 1.0
         if alpha < 1.0:
@@ -261,12 +217,9 @@ class RenderSystem:
 
         shadow_color = tuple(max(c - 40, 0) for c in bg_color)
 
-        def apply_alpha(col):
-            return tuple(int(c * alpha) for c in col)
-
         if alpha < 1.0:
-            bg_color = apply_alpha(bg_color)
-            shadow_color = apply_alpha(shadow_color)
+            bg_color = apply_alpha(bg_color, alpha)
+            shadow_color = apply_alpha(shadow_color, alpha)
 
         # Shadow under the button (a bit lower)
         shadow_offset = 3
@@ -287,7 +240,7 @@ class RenderSystem:
         )
 
         # Soft gradient highlight
-        highlight_height = max(4, box.height // 2)  #  top half of the button
+        highlight_height = max(4, box.height // 2)  # top half of the button
         highlight_surf = pygame.Surface(
             (box.width - 4, highlight_height), pygame.SRCALPHA
         )
@@ -332,8 +285,8 @@ class RenderSystem:
     ):
         # Apply alpha to colors if needed
         if alpha < 1.0:
-            bg_color = tuple(int(c * alpha) for c in progress_bar.color)
-            fill_color = tuple(int(c * alpha) for c in progress_bar.fill_color)
+            bg_color = apply_alpha(progress_bar.color, alpha)
+            fill_color = apply_alpha(progress_bar.fill_color, alpha)
         else:
             bg_color = progress_bar.color
             fill_color = progress_bar.fill_color
@@ -377,25 +330,9 @@ class RenderSystem:
     def draw_image(self, image: ImageComponent, position: Position, alpha: float = 1.0):
         # Load the image if not already loaded
         if image.pygame_image is None:
-            try:
-                loaded_image = pygame.image.load(
-                    get_resource_path(image.image_path)
-                ).convert_alpha()
-
-                # Resize if dimensions are specified
-                if image.width and image.height:
-                    loaded_image = pygame.transform.scale(
-                        loaded_image, (image.width, image.height)
-                    )
-
-                image.pygame_image = loaded_image
-            except pygame.error:
-                # Create a placeholder surface if image fails to load
-                image.pygame_image = pygame.Surface((50, 50), pygame.SRCALPHA)
-                # Draw a red rectangle to indicate missing image
-                pygame.draw.rect(
-                    image.pygame_image, (255, 0, 0), pygame.Rect(0, 0, 50, 50)
-                )
+            image.pygame_image = load_image_with_fallback(
+                image.image_path, image.width or 40, image.height or 40
+            )
 
         # Safety check: ensure image.pygame_image is not None before using it
         # This handles the edge case where something went wrong in the loading process
@@ -449,7 +386,9 @@ class RenderSystem:
 
                 # Log transparency changes if significant
                 if abs(alpha_comp.alpha - old_alpha) > 0.01:
-                    log.debug(f"Alpha component updated: {old_alpha:.3f} -> {alpha_comp.alpha:.3f}")
+                    log.debug(
+                        f"Alpha component updated: {old_alpha:.3f} -> {alpha_comp.alpha:.3f}"
+                    )
 
             h1 = e.get(H1Component)
             if h1:
@@ -475,8 +414,12 @@ class RenderSystem:
                 # Calculate press offset for the image to match button press animation
                 press_offset = 2 if getattr(btn, "pressed", False) and btn.active else 0
                 adjusted_pos = Position(pos.x, pos.y + press_offset)
-                self.draw_button(btn, pos, alpha)  # Button draws with its own internal offset
-                self.draw_image(img, adjusted_pos, alpha)  # Image drawn with matching offset
+                self.draw_button(
+                    btn, pos, alpha
+                )  # Button draws with its own internal offset
+                self.draw_image(
+                    img, adjusted_pos, alpha
+                )  # Image drawn with matching offset
             else:
                 if btn:
                     self.draw_button(btn, pos, alpha)

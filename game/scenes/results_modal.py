@@ -1,29 +1,28 @@
 """Modal scene for displaying game results and statistics."""
 
-from datetime import datetime
-import sys
 from typing import Optional
 
 from config import GameConfig
 from engine import AlphaComponent, BaseScene, ButtonComponent, UIBuilder
 from logger import get_logger
 from stats import get_difficulty_stats
+from utils import format_timestamp
 
 log = get_logger("game/scenes")
 
 
-def format_timestamp(ts: str) -> str:
-    """Convert ISO timestamp into short readable format: 3 Dec'25"""
-    dt = datetime.fromisoformat(ts)
-    return (
-        dt.strftime("%-d %b '%y")
-        if sys.platform != "win32"
-        else dt.strftime("%#d %b'%y")
-    )
-
-
 class ResultsModalScene(BaseScene):
-    def __init__(self, app, difficulty_name: str, min_number: int, max_number: int, current_attempts: Optional[int] = None, current_ranking: int = 0, current_timestamp: str = "", previous_scene: Optional[BaseScene] = None):
+    def __init__(
+        self,
+        app,
+        difficulty_name: str,
+        min_number: int,
+        max_number: int,
+        current_attempts: Optional[int] = None,
+        current_ranking: int = 0,
+        current_timestamp: str = "",
+        previous_scene: Optional[BaseScene] = None,
+    ):
         super().__init__(app)
         self.difficulty_name = difficulty_name
         self.min_number = min_number
@@ -34,7 +33,9 @@ class ResultsModalScene(BaseScene):
         self.previous_scene = previous_scene
 
     def enter(self):
-        log.info(f"ResultsModalScene enter - {self.difficulty_name} ({self.min_number}-{self.max_number})")
+        log.info(
+            f"ResultsModalScene enter - {self.difficulty_name} ({self.min_number}-{self.max_number})"
+        )
         ui = UIBuilder(self.app.font)
 
         # Create a semi-transparent background overlay
@@ -80,9 +81,11 @@ class ResultsModalScene(BaseScene):
                 # Determine color based on whether this is the current attempt with the exact timestamp
                 attempt_color = GameConfig.TEXT_COLOR
                 # Highlight if this attempt matches the current game's attempt count AND timestamp
-                if (self.current_attempts is not None and
-                    attempt['attempts'] == self.current_attempts and
-                    attempt['timestamp'] == self.current_timestamp):
+                if (
+                    self.current_attempts is not None
+                    and attempt["attempts"] == self.current_attempts
+                    and attempt["timestamp"] == self.current_timestamp
+                ):
                     # This is the current attempt, so use the appropriate highlight color based on ranking
                     if self.current_ranking == 1:
                         attempt_color = GameConfig.TOP_SCORE_1_COLOR
@@ -91,9 +94,7 @@ class ResultsModalScene(BaseScene):
                     elif self.current_ranking <= 5:
                         attempt_color = GameConfig.TOP_SCORE_4_TO_5_COLOR
 
-                label = ui.label_entity(
-                    attempt_text, 320, y_pos, attempt_color
-                )
+                label = ui.label_entity(attempt_text, 320, y_pos, attempt_color)
                 setattr(
                     self, f"top_score_label_{i}", label
                 )  # Store as instance attribute
@@ -155,11 +156,12 @@ class ResultsModalScene(BaseScene):
             sound_system.play_sound("button_click")
 
         # Go back to the previous scene (typically the win scene)
-        if hasattr(self, 'previous_scene') and self.previous_scene:
+        if hasattr(self, "previous_scene") and self.previous_scene:
             self.app.scene_manager.change(self.previous_scene)
         else:
             # Fallback to going back to menu
             from .menu import MenuScene
+
             self.app.scene_manager.change(MenuScene(self.app))
 
     def update(self, delta_time: float):

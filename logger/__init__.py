@@ -23,10 +23,7 @@ def setup_logging():
         log_dir = Path(GameConfig.logging.logs_dir)
         log_dir.mkdir(exist_ok=True)
 
-        file_handler = logging.FileHandler(
-            log_dir / "app.log",
-            mode="w"
-        )
+        file_handler = logging.FileHandler(log_dir / "app.log", mode="w")
         file_handler.setFormatter(logging.Formatter(GameConfig.LOG_FORMAT))
         root_logger.addHandler(file_handler)
 
