@@ -9,7 +9,9 @@ It demonstrates clean architecture, responsive UI, scenes, ECS, animations, even
 
 ## 🎥 Demo
 
-> 🎬 **Gameplay demo:** [Watch the video](./docs/demo.mp4)
+> 🎬 **Gameplay demo:**
+
+![Gameplay demo](./docs/demo.gif)
 
 ---
 
