@@ -286,7 +286,7 @@ class RenderSystem:
             border_radius=GameConfig.BUTTON_RADIUS,
         )
 
-        # Sofr gradient highlight
+        # Soft gradient highlight
         highlight_height = max(4, box.height // 2)  #  top half of the button
         highlight_surf = pygame.Surface(
             (box.width - 4, highlight_height), pygame.SRCALPHA
