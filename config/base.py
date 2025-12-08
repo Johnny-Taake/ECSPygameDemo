@@ -91,6 +91,8 @@ class DifficultyConfig(BaseModel):
         DifficultyModel(name="Hard", min=1, max=1000),
         DifficultyModel(name="Very Hard", min=1, max=10000),
         DifficultyModel(name="Extreme", min=1, max=100000),
+
+        DifficultyModel(name="Hell", min=-100000, max=100000),
     ]
     # Index of default difficulty mode (0-based), defaulting to "Medium" at index 1
     default_index: int = 1
