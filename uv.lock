@@ -158,7 +158,7 @@ wheels = [
 ]
 
 [[package]]
-name = "guess-number-pygame"
+name = "guess-number-game"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

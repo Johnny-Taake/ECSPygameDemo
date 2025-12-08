@@ -1,6 +1,6 @@
 # Advanced Architecture Guide
 
-This document explains **architecture details** and **engine behavior** in *GuessNumberPygame*.
+This document explains **architecture details** and **engine behavior** in *GuessNumberGame*.
 
 ---
 
@@ -63,7 +63,7 @@ The EventBus provides simple decoupled messaging.
 
 ### 2.1 Main Application Flow
 
-```text
+```txt
 main.py
   → GameApp(config)
         → initialize pygame, systems, and services
@@ -155,9 +155,31 @@ This gives a soft and tactile UI feel.
 * It keeps track of press → release consistency even when the cursor moves.
 * Hover state updates every frame, not only on mouse events.
 
+### 3.4 Context-Aware UI Validation
+
+The game features intelligent UI validation that adapts to the current game context:
+
+* **Signed Integer Support**: The game accepts both positive and negative numbers as input using `is_signed_integer()` validation.
+* **Context-Aware Error Messages**: When a user types just a minus sign (`-`), the UI shows appropriate feedback:
+  * For games allowing negative numbers: no error (allows continued input)
+  * For games requiring positive numbers: shows "Number should be positive"
+* **Range Validation**: Numbers are validated against the current game's min/max range using `is_in_range()` utility.
+
+This provides a seamless experience for games with both positive and negative number ranges.
+
+### 3.5 Input Field Validation Logic
+
+The validation sequence in `GameScene.update_submit_button_state()` follows this priority:
+
+1. Empty input: No error, button inactive
+2. Just minus sign (`-`): Context-aware handling (see above)
+3. Invalid format: Marked as invalid with error message
+4. Valid format, out of range: Shows range error
+5. Valid input within range: Button becomes active
+
 ---
 
-### 3.4 Render System
+### 3.6 Render System
 
 #### Rendering Order
 

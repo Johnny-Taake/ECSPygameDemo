@@ -13,6 +13,12 @@ It demonstrates clean architecture, responsive UI, scenes, ECS, animations, even
 
 ---
 
+## 📦 Run executable (if available)
+
+Open the `dist/` folder and choose the appropriate executable for your system. Choose it if available, otherwise download the source code and follow the instructions down below. For Windows extract the `.zip` file and put the .exe anywhere you like. Then run it. For linux users - you know the drill. For macOS users - sorry, I don't have a Mac to test on. (# TODO: add macOS instructions).
+
+---
+
 ## ✨ What this project demonstrates
 
 - Lightweight **ECS** (Entity–Component–System)
@@ -118,6 +124,7 @@ GuessNumberPygame/
 ├── docs/                        # Additional documentation & guides
 │   ├── UV.md                    # UV usage & command cheatsheet
 │   ├── ADVANCED_ARCHITECTURE_GUIDE.md  # Deep-dive engine/architecture internals
+│   ├── TESTS.md                 # Testing guide and test structure
 │   └── demo.mp4                 # Gameplay demo video
 │
 ├── .env.example                 # Example environment configuration
@@ -140,6 +147,7 @@ The project is intentionally structured like a mini real-world game codebase:
 
 For a deeper, maintainer-level description of internals (ECS details, scaling model, animation behavior, performance notes), see:
 📄 [`docs/ADVANCED_ARCHITECTURE_GUIDE.md`](./docs/ADVANCED_ARCHITECTURE_GUIDE.md)
+Also see the [testing guide](./docs/TESTS.md) for details on testing.
 
 ---
 
@@ -242,13 +250,33 @@ The boot scene displays a loading bar driven by `progress`.
 
 A simple but polished **number-guessing** game:
 
-- Guess a random number in a configurable range (e.g. `1–N` (`N` depends on difficulty choice))
+- Guess a random number in a configurable range (e.g. `1–N` or `-N to +N` depending on difficulty choice)
 - Type your guess in an input field and submit
 - The game tells you if your guess is **too low** / **too high**
 - Counts attempts
 - Shows a **win screen** and basic stats
 - Maintains **high scores / stats** via the `stats/` module
 - Navigation flow: **Menu → Game → Win** (with reset and back buttons)
+
+### Difficulty Levels
+
+The game supports multiple difficulty levels with different number ranges:
+
+- **Easy**: 1-10
+- **Medium**: 1-100
+- **Hard**: 1-1000
+- **Very Hard**: 1-10000
+- **Extreme**: 1-100000
+- **Impossible**: -100000 to 100000 (supports negative numbers!)
+
+### Negative Number Support
+
+The game fully supports **negative numbers** in difficulty ranges:
+
+- Games with negative ranges allow users to enter negative guesses (e.g., `-50`)
+- When typing negative numbers, there's no error shown for the minus sign (`-`) during input
+- If a game doesn't allow negative numbers, typing `-` will show "Number should be positive"
+- The UI validation is context-aware based on the current game's range
 
 Controls:
 
@@ -264,6 +292,10 @@ Controls:
 
 - Python **3.13+**
 - [uv](https://github.com/astral-sh/uv) (optional, recommended)
+
+### .env file (optional)
+
+Copy `.env.example` to `.env` and fill in the required values.
 
 ### Install dependencies with uv
 
@@ -320,4 +352,5 @@ The executable bundle will be generated into the `dist/` directory.
 
 More details:
 📄 [`docs/UV.md`](./docs/UV.md)
+📄 [`docs/TESTS.md`](./docs/TESTS.md)
 📄 [`docs/ADVANCED_ARCHITECTURE_GUIDE.md`](./docs/ADVANCED_ARCHITECTURE_GUIDE.md)

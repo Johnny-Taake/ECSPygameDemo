@@ -1,5 +1,5 @@
 [project]
-name = "guess-number-pygame"
+name = "guess-number-game"
 version = "0.1.0"
 description = "A Pygame-based number guessing game with ECS architecture"
 readme = "README.md"
