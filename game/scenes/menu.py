@@ -37,7 +37,8 @@ class MenuScene(BaseScene):
 
         ui = UIBuilder(self.app.font)
         self.title = ui.h1_entity("Guess The Number", 320, 60)
-        self.subtitle = ui.h2_entity("Press START", 320, 105, GameConfig.HINT_COLOR)
+        self.subtitle = ui.h2_entity(
+            "Press START", 320, 105, GameConfig.HINT_COLOR)
 
         # Difficulty selection UI
         self.difficulty_label = ui.label_entity(
@@ -56,7 +57,8 @@ class MenuScene(BaseScene):
         difficulty_btn_center_x = 320
         btn_spacing = 60  # Space between the center and each button
         self.btn_prev = ui.button_entity(
-            "<", difficulty_btn_center_x - btn_spacing, 220, prev_difficulty, "[<-]"
+            "<", difficulty_btn_center_x -
+            btn_spacing, 220, prev_difficulty, "[<-]"
         )
         prev_component = self.btn_prev.get(ButtonComponent)
         if prev_component:
@@ -67,7 +69,8 @@ class MenuScene(BaseScene):
             self.next_difficulty()
 
         self.btn_next = ui.button_entity(
-            ">", difficulty_btn_center_x + btn_spacing, 220, next_difficulty, "[->]"
+            ">", difficulty_btn_center_x +
+            btn_spacing, 220, next_difficulty, "[->]"
         )
         next_component = self.btn_next.get(ButtonComponent)
         if next_component:
@@ -84,7 +87,8 @@ class MenuScene(BaseScene):
         start_component = self.btn_start.get(ButtonComponent)
         if start_component:
             start_component.min_width = (
-                220  # Same total width as difficulty buttons (100 + 20 gap + 100)
+                # Same total width as difficulty buttons (100 + 20 gap + 100)
+                220
             )
 
         def exit_game():
@@ -98,7 +102,8 @@ class MenuScene(BaseScene):
         exit_component = self.btn_exit.get(ButtonComponent)
         if exit_component:
             exit_component.min_width = (
-                220  # Same total width as difficulty buttons (100 + 20 gap + 100)
+                # Same total width as difficulty buttons (100 + 20 gap + 100)
+                220
             )
 
         # Sound toggle button - placed at the top right similar to the game scene

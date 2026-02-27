@@ -21,6 +21,7 @@ class ProgressBarComponent:
         self.fill_color: Tuple[int, int, int] = fill_color
         self.progress: float = 0  # 0.0 to 1.0
         self.target_progress: float = 0  # 0.0 to 1.0
+        # How fast the progress fills visually
         self.animation_speed: float = (
             GameConfig.PROGRESS_BAR_ANIMATION_SPEED
-        )  # How fast the progress fills visually
+        )

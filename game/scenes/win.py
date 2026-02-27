@@ -16,7 +16,8 @@ class WinScene(BaseScene):
         log.info("WinScene enter")
         ui = UIBuilder(self.app.font)
 
-        self.title = ui.h1_entity("Correct!", 320, 100, GameConfig.SUCCESS_COLOR)
+        self.title = ui.h1_entity(
+            "Correct!", 320, 100, GameConfig.SUCCESS_COLOR)
         self.stat = ui.h2_entity(
             f"Attempts: {self.attempts}", 320, 180, GameConfig.HINT_COLOR
         )
@@ -42,7 +43,8 @@ class WinScene(BaseScene):
                 rank_color = GameConfig.TEXT_COLOR
 
             if rank_text:
-                self.top_ranking_label = ui.h3_entity(rank_text, 320, 260, rank_color)
+                self.top_ranking_label = ui.h3_entity(
+                    rank_text, 320, 260, rank_color)
         else:
             # If not a top score, don't show the label
             rank_text = ""
@@ -66,7 +68,8 @@ class WinScene(BaseScene):
                         break
 
                 if matching_index is not None:
-                    ServiceLocator.provide("last_selected_difficulty", matching_index)
+                    ServiceLocator.provide(
+                        "last_selected_difficulty", matching_index)
 
             # Start fade out with callback to go to menu
             def on_fade_complete():
@@ -97,7 +100,8 @@ class WinScene(BaseScene):
                         break
 
                 if matching_index is not None:
-                    ServiceLocator.provide("last_selected_difficulty", matching_index)
+                    ServiceLocator.provide(
+                        "last_selected_difficulty", matching_index)
 
             from .game import GameScene
 
@@ -161,7 +165,8 @@ class WinScene(BaseScene):
         if results_component:
             results_component.min_width = 140
 
-        self.btn_menu = ui.button_entity("Menu", 475, 340, menu_with_sound, "[ESC]")
+        self.btn_menu = ui.button_entity(
+            "Menu", 475, 340, menu_with_sound, "[ESC]")
         # Set minimum width to match longest button text in scene
         menu_component = self.btn_menu.get(ButtonComponent)
         if menu_component:
@@ -314,7 +319,8 @@ class WinScene(BaseScene):
                     break
 
             if matching_index is not None:
-                ServiceLocator.provide("last_selected_difficulty", matching_index)
+                ServiceLocator.provide(
+                    "last_selected_difficulty", matching_index)
 
         # Start fade out with callback to go to menu
         def on_fade_complete():
@@ -352,7 +358,8 @@ class WinScene(BaseScene):
                     break
 
             if matching_index is not None:
-                ServiceLocator.provide("last_selected_difficulty", matching_index)
+                ServiceLocator.provide(
+                    "last_selected_difficulty", matching_index)
 
         from .game import GameScene
 

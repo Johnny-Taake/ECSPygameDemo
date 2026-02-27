@@ -110,7 +110,8 @@ class UIBuilder:
         keyboard_shortcut: Optional[str] = None,
     ):
         e = GameObject()
-        btn = ButtonComponent("", keyboard_shortcut)  # Empty text for image button
+        # Empty text for image button
+        btn = ButtonComponent("", keyboard_shortcut)
         btn.on_click = onclick
         # Set minimum width and height with padding around the image
         btn.min_width = width + 16  # Add 16px padding: 8px on each side

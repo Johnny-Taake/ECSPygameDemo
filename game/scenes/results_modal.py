@@ -34,7 +34,8 @@ class ResultsModalScene(BaseScene):
 
     def enter(self):
         log.info(
-            f"ResultsModalScene enter - {self.difficulty_name} ({self.min_number}-{self.max_number})"
+            f"ResultsModalScene enter - {self.difficulty_name} ({self.min_number}-{
+                self.max_number})"
         )
         ui = UIBuilder(self.app.font)
 
@@ -76,7 +77,8 @@ class ResultsModalScene(BaseScene):
             )
             for i, attempt in enumerate(top_attempts[:max_display_attempts]):
                 y_pos = start_y + (i * 25)  # 25px spacing between entries
-                attempt_text = f"#{i+1}: {attempt['attempts']} att. - {format_timestamp(attempt['timestamp'])}"
+                attempt_text = f"#{
+                    i+1}: {attempt['attempts']} att. - {format_timestamp(attempt['timestamp'])}"
 
                 # Determine color based on whether this is the current attempt with the exact timestamp
                 attempt_color = GameConfig.TEXT_COLOR
@@ -94,7 +96,8 @@ class ResultsModalScene(BaseScene):
                     elif self.current_ranking <= 5:
                         attempt_color = GameConfig.TOP_SCORE_4_TO_5_COLOR
 
-                label = ui.label_entity(attempt_text, 320, y_pos, attempt_color)
+                label = ui.label_entity(
+                    attempt_text, 320, y_pos, attempt_color)
                 setattr(
                     self, f"top_score_label_{i}", label
                 )  # Store as instance attribute
@@ -108,7 +111,8 @@ class ResultsModalScene(BaseScene):
             self.close_modal()
 
         # Close button (positioned in the top-right corner of the modal)
-        self.btn_close = ui.button_entity("Close", 550, 100, close_modal, "[ESC]")
+        self.btn_close = ui.button_entity(
+            "Close", 550, 100, close_modal, "[ESC]")
 
         # Set minimum width to match
         close_component = self.btn_close.get(ButtonComponent)

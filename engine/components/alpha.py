@@ -10,5 +10,6 @@ class AlphaComponent:
         self.alpha: float = alpha  # 0.0 (transparent) to 1.0 (opaque)
         self.target_alpha: float = alpha  # Target alpha for smooth transitions
         self.animation_speed: float = (
-            GameConfig.ALPHA_ANIMATION_SPEED  # How fast alpha changes - faster for more immediate response
+            # How fast alpha changes - faster for more immediate response
+            GameConfig.ALPHA_ANIMATION_SPEED
         )

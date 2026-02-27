@@ -45,7 +45,8 @@ class GameLogic:
     def generate_new_number(self):
         """Generate a new random number to guess"""
         self.number_to_guess = randint(self.min_number, self.max_number)
-        log.debug("New number generated: number_to_guess=%s", self.number_to_guess)
+        log.debug("New number generated: number_to_guess=%s",
+                  self.number_to_guess)
 
     def reset(self):
         self.generate_new_number()
@@ -65,7 +66,8 @@ class GameLogic:
         try:
             guess = int(guess_str)
         except ValueError:
-            log.debug('INVALID_FORMAT input (not a valid integer): "%s"', guess_str)
+            log.debug(
+                'INVALID_FORMAT input (not a valid integer): "%s"', guess_str)
             return GuessStatus.INVALID_FORMAT
 
         from utils import is_in_range

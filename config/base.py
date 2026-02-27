@@ -49,8 +49,10 @@ class ColorConfig(BaseModel):
     progress_bar_border_color: Tuple[int, int, int] = (255, 255, 255)
 
     # Colors for top score highlights
-    top_score_1_color: Tuple[int, int, int] = (150, 255, 150)  # Light green for #1
-    top_score_2_to_3_color: Tuple[int, int, int] = (0, 200, 255)  # Light blue for top 3
+    top_score_1_color: Tuple[int, int, int] = (
+        150, 255, 150)  # Light green for #1
+    top_score_2_to_3_color: Tuple[int, int, int] = (
+        0, 200, 255)  # Light blue for top 3
     top_score_4_to_5_color: Tuple[int, int, int] = (
         255,
         200,
@@ -64,7 +66,9 @@ class ColorConfig(BaseModel):
             r, g, b = v
             if all(isinstance(c, int) and 0 <= c <= 255 for c in (r, g, b)):
                 return (r, g, b)
-        raise ValueError("Color must be a tuple of 3 integers between 0 and 255")
+        raise ValueError(
+            "Color must be a tuple of 3 integers between 0 and 255"
+        )
 
 
 class DifficultyModel(BaseModel):
@@ -109,7 +113,8 @@ class DifficultyConfig(BaseModel):
     def validate_default_index(cls, v: int, values) -> int:
         if "modes" in values.data and v >= len(values.data["modes"]):
             raise ValueError(
-                f"Default index {v} is out of range for {len(values.data['modes'])} difficulty modes"
+                f"Default index {v} is out of range for {
+                    len(values.data['modes'])} difficulty modes"
             )
         if v < 0:
             raise ValueError("Default index must be non-negative")

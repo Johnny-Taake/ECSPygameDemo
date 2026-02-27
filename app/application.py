@@ -26,7 +26,8 @@ class GameApp:
         pygame.display.set_caption(GameConfig.WINDOW_TITLE)
 
         # Initialize screen with RESIZABLE flag
-        self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode(
+            (width, height), pygame.RESIZABLE)
 
         pygame.display.set_icon(icon)
 
@@ -75,9 +76,11 @@ class GameApp:
                         (event.w, event.h), pygame.RESIZABLE
                     )
                     self.scale_manager.update_window_size(event.w, event.h)
-                    log.debug(f"Scale factor updated to: {self.scale_manager.scale}")
+                    log.debug(f"Scale factor updated to: {
+                              self.scale_manager.scale}")
                     log.debug(
-                        f"Offset calculated as: ({self.scale_manager.offset_x}, {self.scale_manager.offset_y})"
+                        f"Offset calculated as: ({self.scale_manager.offset_x}, {
+                            self.scale_manager.offset_y})"
                     )
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -89,7 +92,8 @@ class GameApp:
                         )
                     # Process sound system for clicked buttons
                     if self.scene_manager.current:
-                        self.sound_system.update(self.scene_manager.current.entities)
+                        self.sound_system.update(
+                            self.scene_manager.current.entities)
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     # Convert screen coordinates to virtual coordinates before processing
@@ -100,7 +104,8 @@ class GameApp:
                         )
                     # Process sound system for clicked buttons
                     if self.scene_manager.current:
-                        self.sound_system.update(self.scene_manager.current.entities)
+                        self.sound_system.update(
+                            self.scene_manager.current.entities)
 
                 if event.type == pygame.MOUSEMOTION:
                     # Convert screen coordinates to virtual coordinates before processing
@@ -149,7 +154,8 @@ class GameApp:
             self.virtual_surface.fill(GameConfig.BACKGROUND_COLOR)
             if self.scene_manager.current:
                 try:
-                    self.render_system.update(self.scene_manager.current.entities)
+                    self.render_system.update(
+                        self.scene_manager.current.entities)
                 except Exception as e:
                     log.exception("Render error: %s", e)
 

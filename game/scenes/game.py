@@ -41,7 +41,8 @@ class GameScene(BaseScene):
                 self.difficulty_params = data
 
         if event_bus is not None:
-            event_bus.subscribe("difficulty_selected", handle_difficulty_selection)
+            event_bus.subscribe("difficulty_selected",
+                                handle_difficulty_selection)
         else:
             log.error(
                 "EventBus not found in ServiceLocator. Difficulty selection will not be handled."
@@ -95,7 +96,8 @@ class GameScene(BaseScene):
         self.title = ui.h2_entity(
             title_text, 320, 40, GameConfig.H1_DEFAULT_COLOR
         )  # Use H2 size for better fit
-        range_text = f"{self.game_logic.min_number} - {self.game_logic.max_number}"
+        range_text = f"{
+            self.game_logic.min_number} - {self.game_logic.max_number}"
         self.range_label = ui.h3_entity(
             range_text, 320, 70, GameConfig.H2_DEFAULT_COLOR
         )  # Range on separate line
@@ -121,9 +123,12 @@ class GameScene(BaseScene):
             if input_comp:
                 input_comp.text = preserved_input_value
 
-        self.history_label = ui.label_entity("", 320, 260, GameConfig.HINT_COLOR)
+        self.history_label = ui.label_entity(
+            "", 320, 260, GameConfig.HINT_COLOR
+        )
         self.attempts_label = ui.label_entity(
-            f"Attempts: {self.game_logic.attempts}", 320, 300, GameConfig.HINT_COLOR
+            f"Attempts: {
+                self.game_logic.attempts}", 320, 300, GameConfig.HINT_COLOR
         )
 
         self._restart_requested = False
@@ -205,7 +210,8 @@ class GameScene(BaseScene):
         self.clear_error_label()  # Initially clear the error label
 
         # Input system focus the input on enter to scene
-        self.app.input_system.set_focus(self.input_ent.get(InputFieldComponent))
+        self.app.input_system.set_focus(
+            self.input_ent.get(InputFieldComponent))
 
     def submit_guess(self):
         inp = self.input_ent.get(InputFieldComponent)
@@ -235,7 +241,8 @@ class GameScene(BaseScene):
                 from .win import WinScene
 
                 self.app.scene_manager.change(
-                    WinScene(self.app, self.game_logic.attempts, self.game_logic)
+                    WinScene(self.app, self.game_logic.attempts,
+                             self.game_logic)
                 )
                 return
 
@@ -246,7 +253,8 @@ class GameScene(BaseScene):
         if status in [GuessStatus.TOO_LOW, GuessStatus.TOO_HIGH, GuessStatus.CORRECT]:
             attempts_label_comp = self.attempts_label.get(LabelComponent)
             if attempts_label_comp is not None:
-                attempts_label_comp.text = f"Attempts: {self.game_logic.attempts}"
+                attempts_label_comp.text = f"Attempts: {
+                    self.game_logic.attempts}"
 
         self.update_history_label()
 
@@ -267,7 +275,8 @@ class GameScene(BaseScene):
     def update_history_label(self):
         # Use configuration value for max history entries
         compact = (
-            " | ".join(self.history_list[: GameConfig.SCENE_MAX_HISTORY_ENTRIES])
+            " | ".join(
+                self.history_list[: GameConfig.SCENE_MAX_HISTORY_ENTRIES])
             if self.history_list
             else ""
         )
@@ -342,7 +351,8 @@ class GameScene(BaseScene):
                     submit_btn.active = False
                     if error_label:
                         invalid_msg = "Invalid: Number out of range"
-                        range_vals = f"({self.game_logic.min_number}-{self.game_logic.max_number})"
+                        range_vals = f"({
+                            self.game_logic.min_number}-{self.game_logic.max_number})"
                         error_label.text = f"{invalid_msg} {range_vals}"
                         error_label.color = GameConfig.ERROR_COLOR
                 else:
@@ -391,7 +401,8 @@ class GameScene(BaseScene):
                     break
 
             if matching_index is not None:
-                ServiceLocator.provide("last_selected_difficulty", matching_index)
+                ServiceLocator.provide(
+                    "last_selected_difficulty", matching_index)
             else:
                 # If not found in predefined modes, store as a custom difficulty
                 # For now, just store the current index if available or default

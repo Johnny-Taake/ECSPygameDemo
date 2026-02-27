@@ -1,3 +1,4 @@
-from .application import GameApp
-
 __all__ = ["GameApp"]
+
+
+from .application import GameApp

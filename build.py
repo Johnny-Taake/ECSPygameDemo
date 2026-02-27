@@ -20,7 +20,9 @@ def build_executable():
     dist_dir = Path("dist")
     dist_dir.mkdir(exist_ok=True)
 
-    _ = subprocess.run([sys.executable, "-m", "PyInstaller", "build.spec"], check=True)
+    _ = subprocess.run(
+        [sys.executable, "-m", "PyInstaller", "build.spec"], check=True
+    )
 
     print("Build completed successfully! Executable is in the 'dist' folder.")
 

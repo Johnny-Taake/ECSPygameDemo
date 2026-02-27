@@ -84,7 +84,9 @@ class AssetLoader:
                 # Reset frame counter for next task
                 self.current_task_frame_counter = 0
 
-                log.info(f"AssetLoader: Progress updated - {self.progress:.2%}")
+                log.info(
+                    f"AssetLoader: Progress updated - {self.progress:.2%}"
+                )
         else:
             self.completed = True
 

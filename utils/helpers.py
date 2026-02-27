@@ -57,21 +57,10 @@ def is_signed_integer(s: str) -> bool:
     return remaining.isdigit()
 
 
-def is_positive_integer(s: str) -> bool:
-    """
-    Check if a string represents a valid positive integer.
-
-    Args:
-        s: String to check
-
-    Returns:
-        True if string is a valid positive integer, False otherwise
-    """
-    return s.isdigit()
-
-
 def is_in_range(
-    value: Union[int, float], min_val: Union[int, float], max_val: Union[int, float]
+    value: Union[int, float],
+    min_val: Union[int, float],
+    max_val: Union[int, float],
 ) -> bool:
     """
     Check if a value is within an inclusive range [min_val, max_val].

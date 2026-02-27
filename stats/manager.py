@@ -45,7 +45,8 @@ class StatsManager:
         """Get default statistics structure."""
         stats: Dict[str, Any] = {}
         for difficulty in GameConfig.DIFFICULTY_MODES:
-            difficulty_key = f"{difficulty.name}_{difficulty.min}-{difficulty.max}"
+            difficulty_key = f"{difficulty.name}_{
+                difficulty.min}-{difficulty.max}"
             stats[difficulty_key] = {
                 "games_played": 0,
                 "top_attempts": [],  # Will store GameResult objects as dicts
@@ -61,8 +62,10 @@ class StatsManager:
 
         # Ensure the difficulty exists in stats
         if difficulty_key not in self._stats:
-            log.debug("Creating new difficulty entry for key: %s", difficulty_key)
-            self._stats[difficulty_key] = {"games_played": 0, "top_attempts": []}
+            log.debug("Creating new difficulty entry for key: %s",
+                      difficulty_key)
+            self._stats[difficulty_key] = {
+                "games_played": 0, "top_attempts": []}
 
         # Increment games played
         self._stats[difficulty_key]["games_played"] += 1
@@ -130,7 +133,11 @@ class StatsManager:
         self.save_stats()
 
     def get_ranking_for_new_score(
-        self, new_attempts: int, difficulty_name: str, min_num: int, max_num: int
+        self,
+        new_attempts: int,
+        difficulty_name: str,
+        min_num: int,
+        max_num: int,
     ) -> int:
         """Get the ranking for a new score without recording it yet."""
         difficulty_key = f"{difficulty_name}_{min_num}-{max_num}"

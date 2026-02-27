@@ -35,7 +35,9 @@ class DialogScene(BaseScene):
         overlay_entity.add(AlphaComponent(0.5))
 
         # Dialog title
-        self.title = ui.h2_entity(self.title_text, 320, 140, GameConfig.TEXT_COLOR)
+        self.title = ui.h2_entity(
+            self.title_text, 320, 140, GameConfig.TEXT_COLOR
+        )
 
         # Dialog message
         self.message_label = ui.label_entity(
@@ -54,7 +56,8 @@ class DialogScene(BaseScene):
         self.btn_confirm = ui.button_entity(
             self.confirm_text, 250, 270, confirm, "[ENTER]"
         )
-        self.btn_cancel = ui.button_entity(self.cancel_text, 400, 270, cancel, "[ESC]")
+        self.btn_cancel = ui.button_entity(
+            self.cancel_text, 400, 270, cancel, "[ESC]")
 
         # Set minimum width to match
         confirm_component = self.btn_confirm.get(ButtonComponent)

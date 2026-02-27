@@ -3,7 +3,6 @@
 from utils.helpers import (
     format_timestamp,
     is_signed_integer,
-    is_positive_integer,
     is_in_range,
     is_point_in_rect,
 )
@@ -46,29 +45,6 @@ class TestIsSignedInteger:
         assert not is_signed_integer("--123")
 
 
-class TestIsPositiveInteger:
-    """Test the is_positive_integer function."""
-
-    def test_is_positive_integer_positive(self):
-        """Test is_positive_integer with positive integers."""
-        assert is_positive_integer("123")
-        assert is_positive_integer("0")
-        assert is_positive_integer("42")
-
-    def test_is_positive_integer_negative(self):
-        """Test is_positive_integer with negative integers."""
-        assert not is_positive_integer("-123")
-        assert not is_positive_integer("-1")
-
-    def test_is_positive_integer_invalid(self):
-        """Test is_positive_integer with invalid inputs."""
-        assert not is_positive_integer("abc")
-        assert not is_positive_integer("12.34")
-        assert not is_positive_integer("-")
-        assert not is_positive_integer("")
-        assert not is_positive_integer("12-34")
-
-
 class TestIsInRange:
     """Test the is_in_range function."""
 
@@ -107,9 +83,12 @@ class TestIsPointInRect:
 
     def test_is_point_in_rect_outside(self):
         """Test is_point_in_rect with point outside rectangle."""
-        assert not is_point_in_rect(51, 0, 0, 0, 100, 100)  # Just outside right
-        assert not is_point_in_rect(-51, 0, 0, 0, 100, 100)  # Just outside left
-        assert not is_point_in_rect(0, 51, 0, 0, 100, 100)  # Just outside bottom
+        assert not is_point_in_rect(
+            51, 0, 0, 0, 100, 100)  # Just outside right
+        # Just outside left
+        assert not is_point_in_rect(-51, 0, 0, 0, 100, 100)
+        assert not is_point_in_rect(
+            0, 51, 0, 0, 100, 100)  # Just outside bottom
         assert not is_point_in_rect(0, -51, 0, 0, 100, 100)  # Just outside top
 
     def test_is_point_in_rect_different_position(self):
@@ -118,4 +97,5 @@ class TestIsPointInRect:
         assert is_point_in_rect(10, 20, 10, 20, 40, 40)  # Center
         assert is_point_in_rect(30, 20, 10, 20, 40, 40)  # Right edge
         assert is_point_in_rect(-10, 20, 10, 20, 40, 40)  # Left edge
-        assert not is_point_in_rect(31, 20, 10, 20, 40, 40)  # Just outside right
+        assert not is_point_in_rect(
+            31, 20, 10, 20, 40, 40)  # Just outside right

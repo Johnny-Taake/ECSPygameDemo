@@ -17,7 +17,10 @@ log = get_logger("game/scenes")
 class BootScene(BaseScene):
     def __init__(self, app):
         super().__init__(app)
-        self.asset_loader = AssetLoader(frames_per_task=2)  # Faster progression
+        # Faster progression
+        self.asset_loader = AssetLoader(
+            frames_per_task=2
+        )
         self.setup_asset_loading_tasks()
         self.loading_complete = False
         self.showing_progress = True
@@ -27,15 +30,21 @@ class BootScene(BaseScene):
         self.asset_loader.add_simple_task(
             "Initializing services", self.initialize_services
         )
-        self.asset_loader.add_simple_task("Loading UI assets", self.load_ui_assets)
-        self.asset_loader.add_simple_task("Loading game assets", self.load_game_assets)
+        self.asset_loader.add_simple_task(
+            "Loading UI assets", self.load_ui_assets
+        )
+        self.asset_loader.add_simple_task(
+            "Loading game assets", self.load_game_assets
+        )
         self.asset_loader.add_simple_task(
             "Loading sound assets", self.load_sound_assets
         )
         self.asset_loader.add_simple_task(
             "Loading image assets", self.load_image_assets
         )
-        self.asset_loader.add_simple_task("Loading font assets", self.load_font_assets)
+        self.asset_loader.add_simple_task(
+            "Loading font assets", self.load_font_assets
+        )
 
     def initialize_services(self):
         """Initialize services for the game"""
@@ -68,7 +77,9 @@ class BootScene(BaseScene):
 
             if sound_system:
                 sound_system.load_sound(
-                    "button_click", get_resource_path("assets/sounds/button-click.mp3")
+                    "button_click", get_resource_path(
+                        "assets/sounds/button-click.mp3"
+                    ),
                 )
                 sound_system.load_sound(
                     "keyboard_click",
@@ -76,7 +87,9 @@ class BootScene(BaseScene):
                 )
                 sound_system.load_sound(
                     "win",
-                    get_resource_path("assets/sounds/soft-treble-win-fade-out.mp3"),
+                    get_resource_path(
+                        "assets/sounds/soft-treble-win-fade-out.mp3"
+                    ),
                 )
                 log.info("Sound assets loaded successfully")
             else:
@@ -102,8 +115,12 @@ class BootScene(BaseScene):
             import pygame
             from config import GameConfig
 
-            pygame.font.Font(get_resource_path(GameConfig.DEFAULT_FONT_PATH), 16)
-            pygame.font.Font(get_resource_path(GameConfig.ITALIC_FONT_PATH), 16)
+            pygame.font.Font(get_resource_path(
+                GameConfig.DEFAULT_FONT_PATH), 16
+            )
+            pygame.font.Font(get_resource_path(
+                GameConfig.ITALIC_FONT_PATH), 16
+            )
             pygame.font.Font(get_resource_path(GameConfig.BOLD_FONT_PATH), 16)
             log.info("Font assets preloaded successfully")
         except Exception as e:
